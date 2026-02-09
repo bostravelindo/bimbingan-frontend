@@ -1,0 +1,38 @@
+[
+  {
+    "id": "user_admin_001",
+    "username": "admin",
+    "password": "admin123",
+    "name": "Administrator",
+    "role": "admin",
+    "nim": null,
+    "nidn": "199001012020011001",
+    "prodi": "Semua Prodi",
+    "email": "admin@febi.ac.id",
+    "phone": "081234567890"
+  },
+  {
+    "id": "user_mhs_001",
+    "username": "mahasiswa1",
+    "password": "mahasiswa123",
+    "name": "Ahmad Fauzi",
+    "role": "mahasiswa",
+    "nim": "2001010001",
+    "nidn": null,
+    "prodi": "Ekonomi Syariah",
+    "email": "ahmad.fauzi@student.febi.ac.id",
+    "phone": "081234567891"
+  },
+  {
+    "id": "user_dsn_001",
+    "username": "dosen1",
+    "password": "dosen123",
+    "name": "Dr. Muhammad Ridwan, M.E.I",
+    "role": "dosen",
+    "nim": null,
+    "nidn": "197501012005011001",
+    "prodi": "Ekonomi Syariah",
+    "email": "ridwan@febi.ac.id",
+    "phone": "081234567892"
+  }
+]
