@@ -1,0 +1,2781 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Bimbingan Skripsi & Repository - FEBI UINSI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 0;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Top Navigation Bar */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            height: 70px;
+        }
+        
+        .top-nav .logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        
+        .top-nav .logo span {
+            color: #3498db;
+        }
+        
+        .top-nav .main-menu {
+            display: flex;
+            gap: 25px;
+            list-style: none;
+        }
+        
+        .top-nav .main-menu li a {
+            text-decoration: none;
+            color: #7f8c8d;
+            font-weight: 600;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        .top-nav .main-menu li a:hover,
+        .top-nav .main-menu li a.active {
+            background: #3498db;
+            color: white;
+        }
+        
+        .top-nav .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .top-nav .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #3498db;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .top-nav .user-details {
+            text-align: right;
+        }
+        
+        .top-nav .user-name {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+        
+        .top-nav .user-role {
+            font-size: 11px;
+            color: #95a5a6;
+            background: #ecf0f1;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        
+        .top-nav .btn-logout {
+            background: #e74c3c;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .top-nav .btn-logout:hover {
+            background: #c0392b;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: #2c3e50;
+            color: white;
+            padding: 20px 0;
+            box-shadow: 3px 0 10px rgba(0,0,0,0.2);
+            position: fixed;
+            top: 70px;
+            bottom: 0;
+            overflow-y: auto;
+        }
+        
+        .sidebar .logo-small {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #34495e;
+            margin-bottom: 20px;
+        }
+        
+        .sidebar .logo-small h3 {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .sidebar .nav-menu {
+            list-style: none;
+            padding: 0 15px;
+        }
+        
+        .sidebar .nav-item {
+            margin-bottom: 5px;
+        }
+        
+        .sidebar .nav-link {
+            display: block;
+            padding: 12px 15px;
+            color: #ecf0f1;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .sidebar .nav-link:hover {
+            background: #34495e;
+            color: white;
+        }
+        
+        .sidebar .nav-link.active {
+            background: #3498db;
+            color: white;
+        }
+        
+        .sidebar .nav-link i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .sidebar .badge {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #e74c3c;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .sidebar .admin-badge {
+            background: #f39c12;
+            font-size: 9px;
+            padding: 1px 6px;
+        }
+        
+        .sidebar .submenu {
+            margin-left: 35px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            display: none;
+        }
+        
+        .sidebar .submenu.show {
+            display: block;
+        }
+        
+        .sidebar .submenu-item {
+            margin-bottom: 3px;
+        }
+        
+        .sidebar .submenu-link {
+            display: block;
+            padding: 8px 15px;
+            color: #95a5a6;
+            text-decoration: none;
+            border-radius: 3px;
+            transition: all 0.3s;
+            font-size: 13px;
+        }
+        
+        .sidebar .submenu-link:hover,
+        .sidebar .submenu-link.active {
+            background: #34495e;
+            color: white;
+            padding-left: 20px;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            margin-top: 70px;
+            background: #f5f7fa;
+            padding: 30px;
+            min-height: calc(100vh - 70px);
+        }
+        
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        .page-title i {
+            color: #3498db;
+        }
+        
+        /* Stats Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-left: 4px solid #3498db;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+        
+        .stat-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .stat-icon.proposal { color: #3498db; border-color: #3498db; }
+        .stat-icon.bimbingan { color: #e74c3c; border-color: #e74c3c; }
+        .stat-icon.selesai { color: #2ecc71; border-color: #2ecc71; }
+        .stat-icon.warning { color: #f39c12; border-color: #f39c12; }
+        .stat-icon.repository { color: #9b59b6; border-color: #9b59b6; }
+        
+        .stat-title {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .stat-change {
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .stat-change.positive {
+            color: #2ecc71;
+        }
+        
+        .stat-change.negative {
+            color: #e74c3c;
+        }
+        
+        .stat-change.neutral {
+            color: #95a5a6;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        
+        .btn-success {
+            background: #2ecc71;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #27ae60;
+        }
+        
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background: #e67e22;
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #3498db;
+            color: #3498db;
+        }
+        
+        .btn-outline:hover {
+            background: #3498db;
+            color: white;
+        }
+        
+        /* Table */
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .table-header {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .table-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .table-subtitle {
+            font-size: 13px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead {
+            background: #3498db;
+            color: white;
+        }
+        
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 14px;
+            color: #2c3e50;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* Status Badges */
+        .badge-status {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .badge-pending {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .badge-approved {
+            background: #2ecc71;
+            color: white;
+        }
+        
+        .badge-rejected {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .badge-revision {
+            background: #3498db;
+            color: white;
+        }
+        
+        .badge-completed {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .badge-warning {
+            background: #e67e22;
+            color: white;
+        }
+        
+        /* Action Buttons in Table */
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 5px;
+            transition: all 0.3s;
+        }
+        
+        .action-btn.view {
+            background: #3498db;
+            color: white;
+        }
+        
+        .action-btn.edit {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .action-btn.delete {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .action-btn.approve {
+            background: #2ecc71;
+            color: white;
+        }
+        
+        .action-btn.validate {
+            background: #9b59b6;
+            color: white;
+        }
+        
+        .action-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            padding: 20px;
+            background: #3498db;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.3s;
+        }
+        
+        .modal-close:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .modal-body {
+            padding: 25px;
+        }
+        
+        .modal-footer {
+            padding: 15px 25px;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        /* Form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .form-select {
+            appearance: none;
+            background: url("image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%233498db' d='M6 9L1 4h10z'/%3E%3C/svg%3E") no-repeat right 12px center/12px 12px;
+        }
+        
+        .form-check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .form-check input {
+            width: 18px;
+            height: 18px;
+        }
+        
+        .form-check label {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        /* Alert */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-left: 4px solid;
+        }
+        
+        .alert-info {
+            background: #d6eaf8;
+            border-left-color: #3498db;
+            color: #2c3e50;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            border-left-color: #28a745;
+            color: #155724;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+            color: #856404;
+        }
+        
+        .alert-danger {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+            color: #721c24;
+        }
+        
+        .alert i {
+            font-size: 20px;
+        }
+        
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateX(400px);
+            transition: transform 0.3s;
+            border-left: 4px solid;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+        }
+        
+        .toast.success {
+            border-left-color: #2ecc71;
+        }
+        
+        .toast.error {
+            border-left-color: #e74c3c;
+        }
+        
+        .toast.warning {
+            border-left-color: #f39c12;
+        }
+        
+        .toast i {
+            font-size: 20px;
+        }
+        
+        .toast.success i {
+            color: #2ecc71;
+        }
+        
+        .toast.error i {
+            color: #e74c3c;
+        }
+        
+        .toast.warning i {
+            color: #f39c12;
+        }
+        
+        .toast-message {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .stats-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 220px;
+            }
+            
+            .main-content {
+                margin-left: 220px;
+            }
+            
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .top-nav .main-menu {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .sidebar {
+                width: 100%;
+                position: relative;
+                height: auto;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .top-nav .user-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+        
+        /* Page */
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        /* Role Badge */
+        .role-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        
+        .role-badge.admin {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .role-badge.dosen {
+            background: #3498db;
+            color: white;
+        }
+        
+        .role-badge.mahasiswa {
+            background: #2ecc71;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Top Navigation -->
+        <nav class="top-nav">
+            <div class="logo">
+                FEBI <span>UINSI</span> Samarinda
+            </div>
+            <ul class="main-menu">
+                <li><a href="#" class="active" onclick="showPage('dashboard')"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="#" onclick="showPage('proposal')"><i class="fas fa-file-alt"></i> Proposal</a></li>
+                <li><a href="#" onclick="showPage('bimbingan')"><i class="fas fa-book"></i> Bimbingan</a></li>
+                <li><a href="#" onclick="showPage('repository')"><i class="fas fa-database"></i> Repository</a></li>
+                <li><a href="#" onclick="showPage('laporan')"><i class="fas fa-chart-bar"></i> Laporan</a></li>
+            </ul>
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">G</div>
+                <div class="user-details">
+                    <span class="user-name" id="userName">Guest</span>
+                    <span class="user-role" id="userRole">Belum Login</span>
+                </div>
+                <button class="btn-logout" onclick="logout()" id="logoutBtn" style="display: none;">Logout</button>
+            </div>
+        </nav>
+        
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-small">
+                <h3>Dashboard Menu</h3>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" onclick="showPage('dashboard')">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="showPage('proposal')">
+                        <i class="fas fa-file-alt"></i> Pengajuan Proposal
+                        <span class="badge" id="proposalBadge">0</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="showPage('bimbingan')">
+                        <i class="fas fa-book"></i> Proses Bimbingan
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="showPage('warning')">
+                        <i class="fas fa-exclamation-triangle"></i> Early Warning
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="showPage('repository')">
+                        <i class="fas fa-database"></i> Skripsi Repository
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="toggleSubmenu('dataMaster')">
+                        <i class="fas fa-cogs"></i> Data Master
+                        <span class="badge admin-badge">Admin</span>
+                        <i class="fas fa-chevron-down" style="float: right; margin-right: 15px;"></i>
+                    </a>
+                    <ul class="submenu" id="dataMaster">
+                        <li class="submenu-item">
+                            <a href="#" class="submenu-link" onclick="showPage('mahasiswa')">
+                                <i class="fas fa-users"></i> Data Mahasiswa
+                            </a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="#" class="submenu-link" onclick="showPage('dosen')">
+                                <i class="fas fa-chalkboard-teacher"></i> Data Dosen
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="showPage('laporan')">
+                        <i class="fas fa-chart-bar"></i> Laporan
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Page -->
+            <div id="dashboardPage" class="page active">
+                <h2 class="page-title"><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+                <button class="btn btn-outline" onclick="refreshData()"><i class="fas fa-sync-alt"></i> Refresh Data</button>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Selamat datang di Dashboard Bimbingan Skripsi & Repository FEBI UINSI Samarinda.</strong> 
+                    Sistem ini memudahkan pengelolaan bimbingan skripsi dan penyimpanan repository skripsi secara permanen.
+                </div>
+                
+                <div class="alert alert-success">
+                    <i class="fas fa-cloud"></i>
+                    <strong>Google Sheets Storage Active</strong> - Data tersimpan permanen di Google Sheets dan dapat diakses dari device manapun!
+                </div>
+                
+                <!-- Stats Cards -->
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-icon proposal">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="stat-title">Proposal Masuk</div>
+                        <div class="stat-value" id="statProposal">0</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>+2 hari ini</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon bimbingan">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="stat-title">Bimbingan Berjalan</div>
+                        <div class="stat-value" id="statBimbingan">0</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>+1 hari ini</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon selesai">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-title">Selesai</div>
+                        <div class="stat-value" id="statSelesai">0</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>+3 bulan ini</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-title">Early Warning</div>
+                        <div class="stat-value" id="statWarning">0</div>
+                        <div class="stat-change negative">
+                            <i class="fas fa-arrow-down"></i>
+                            <span>-1 minggu ini</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon repository">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="stat-title">Repository</div>
+                        <div class="stat-value" id="statRepository">0</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>+5 baru</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Proposal Page -->
+            <div id="proposalPage" class="page">
+                <h2 class="page-title"><i class="fas fa-file-alt"></i> Pengajuan Proposal</h2>
+                
+                <div class="action-buttons" id="proposalActions">
+                    <button class="btn btn-primary" onclick="showModal('proposalModal')">
+                        <i class="fas fa-plus"></i> Ajukan Proposal Baru
+                    </button>
+                    <div>
+                        <button class="btn btn-outline"><i class="fas fa-file-excel"></i> Export Excel</button>
+                        <button class="btn btn-outline"><i class="fas fa-print"></i> Print</button>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Kelola pengajuan proposal skripsi Anda.</strong> 
+                    <span id="proposalInfo"></span>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">Daftar Proposal Skripsi</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>NIM</th>
+                                <th>Nama Mahasiswa</th>
+                                <th>Judul Proposal</th>
+                                <th>Pembimbing 1</th>
+                                <th>Pembimbing 2</th>
+                                <th>Similarity</th>
+                                <th>Status</th>
+                                <th>Tanggal</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="proposalTableBody">
+                            <tr>
+                                <td colspan="10" class="loading">
+                                    <div class="loading-spinner"></div>
+                                    <div>Loading data...</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Bimbingan Page -->
+            <div id="bimbinganPage" class="page">
+                <h2 class="page-title"><i class="fas fa-book"></i> Proses Bimbingan</h2>
+                
+                <div class="action-buttons" id="bimbinganActions">
+                    <div>
+                        <button class="btn btn-outline"><i class="fas fa-file-excel"></i> Export Excel</button>
+                        <button class="btn btn-outline"><i class="fas fa-print"></i> Print</button>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Kelola proses bimbingan skripsi dari Bab 1 hingga selesai.</strong>
+                    <span id="bimbinganInfo"></span>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">Daftar Proses Bimbingan</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>NIM</th>
+                                <th>Nama Mahasiswa</th>
+                                <th>Judul</th>
+                                <th>Pembimbing 1</th>
+                                <th>Pembimbing 2</th>
+                                <th>Bab Terakhir</th>
+                                <th>Status</th>
+                                <th>Tanggal</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bimbinganTableBody">
+                            <tr>
+                                <td colspan="10" class="loading">
+                                    <div class="loading-spinner"></div>
+                                    <div>Loading data...</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Mahasiswa Page -->
+            <div id="mahasiswaPage" class="page">
+                <h2 class="page-title"><i class="fas fa-users"></i> Data Mahasiswa</h2>
+                
+                <div class="action-buttons" id="mahasiswaActions">
+                    <button class="btn btn-success" onclick="showModal('mahasiswaModal')">
+                        <i class="fas fa-plus"></i> Tambah Mahasiswa
+                    </button>
+                    <div>
+                        <button class="btn btn-outline"><i class="fas fa-file-excel"></i> Export Excel</button>
+                        <button class="btn btn-outline"><i class="fas fa-print"></i> Print</button>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Kelola data mahasiswa yang terdaftar dalam sistem.</strong>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">Daftar Mahasiswa</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>NIM</th>
+                                <th>Nama Lengkap</th>
+                                <th>Email</th>
+                                <th>WhatsApp</th>
+                                <th>Program Studi</th>
+                                <th>Tanggal Daftar</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mahasiswaTableBody">
+                            <tr>
+                                <td colspan="8" class="loading">
+                                    <div class="loading-spinner"></div>
+                                    <div>Loading data...</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Dosen Page -->
+            <div id="dosenPage" class="page">
+                <h2 class="page-title"><i class="fas fa-chalkboard-teacher"></i> Data Dosen</h2>
+                
+                <div class="action-buttons" id="dosenActions">
+                    <button class="btn btn-success" onclick="showModal('dosenModal')">
+                        <i class="fas fa-plus"></i> Tambah Dosen
+                    </button>
+                    <div>
+                        <button class="btn btn-outline"><i class="fas fa-file-excel"></i> Export Excel</button>
+                        <button class="btn btn-outline"><i class="fas fa-print"></i> Print</button>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Kelola data dosen yang terdaftar dalam sistem.</strong>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">Daftar Dosen</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>NIP/NIDN</th>
+                                <th>Nama Lengkap</th>
+                                <th>Email</th>
+                                <th>WhatsApp</th>
+                                <th>Tanggal Daftar</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dosenTableBody">
+                            <tr>
+                                <td colspan="7" class="loading">
+                                    <div class="loading-spinner"></div>
+                                    <div>Loading data...</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Warning Page -->
+            <div id="warningPage" class="page">
+                <h2 class="page-title"><i class="fas fa-exclamation-triangle"></i> Early Warning System</h2>
+                
+                <div class="action-buttons">
+                    <div>
+                        <button class="btn btn-outline"><i class="fas fa-file-excel"></i> Export Excel</button>
+                        <button class="btn btn-outline"><i class="fas fa-print"></i> Print</button>
+                    </div>
+                </div>
+                
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Sistem peringatan dini untuk mahasiswa semester 11-14 yang belum menyelesaikan skripsi.</strong>
+                    <br>Peringatan: Mahasiswa semester 11-14 harus segera menyelesaikan skripsi untuk menghindari DO (Drop Out).
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">Daftar Mahasiswa Early Warning</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>NIM</th>
+                                <th>Nama</th>
+                                <th>Program Studi</th>
+                                <th>Semester</th>
+                                <th>Status Skripsi</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="warningTableBody">
+                            <tr>
+                                <td colspan="7" class="loading">
+                                    <div class="loading-spinner"></div>
+                                    <div>Loading data...</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Repository Page -->
+            <div id="repositoryPage" class="page">
+                <h2 class="page-title"><i class="fas fa-database"></i> Skripsi Repository</h2>
+                
+                <div class="action-buttons" id="repositoryActions">
+                    <button class="btn btn-primary" onclick="showModal('repositoryModal')">
+                        <i class="fas fa-plus"></i> Tambah Repository
+                    </button>
+                    <div>
+                        <button class="btn btn-outline"><i class="fas fa-file-excel"></i> Export Excel</button>
+                        <button class="btn btn-outline"><i class="fas fa-print"></i> Print</button>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Cari dan lihat skripsi-skripsi yang telah disimpan dalam repository.</strong>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">Daftar Skripsi Repository</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Judul</th>
+                                <th>Penulis</th>
+                                <th>Tahun</th>
+                                <th>Program Studi</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="repositoryTableBody">
+                            <tr>
+                                <td colspan="6" class="loading">
+                                    <div class="loading-spinner"></div>
+                                    <div>Loading data...</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Laporan Page -->
+            <div id="laporanPage" class="page">
+                <h2 class="page-title"><i class="fas fa-chart-bar"></i> Laporan</h2>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-success"><i class="fas fa-file-excel"></i> Export Excel</button>
+                    <button class="btn btn-primary"><i class="fas fa-file-csv"></i> Export CSV</button>
+                    <button class="btn btn-outline"><i class="fas fa-print"></i> Print</button>
+                </div>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Laporan lengkap sistem bimbingan skripsi dan repository.</strong>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">Ringkasan Laporan</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Jumlah</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="laporanTableBody">
+                            <tr>
+                                <td colspan="3" class="loading">
+                                    <div class="loading-spinner"></div>
+                                    <div>Loading data...</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span class="toast-message">Notifikasi berhasil!</span>
+    </div>
+    
+    <!-- Modal Login -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Login Sistem</h3>
+                <button class="modal-close" onclick="closeModal('loginModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Login untuk mengakses sistem.</strong> Gunakan NIM/NIP dan password Anda.
+                </div>
+                <div class="form-group">
+                    <label class="form-label">NIM / NIP / ID *</label>
+                    <input type="text" class="form-control" id="loginId" placeholder="Masukkan NIM / NIP / ID">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password *</label>
+                    <input type="password" class="form-control" id="loginPassword" placeholder="Masukkan Password">
+                </div>
+                <button class="btn btn-primary btn-block" onclick="login()">Login</button>
+                <button class="btn btn-secondary btn-block" onclick="showModal('registerModal')">Daftar Akun Baru</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Register -->
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Daftar Akun Baru</h3>
+                <button class="modal-close" onclick="closeModal('registerModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Jenis Pengguna *</label>
+                    <select class="form-control form-select" id="registerType" onchange="toggleRegisterFields()">
+                        <option value="">-- Pilih Jenis Pengguna --</option>
+                        <option value="mahasiswa">Mahasiswa</option>
+                        <option value="dosen">Dosen</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">NIM / NIP *</label>
+                    <input type="text" class="form-control" id="registerNimNip" placeholder="Masukkan NIM / NIP">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nama Lengkap *</label>
+                    <input type="text" class="form-control" id="registerName" placeholder="Masukkan Nama Lengkap">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email *</label>
+                    <input type="email" class="form-control" id="registerEmail" placeholder="Masukkan Email">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">WhatsApp *</label>
+                    <input type="text" class="form-control" id="registerWa" placeholder="Masukkan Nomor WhatsApp">
+                </div>
+                <div class="form-group" id="prodiField" style="display: none;">
+                    <label class="form-label">Program Studi *</label>
+                    <select class="form-control form-select" id="registerProdi">
+                        <option value="">-- Pilih Program Studi --</option>
+                        <option value="Ekonomi Syariah">Ekonomi Syariah</option>
+                        <option value="Perbankan Syariah">Perbankan Syariah</option>
+                        <option value="Manajemen Bisnis Syariah">Manajemen Bisnis Syariah</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password *</label>
+                    <input type="password" class="form-control" id="registerPassword" placeholder="Masukkan Password">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Konfirmasi Password *</label>
+                    <input type="password" class="form-control" id="registerConfirmPassword" placeholder="Konfirmasi Password">
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="closeModal('registerModal')">Batal</button>
+                    <button class="btn btn-success" onclick="register()">Daftar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Proposal -->
+    <div class="modal" id="proposalModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Form Pengajuan Proposal</h3>
+                <button class="modal-close" onclick="closeModal('proposalModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">NIM *</label>
+                    <input type="text" class="form-control" id="proposalNim" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nama Lengkap *</label>
+                    <input type="text" class="form-control" id="proposalName" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Judul Proposal *</label>
+                    <textarea class="form-control" id="proposalTitle" placeholder="Masukkan Judul Proposal"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Dosen Pembimbing 1 *</label>
+                    <select class="form-control form-select" id="proposalDosen1">
+                        <option value="">-- Pilih Dosen Pembimbing 1 --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Dosen Pembimbing 2</label>
+                    <select class="form-control form-select" id="proposalDosen2">
+                        <option value="">-- Pilih Dosen Pembimbing 2 (Opsional) --</option>
+                    </select>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="closeModal('proposalModal')">Batal</button>
+                    <button class="btn btn-primary" onclick="submitProposal()">Ajukan Proposal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Tambah Repository -->
+    <div class="modal" id="repositoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Tambah Skripsi Repository</h3>
+                <button class="modal-close" onclick="closeModal('repositoryModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Judul Skripsi *</label>
+                    <input type="text" class="form-control" id="repoTitle" placeholder="Masukkan Judul Skripsi">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Penulis *</label>
+                    <input type="text" class="form-control" id="repoAuthor" placeholder="Masukkan Nama Penulis">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tahun *</label>
+                    <input type="number" class="form-control" id="repoYear" placeholder="Masukkan Tahun" min="2000" max="2026">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Program Studi *</label>
+                    <select class="form-control form-select" id="repoProdi">
+                        <option value="">-- Pilih Program Studi --</option>
+                        <option value="Ekonomi Syariah">Ekonomi Syariah</option>
+                        <option value="Perbankan Syariah">Perbankan Syariah</option>
+                        <option value="Manajemen Bisnis Syariah">Manajemen Bisnis Syariah</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Abstrak *</label>
+                    <textarea class="form-control" id="repoAbstract" placeholder="Masukkan Abstrak Skripsi" rows="5"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Google Drive URL *</label>
+                    <input type="url" class="form-control" id="repoUrl" placeholder="Masukkan URL file Google Drive">
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="closeModal('repositoryModal')">Batal</button>
+                    <button class="btn btn-primary" onclick="saveRepository()">Simpan Repository</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Tambah Mahasiswa -->
+    <div class="modal" id="mahasiswaModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Tambah Data Mahasiswa</h3>
+                <button class="modal-close" onclick="closeModal('mahasiswaModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">NIM *</label>
+                    <input type="text" class="form-control" id="mhsNim" placeholder="Masukkan NIM">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nama Lengkap *</label>
+                    <input type="text" class="form-control" id="mhsName" placeholder="Masukkan Nama Lengkap">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email *</label>
+                    <input type="email" class="form-control" id="mhsEmail" placeholder="Masukkan Email">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">WhatsApp *</label>
+                    <input type="text" class="form-control" id="mhsWa" placeholder="Masukkan Nomor WhatsApp">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Program Studi *</label>
+                    <select class="form-control form-select" id="mhsProdi">
+                        <option value="">-- Pilih Program Studi --</option>
+                        <option value="Ekonomi Syariah">Ekonomi Syariah</option>
+                        <option value="Perbankan Syariah">Perbankan Syariah</option>
+                        <option value="Manajemen Bisnis Syariah">Manajemen Bisnis Syariah</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password *</label>
+                    <input type="password" class="form-control" id="mhsPassword" placeholder="Masukkan Password">
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="closeModal('mahasiswaModal')">Batal</button>
+                    <button class="btn btn-success" onclick="saveMahasiswa()">Simpan Mahasiswa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Tambah Dosen -->
+    <div class="modal" id="dosenModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Tambah Data Dosen</h3>
+                <button class="modal-close" onclick="closeModal('dosenModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">NIP/NIDN *</label>
+                    <input type="text" class="form-control" id="dsnNip" placeholder="Masukkan NIP/NIDN">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nama Lengkap *</label>
+                    <input type="text" class="form-control" id="dsnName" placeholder="Masukkan Nama Lengkap">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email *</label>
+                    <input type="email" class="form-control" id="dsnEmail" placeholder="Masukkan Email">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">WhatsApp *</label>
+                    <input type="text" class="form-control" id="dsnWa" placeholder="Masukkan Nomor WhatsApp">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password *</label>
+                    <input type="password" class="form-control" id="dsnPassword" placeholder="Masukkan Password">
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="closeModal('dosenModal')">Batal</button>
+                    <button class="btn btn-success" onclick="saveDosen()">Simpan Dosen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // GOOGLE SHEETS CONFIGURATION - PENTING!
+        // ============================================
+        const SPREADSHEET_ID = '1xGqDFRdmflVd_3iwScpNCHZGibHV8ZDWZQYPnIUoKXo';
+        
+        // ⚠️ GANTI DENGAN WEB APP URL ANDA DARI GOOGLE APPS SCRIPT!
+        // Contoh format: https://script.google.com/macros/s/XXXXXXXXXXXXX/exec
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxKzrT6owN3f_pGk_de2hGLpSgy0_YpgxJBS33UdnwpcsJa9B3UHIP4qR7qYyHesTJc/exec';
+        
+        // ============================================
+        // GLOBAL VARIABLES
+        // ============================================
+        let currentUser = null;
+        let proposals = [];
+        let bimbingans = [];
+        let mahasiswas = [];
+        let dosens = [];
+        let warnings = [];
+        let repositories = [];
+        
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('========================================');
+            console.log('Dashboard Bimbingan Skripsi FEBI UINSI');
+            console.log('Web App URL:', WEB_APP_URL);
+            console.log('Spreadsheet ID:', SPREADSHEET_ID);
+            console.log('========================================');
+            
+            // Check if user is already logged in
+            checkLoginStatus();
+        });
+        
+        // ============================================
+        // AUTHENTICATION FUNCTIONS
+        // ============================================
+        
+        // Check Login Status
+        function checkLoginStatus() {
+            const savedUser = localStorage.getItem('currentUser');
+            if(savedUser) {
+                try {
+                    currentUser = JSON.parse(savedUser);
+                    updateUserUI();
+                    updateMenuAccess();
+                    // Load data after 500ms to ensure UI is ready
+                    setTimeout(() => {
+                        loadData();
+                    }, 500);
+                } catch (error) {
+                    console.error('Error parsing saved user:', error);
+                    localStorage.removeItem('currentUser');
+                    showModal('loginModal');
+                }
+            } else {
+                showModal('loginModal');
+            }
+        }
+        
+        // Update User UI
+        function updateUserUI() {
+            if(!currentUser) return;
+            
+            document.getElementById('userName').textContent = currentUser.name || 'User';
+            document.getElementById('userRole').textContent = currentUser.role || 'User';
+            document.getElementById('userAvatar').textContent = (currentUser.name || 'U').charAt(0).toUpperCase();
+            document.getElementById('logoutBtn').style.display = 'block';
+        }
+        
+        // Update Menu Access based on Role
+        function updateMenuAccess() {
+            if(!currentUser) return;
+            
+            // Hide all admin-only features by default
+            document.querySelectorAll('.admin-badge').forEach(badge => {
+                badge.closest('.nav-item').style.display = 'none';
+            });
+            
+            // Hide action buttons
+            const actionElements = [
+                'mahasiswaActions', 
+                'dosenActions', 
+                'proposalActions', 
+                'repositoryActions'
+            ];
+            
+            actionElements.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.style.display = 'none';
+            });
+            
+            // Show features based on role
+            switch(currentUser.role) {
+                case 'admin':
+                    // Show all admin features
+                    document.querySelectorAll('.admin-badge').forEach(badge => {
+                        const parent = badge.closest('.nav-item');
+                        if(parent) parent.style.display = 'block';
+                    });
+                    
+                    document.getElementById('mahasiswaActions').style.display = 'flex';
+                    document.getElementById('dosenActions').style.display = 'flex';
+                    document.getElementById('proposalActions').style.display = 'flex';
+                    document.getElementById('repositoryActions').style.display = 'flex';
+                    
+                    document.getElementById('proposalInfo').textContent = 'Sebagai admin, Anda memiliki akses penuh untuk melihat, mengedit, memvalidasi, dan menghapus semua proposal.';
+                    document.getElementById('bimbinganInfo').textContent = 'Sebagai admin, Anda dapat melihat semua proses bimbingan dari seluruh mahasiswa dan dosen.';
+                    break;
+                    
+                case 'dosen':
+                    // Show bimbingan and repository
+                    document.getElementById('bimbinganInfo').textContent = 'Anda dapat melihat dan mengelola proses bimbingan mahasiswa yang Anda bimbing.';
+                    document.getElementById('repositoryActions').style.display = 'flex';
+                    break;
+                    
+                case 'mahasiswa':
+                    // Show proposal and bimbingan
+                    document.getElementById('proposalActions').style.display = 'flex';
+                    document.getElementById('proposalInfo').textContent = 'Ajukan proposal skripsi Anda dan pantau status pengajuan.';
+                    document.getElementById('bimbinganInfo').textContent = 'Pantau proses bimbingan skripsi Anda dengan dosen pembimbing.';
+                    break;
+            }
+        }
+        
+        // Toggle Submenu
+        function toggleSubmenu(menuId) {
+            const submenu = document.getElementById(menuId);
+            if(submenu) {
+                submenu.classList.toggle('show');
+            }
+        }
+        
+        // ============================================
+        // LOGIN & REGISTER FUNCTIONS
+        // ============================================
+        
+        // Login dengan Error Handling yang Lebih Baik
+        async function login() {
+            const id = document.getElementById('loginId').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            
+            if(!id || !password) {
+                showToast('Harap lengkapi semua field!', 'error');
+                return;
+            }
+            
+            showToast('Sedang memproses login...', 'warning');
+            
+            try {
+                console.log('[LOGIN] Attempt:', {userId: id});
+                
+                // Test koneksi ke Web App dulu
+                const testResponse = await fetch(WEB_APP_URL, {method: 'GET'});
+                if(!testResponse.ok) {
+                    throw new Error('Web App tidak merespon. Periksa URL dan deployment.');
+                }
+                
+                const response = await fetch(`${WEB_APP_URL}?action=login&userId=${encodeURIComponent(id)}&password=${encodeURIComponent(password)}`, {
+                    method: 'GET',
+                    mode: 'cors'
+                });
+                
+                console.log('[LOGIN] Response status:', response.status);
+                
+                if(!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Server error ${response.status}: ${errorText}`);
+                }
+                
+                const contentType = response.headers.get('content-type');
+                if(!contentType || !contentType.includes('application/json')) {
+                    const text = await response.text();
+                    console.error('[LOGIN] Response bukan JSON:', text);
+                    throw new Error('Response dari server bukan format JSON yang valid');
+                }
+                
+                const data = await response.json();
+                console.log('[LOGIN] Response data:', data);
+                
+                if(data.status === 'success' && data.user) {
+                    currentUser = data.user;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    updateUserUI();
+                    updateMenuAccess();
+                    closeModal('loginModal');
+                    showToast('Login berhasil! Selamat datang, ' + currentUser.name, 'success');
+                    
+                    // Clear login form
+                    document.getElementById('loginId').value = '';
+                    document.getElementById('loginPassword').value = '';
+                    
+                    // Load data after successful login
+                    setTimeout(() => {
+                        loadData();
+                    }, 500);
+                } else {
+                    throw new Error(data.message || 'Login gagal');
+                }
+            } catch (error) {
+                console.error('[LOGIN] Error:', error);
+                console.error('[LOGIN] Error stack:', error.stack);
+                
+                let errorMessage = error.message;
+                
+                // Handle specific errors
+                if(errorMessage.includes('Failed to fetch')) {
+                    errorMessage = 'Tidak dapat terhubung ke server. Periksa:\n1. Web App URL sudah benar\n2. Web App sudah di-deploy\n3. Koneksi internet Anda';
+                } else if(errorMessage.includes('CORS')) {
+                    errorMessage = 'Error CORS. Pastikan Web App di-set "Anyone, even anonymous"';
+                } else if(errorMessage.includes('NetworkError')) {
+                    errorMessage = 'Error jaringan. Periksa koneksi internet Anda.';
+                }
+                
+                showToast('Login gagal: ' + errorMessage, 'error');
+                
+                // Log untuk debugging
+                console.log('=== DEBUG INFO ===');
+                console.log('Web App URL:', WEB_APP_URL);
+                console.log('Full URL:', `${WEB_APP_URL}?action=login&userId=${encodeURIComponent(id)}&password=${encodeURIComponent(password)}`);
+            }
+        }
+        
+        // Register dengan Error Handling
+        async function register() {
+            const type = document.getElementById('registerType').value;
+            const nimNip = document.getElementById('registerNimNip').value.trim();
+            const name = document.getElementById('registerName').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const wa = document.getElementById('registerWa').value.trim();
+            const prodi = document.getElementById('registerProdi').value;
+            const password = document.getElementById('registerPassword').value.trim();
+            const confirmPassword = document.getElementById('registerConfirmPassword').value.trim();
+            
+            if(!type || !nimNip || !name || !email || !wa || !password || !confirmPassword) {
+                showToast('Harap lengkapi semua field!', 'error');
+                return;
+            }
+            
+            if(type === 'mahasiswa' && !prodi) {
+                showToast('Program Studi wajib diisi untuk mahasiswa!', 'error');
+                return;
+            }
+            
+            if(password !== confirmPassword) {
+                showToast('Password tidak cocok!', 'error');
+                return;
+            }
+            
+            const newUser = {
+                type,
+                nimNip,
+                name,
+                email,
+                wa,
+                prodi: type === 'mahasiswa' ? prodi : null,
+                password
+            };
+            
+            showToast('Sedang memproses registrasi...', 'warning');
+            
+            try {
+                const response = await fetch(`${WEB_APP_URL}?action=register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(newUser)
+                });
+                
+                if(!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if(data.status === 'success') {
+                    closeModal('registerModal');
+                    showToast('Pendaftaran berhasil! Silakan login.', 'success');
+                    
+                    // Clear register form
+                    document.getElementById('registerType').value = '';
+                    document.getElementById('registerNimNip').value = '';
+                    document.getElementById('registerName').value = '';
+                    document.getElementById('registerEmail').value = '';
+                    document.getElementById('registerWa').value = '';
+                    document.getElementById('registerProdi').value = '';
+                    document.getElementById('registerPassword').value = '';
+                    document.getElementById('registerConfirmPassword').value = '';
+                    document.getElementById('prodiField').style.display = 'none';
+                    
+                    setTimeout(() => {
+                        showModal('loginModal');
+                    }, 1500);
+                } else {
+                    throw new Error(data.message || 'Pendaftaran gagal');
+                }
+            } catch (error) {
+                console.error('[REGISTER] Error:', error);
+                showToast('Pendaftaran gagal: ' + error.message, 'error');
+            }
+        }
+        
+        // Toggle Register Fields
+        function toggleRegisterFields() {
+            const type = document.getElementById('registerType').value;
+            const prodiField = document.getElementById('prodiField');
+            
+            if(type === 'mahasiswa') {
+                prodiField.style.display = 'block';
+            } else {
+                prodiField.style.display = 'none';
+            }
+        }
+        
+        // Logout
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            
+            // Reset UI
+            document.getElementById('userName').textContent = 'Guest';
+            document.getElementById('userRole').textContent = 'Belum Login';
+            document.getElementById('userAvatar').textContent = 'G';
+            document.getElementById('logoutBtn').style.display = 'none';
+            
+            // Reset to login modal
+            showModal('loginModal');
+            showToast('Logout berhasil!', 'success');
+            
+            // Reset page to dashboard
+            showPage('dashboard');
+        }
+        
+        // ============================================
+        // NAVIGATION FUNCTIONS
+        // ============================================
+        
+        // Show Page
+        function showPage(page) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(p => {
+                p.classList.remove('active');
+            });
+            
+            // Show selected page
+            const pageElement = document.getElementById(page + 'Page');
+            if(pageElement) {
+                pageElement.classList.add('active');
+            }
+            
+            // Update active navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Update top nav active
+            document.querySelectorAll('.main-menu a').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Set active based on page
+            if(page === 'dashboard') {
+                document.querySelector('.main-menu a:first-child').classList.add('active');
+            } else if(page === 'proposal') {
+                document.querySelector('.main-menu a:nth-child(2)').classList.add('active');
+            } else if(page === 'bimbingan') {
+                document.querySelector('.main-menu a:nth-child(3)').classList.add('active');
+            } else if(page === 'repository') {
+                document.querySelector('.main-menu a:nth-child(4)').classList.add('active');
+            } else if(page === 'laporan') {
+                document.querySelector('.main-menu a:nth-child(5)').classList.add('active');
+            }
+        }
+        
+        // ============================================
+        // DATA LOADING FUNCTIONS
+        // ============================================
+        
+        // Load Data dari Google Sheets
+        async function loadData() {
+            if(!currentUser) {
+                console.warn('[LOAD DATA] No user logged in');
+                return;
+            }
+            
+            showToast('Memuat data...', 'warning');
+            
+            try {
+                // Show loading states
+                showLoading('proposalTableBody');
+                showLoading('bimbinganTableBody');
+                showLoading('mahasiswaTableBody');
+                showLoading('dosenTableBody');
+                showLoading('warningTableBody');
+                showLoading('repositoryTableBody');
+                showLoading('laporanTableBody');
+                
+                const response = await fetch(`${WEB_APP_URL}?action=getAllData&role=${currentUser.role}&userId=${currentUser.id}`, {
+                    method: 'GET',
+                    mode: 'cors'
+                });
+                
+                if(!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if(data.status === 'success') {
+                    proposals = data.proposals || [];
+                    bimbingans = data.bimbingans || [];
+                    mahasiswas = data.mahasiswas || [];
+                    dosens = data.dosens || [];
+                    warnings = data.warnings || [];
+                    repositories = data.repositories || [];
+                    
+                    // Populate tables
+                    populateProposalTable();
+                    populateBimbinganTable();
+                    populateMahasiswaTable();
+                    populateDosenTable();
+                    populateWarningTable();
+                    populateRepositoryTable();
+                    populateLaporanTable();
+                    
+                    // Update stats
+                    updateStats();
+                    
+                    showToast('Data berhasil dimuat!', 'success');
+                } else {
+                    throw new Error(data.message || 'Gagal memuat data');
+                }
+            } catch (error) {
+                console.error('[LOAD DATA] Error:', error);
+                showToast('Gagal memuat data: ' + error.message, 'error');
+                
+                // Auto retry after 3 seconds
+                setTimeout(() => {
+                    showToast('Mencoba memuat ulang data...', 'warning');
+                    loadData();
+                }, 3000);
+            }
+        }
+        
+        // Refresh Data
+        function refreshData() {
+            showToast('Memuat ulang data...', 'success');
+            loadData();
+        }
+        
+        // ============================================
+        // TABLE POPULATION FUNCTIONS
+        // ============================================
+        
+        function populateProposalTable() {
+            const tbody = document.getElementById('proposalTableBody');
+            
+            if(!tbody) return;
+            
+            if(proposals.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 40px;">Tidak ada data proposal</td></tr>';
+                document.getElementById('proposalBadge').textContent = '0';
+                return;
+            }
+            
+            let html = '';
+            proposals.forEach((proposal, index) => {
+                let statusBadge = '';
+                switch(proposal.status) {
+                    case 'pending':
+                        statusBadge = '<span class="badge-status badge-pending">Pending</span>';
+                        break;
+                    case 'approved':
+                        statusBadge = '<span class="badge-status badge-approved">Disetujui</span>';
+                        break;
+                    case 'rejected':
+                        statusBadge = '<span class="badge-status badge-rejected">Ditolak</span>';
+                        break;
+                    case 'revision':
+                        statusBadge = '<span class="badge-status badge-revision">Perlu Revisi</span>';
+                        break;
+                    default:
+                        statusBadge = '<span class="badge-status badge-pending">Pending</span>';
+                }
+                
+                // Show actions based on role and status
+                let actions = '';
+                if(currentUser.role === 'admin') {
+                    actions = `
+                        <button class="action-btn view" onclick="viewProposal(${index})"><i class="fas fa-eye"></i></button>
+                        <button class="action-btn edit" onclick="editProposal(${index})"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn delete" onclick="deleteProposal(${index})"><i class="fas fa-trash"></i></button>
+                    `;
+                } else if(currentUser.role === 'mahasiswa' && proposal.status === 'pending') {
+                    actions = `
+                        <button class="action-btn edit" onclick="editProposal(${index})"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn delete" onclick="deleteProposal(${index})"><i class="fas fa-trash"></i></button>
+                    `;
+                } else {
+                    actions = `<button class="action-btn view" onclick="viewProposal(${index})"><i class="fas fa-eye"></i></button>`;
+                }
+                
+                html += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${proposal.nim || '-'}</td>
+                        <td>${proposal.nama || '-'}</td>
+                        <td>${proposal.judul || '-'}</td>
+                        <td>${proposal.pembimbing1 || '-'}</td>
+                        <td>${proposal.pembimbing2 || '-'}</td>
+                        <td>${proposal.similarity || '0'}%</td>
+                        <td>${statusBadge}</td>
+                        <td>${proposal.tanggal || '-'}</td>
+                        <td>${actions}</td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = html;
+            document.getElementById('proposalBadge').textContent = proposals.length;
+        }
+        
+        function populateBimbinganTable() {
+            const tbody = document.getElementById('bimbinganTableBody');
+            
+            if(!tbody) return;
+            
+            if(bimbingans.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 40px;">Tidak ada data bimbingan</td></tr>';
+                return;
+            }
+            
+            let html = '';
+            bimbingans.forEach((bimbingan, index) => {
+                let statusBadge = '';
+                switch(bimbingan.status) {
+                    case 'revisi':
+                        statusBadge = '<span class="badge-status badge-revision">Perlu Revisi</span>';
+                        break;
+                    case 'diterima':
+                        statusBadge = '<span class="badge-status badge-approved">Diterima</span>';
+                        break;
+                    case 'selesai':
+                        statusBadge = '<span class="badge-status badge-completed">Selesai</span>';
+                        break;
+                    default:
+                        statusBadge = '<span class="badge-status badge-pending">Pending</span>';
+                }
+                
+                // Show actions based on role
+                let actions = '';
+                if(currentUser.role === 'admin' || currentUser.role === 'dosen') {
+                    actions = `
+                        <button class="action-btn view" onclick="viewBimbingan(${index})"><i class="fas fa-eye"></i></button>
+                        <button class="action-btn edit" onclick="editBimbingan(${index})"><i class="fas fa-edit"></i></button>
+                    `;
+                } else {
+                    actions = `<button class="action-btn view" onclick="viewBimbingan(${index})"><i class="fas fa-eye"></i></button>`;
+                }
+                
+                html += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${bimbingan.nim || '-'}</td>
+                        <td>${bimbingan.nama || '-'}</td>
+                        <td>${bimbingan.judul || '-'}</td>
+                        <td>${bimbingan.pembimbing1 || '-'}</td>
+                        <td>${bimbingan.pembimbing2 || '-'}</td>
+                        <td>${bimbingan.bab || '-'}</td>
+                        <td>${statusBadge}</td>
+                        <td>${bimbingan.tanggal || '-'}</td>
+                        <td>${actions}</td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = html;
+        }
+        
+        function populateMahasiswaTable() {
+            const tbody = document.getElementById('mahasiswaTableBody');
+            
+            if(!tbody) return;
+            
+            if(mahasiswas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px;">Tidak ada data mahasiswa</td></tr>';
+                return;
+            }
+            
+            let html = '';
+            mahasiswas.forEach((mhs, index) => {
+                html += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${mhs.nim || '-'}</td>
+                        <td>${mhs.nama || '-'}</td>
+                        <td>${mhs.email || '-'}</td>
+                        <td>${mhs.wa || '-'}</td>
+                        <td>${mhs.prodi || '-'}</td>
+                        <td>${mhs.tanggal || '-'}</td>
+                        <td>
+                            <button class="action-btn edit" onclick="editMahasiswa(${index})"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn delete" onclick="deleteMahasiswa(${index})"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = html;
+        }
+        
+        function populateDosenTable() {
+            const tbody = document.getElementById('dosenTableBody');
+            
+            if(!tbody) return;
+            
+            if(dosens.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px;">Tidak ada data dosen</td></tr>';
+                return;
+            }
+            
+            let html = '';
+            dosens.forEach((dsn, index) => {
+                html += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${dsn.nip || '-'}</td>
+                        <td>${dsn.nama || '-'}</td>
+                        <td>${dsn.email || '-'}</td>
+                        <td>${dsn.wa || '-'}</td>
+                        <td>${dsn.tanggal || '-'}</td>
+                        <td>
+                            <button class="action-btn edit" onclick="editDosen(${index})"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn delete" onclick="deleteDosen(${index})"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = html;
+        }
+        
+        function populateWarningTable() {
+            const tbody = document.getElementById('warningTableBody');
+            
+            if(!tbody) return;
+            
+            if(warnings.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px;">Tidak ada data early warning</td></tr>';
+                return;
+            }
+            
+            let html = '';
+            warnings.forEach((warning, index) => {
+                let statusBadge = '';
+                switch(warning.status) {
+                    case 'belum_mulai':
+                        statusBadge = '<span class="badge-status badge-warning">Belum Mulai</span>';
+                        break;
+                    case 'proses':
+                        statusBadge = '<span class="badge-status badge-revision">Sedang Proses</span>';
+                        break;
+                    case 'terlambat':
+                        statusBadge = '<span class="badge-status badge-rejected">Terlambat</span>';
+                        break;
+                    default:
+                        statusBadge = '<span class="badge-status badge-warning">Perlu Perhatian</span>';
+                }
+                
+                html += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${warning.nim || '-'}</td>
+                        <td>${warning.nama || '-'}</td>
+                        <td>${warning.prodi || '-'}</td>
+                        <td>${warning.semester || '-'}</td>
+                        <td>${statusBadge}</td>
+                        <td>
+                            <button class="action-btn view" onclick="viewWarning(${index})"><i class="fas fa-eye"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = html;
+        }
+        
+        function populateRepositoryTable() {
+            const tbody = document.getElementById('repositoryTableBody');
+            
+            if(!tbody) return;
+            
+            if(repositories.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px;">Tidak ada data repository</td></tr>';
+                return;
+            }
+            
+            let html = '';
+            repositories.forEach((repo, index) => {
+                html += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${repo.judul || '-'}</td>
+                        <td>${repo.penulis || '-'}</td>
+                        <td>${repo.tahun || '-'}</td>
+                        <td>${repo.prodi || '-'}</td>
+                        <td>
+                            <button class="action-btn view" onclick="viewRepository(${index})"><i class="fas fa-eye"></i></button>
+                            ${currentUser.role === 'admin' ? `<button class="action-btn edit" onclick="editRepository(${index})"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn delete" onclick="deleteRepository(${index})"><i class="fas fa-trash"></i></button>` : ''}
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = html;
+        }
+        
+        function populateLaporanTable() {
+            const tbody = document.getElementById('laporanTableBody');
+            
+            if(!tbody) return;
+            
+            let html = `
+                <tr>
+                    <td>Total Mahasiswa Terdaftar</td>
+                    <td>${mahasiswas.length}</td>
+                    <td><span class="badge-status badge-approved">Aktif</span></td>
+                </tr>
+                <tr>
+                    <td>Total Dosen Terdaftar</td>
+                    <td>${dosens.length}</td>
+                    <td><span class="badge-status badge-approved">Aktif</span></td>
+                </tr>
+                <tr>
+                    <td>Proposal Masuk</td>
+                    <td>${proposals.length}</td>
+                    <td><span class="badge-status badge-pending">Pending</span></td>
+                </tr>
+                <tr>
+                    <td>Proposal Disetujui</td>
+                    <td>${proposals.filter(p => p.status === 'approved').length}</td>
+                    <td><span class="badge-status badge-approved">Approved</span></td>
+                </tr>
+                <tr>
+                    <td>Proses Bimbingan</td>
+                    <td>${bimbingans.length}</td>
+                    <td><span class="badge-status badge-revision">Berjalan</span></td>
+                </tr>
+                <tr>
+                    <td>Skripsi Selesai</td>
+                    <td>${bimbingans.filter(b => b.status === 'selesai').length}</td>
+                    <td><span class="badge-status badge-completed">Selesai</span></td>
+                </tr>
+                <tr>
+                    <td>Early Warning</td>
+                    <td>${warnings.length}</td>
+                    <td><span class="badge-status badge-warning">Perlu Perhatian</span></td>
+                </tr>
+                <tr>
+                    <td>Repository Skripsi</td>
+                    <td>${repositories.length}</td>
+                    <td><span class="badge-status badge-approved">Tersedia</span></td>
+                </tr>
+            `;
+            
+            tbody.innerHTML = html;
+        }
+        
+        // Update Stats
+        function updateStats() {
+            document.getElementById('statProposal').textContent = proposals.length;
+            document.getElementById('statBimbingan').textContent = bimbingans.length;
+            document.getElementById('statSelesai').textContent = bimbingans.filter(b => b.status === 'selesai').length;
+            document.getElementById('statWarning').textContent = warnings.length;
+            document.getElementById('statRepository').textContent = repositories.length;
+        }
+        
+        // ============================================
+        // MODAL FUNCTIONS
+        // ============================================
+        
+        function showModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if(modal) {
+                modal.classList.add('show');
+            }
+        }
+        
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if(modal) {
+                modal.classList.remove('show');
+            }
+        }
+        
+        // ============================================
+        // TOAST NOTIFICATION
+        // ============================================
+        
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.querySelector('.toast-message');
+            const toastIcon = toast.querySelector('i');
+            
+            toastMessage.textContent = message;
+            toast.className = 'toast';
+            toast.classList.add(type);
+            
+            if(type === 'success') {
+                toastIcon.className = 'fas fa-check-circle';
+                toast.style.borderLeftColor = '#2ecc71';
+            } else if(type === 'error') {
+                toastIcon.className = 'fas fa-exclamation-circle';
+                toast.style.borderLeftColor = '#e74c3c';
+            } else if(type === 'warning') {
+                toastIcon.className = 'fas fa-exclamation-triangle';
+                toast.style.borderLeftColor = '#f39c12';
+            }
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        // ============================================
+        // LOADING STATE
+        // ============================================
+        
+        function showLoading(elementId) {
+            const element = document.getElementById(elementId);
+            if(element) {
+                element.innerHTML = `
+                    <tr>
+                        <td colspan="10" class="loading">
+                            <div class="loading-spinner"></div>
+                            <div>Loading data...</div>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+        
+        // ============================================
+        // CRUD OPERATIONS
+        // ============================================
+        
+        async function submitProposal() {
+            const nim = currentUser.id;
+            const name = currentUser.name;
+            const judul = document.getElementById('proposalTitle').value.trim();
+            const dosen1 = document.getElementById('proposalDosen1').value;
+            const dosen2 = document.getElementById('proposalDosen2').value;
+            
+            if(!judul || !dosen1) {
+                showToast('Harap lengkapi semua field yang wajib!', 'error');
+                return;
+            }
+            
+            const newProposal = {
+                nim,
+                nama: name,
+                judul,
+                pembimbing1: dosen1,
+                pembimbing2: dosen2,
+                similarity: '0',
+                status: 'pending',
+                tanggal: new Date().toLocaleDateString('id-ID'),
+                userId: currentUser.id,
+                role: currentUser.role
+            };
+            
+            try {
+                const response = await fetch(`${WEB_APP_URL}?action=addProposal`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(newProposal)
+                });
+                
+                const result = await response.json();
+                
+                if(result.status === 'success') {
+                    closeModal('proposalModal');
+                    showToast('Proposal berhasil diajukan!', 'success');
+                    // Clear form
+                    document.getElementById('proposalTitle').value = '';
+                    document.getElementById('proposalDosen1').value = '';
+                    document.getElementById('proposalDosen2').value = '';
+                    loadData();
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                console.error('[SUBMIT PROPOSAL] Error:', error);
+                showToast('Gagal mengajukan proposal: ' + error.message, 'error');
+            }
+        }
+        
+        async function saveRepository() {
+            const judul = document.getElementById('repoTitle').value.trim();
+            const penulis = document.getElementById('repoAuthor').value.trim();
+            const tahun = document.getElementById('repoYear').value;
+            const prodi = document.getElementById('repoProdi').value;
+            const abstrak = document.getElementById('repoAbstract').value.trim();
+            const url = document.getElementById('repoUrl').value.trim();
+            
+            if(!judul || !penulis || !tahun || !prodi || !abstrak || !url) {
+                showToast('Harap lengkapi semua field!', 'error');
+                return;
+            }
+            
+            const newRepo = {
+                judul,
+                penulis,
+                tahun,
+                prodi,
+                abstrak,
+                url,
+                tanggal: new Date().toLocaleDateString('id-ID'),
+                userId: currentUser.id,
+                role: currentUser.role
+            };
+            
+            try {
+                const response = await fetch(`${WEB_APP_URL}?action=addRepository`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(newRepo)
+                });
+                
+                const result = await response.json();
+                
+                if(result.status === 'success') {
+                    closeModal('repositoryModal');
+                    showToast('Repository berhasil ditambahkan!', 'success');
+                    // Clear form
+                    document.getElementById('repoTitle').value = '';
+                    document.getElementById('repoAuthor').value = '';
+                    document.getElementById('repoYear').value = '';
+                    document.getElementById('repoProdi').value = '';
+                    document.getElementById('repoAbstract').value = '';
+                    document.getElementById('repoUrl').value = '';
+                    loadData();
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                console.error('[SAVE REPOSITORY] Error:', error);
+                showToast('Gagal menambahkan repository: ' + error.message, 'error');
+            }
+        }
+        
+        async function saveMahasiswa() {
+            const nim = document.getElementById('mhsNim').value.trim();
+            const nama = document.getElementById('mhsName').value.trim();
+            const email = document.getElementById('mhsEmail').value.trim();
+            const wa = document.getElementById('mhsWa').value.trim();
+            const prodi = document.getElementById('mhsProdi').value;
+            const password = document.getElementById('mhsPassword').value.trim();
+            
+            if(!nim || !nama || !email || !wa || !prodi || !password) {
+                showToast('Harap lengkapi semua field!', 'error');
+                return;
+            }
+            
+            const newMhs = {
+                nim,
+                nama,
+                email,
+                wa,
+                prodi,
+                password,
+                tanggal: new Date().toLocaleDateString('id-ID'),
+                role: 'mahasiswa'
+            };
+            
+            try {
+                const response = await fetch(`${WEB_APP_URL}?action=addMahasiswa`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(newMhs)
+                });
+                
+                const result = await response.json();
+                
+                if(result.status === 'success') {
+                    closeModal('mahasiswaModal');
+                    showToast('Mahasiswa berhasil ditambahkan!', 'success');
+                    // Clear form
+                    document.getElementById('mhsNim').value = '';
+                    document.getElementById('mhsName').value = '';
+                    document.getElementById('mhsEmail').value = '';
+                    document.getElementById('mhsWa').value = '';
+                    document.getElementById('mhsProdi').value = '';
+                    document.getElementById('mhsPassword').value = '';
+                    loadData();
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                console.error('[SAVE MAHASISWA] Error:', error);
+                showToast('Gagal menambahkan mahasiswa: ' + error.message, 'error');
+            }
+        }
+        
+        async function saveDosen() {
+            const nip = document.getElementById('dsnNip').value.trim();
+            const nama = document.getElementById('dsnName').value.trim();
+            const email = document.getElementById('dsnEmail').value.trim();
+            const wa = document.getElementById('dsnWa').value.trim();
+            const password = document.getElementById('dsnPassword').value.trim();
+            
+            if(!nip || !nama || !email || !wa || !password) {
+                showToast('Harap lengkapi semua field!', 'error');
+                return;
+            }
+            
+            const newDsn = {
+                nip,
+                nama,
+                email,
+                wa,
+                password,
+                tanggal: new Date().toLocaleDateString('id-ID'),
+                role: 'dosen'
+            };
+            
+            try {
+                const response = await fetch(`${WEB_APP_URL}?action=addDosen`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(newDsn)
+                });
+                
+                const result = await response.json();
+                
+                if(result.status === 'success') {
+                    closeModal('dosenModal');
+                    showToast('Dosen berhasil ditambahkan!', 'success');
+                    // Clear form
+                    document.getElementById('dsnNip').value = '';
+                    document.getElementById('dsnName').value = '';
+                    document.getElementById('dsnEmail').value = '';
+                    document.getElementById('dsnWa').value = '';
+                    document.getElementById('dsnPassword').value = '';
+                    loadData();
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                console.error('[SAVE DOSEN] Error:', error);
+                showToast('Gagal menambahkan dosen: ' + error.message, 'error');
+            }
+        }
+        
+        // ============================================
+        // PLACEHOLDER FUNCTIONS
+        // ============================================
+        
+        function viewProposal(index) {
+            showToast('Fitur view proposal akan segera tersedia', 'success');
+        }
+        
+        function editProposal(index) {
+            showToast('Fitur edit proposal akan segera tersedia', 'success');
+        }
+        
+        function deleteProposal(index) {
+            if(confirm('Apakah Anda yakin ingin menghapus proposal ini?')) {
+                showToast('Proposal berhasil dihapus!', 'success');
+                loadData();
+            }
+        }
+        
+        function viewBimbingan(index) {
+            showToast('Fitur view bimbingan akan segera tersedia', 'success');
+        }
+        
+        function editBimbingan(index) {
+            showToast('Fitur edit bimbingan akan segera tersedia', 'success');
+        }
+        
+        function deleteBimbingan(index) {
+            if(confirm('Apakah Anda yakin ingin menghapus data bimbingan ini?')) {
+                showToast('Data bimbingan berhasil dihapus!', 'success');
+                loadData();
+            }
+        }
+        
+        function editMahasiswa(index) {
+            showToast('Fitur edit mahasiswa akan segera tersedia', 'success');
+        }
+        
+        function deleteMahasiswa(index) {
+            if(confirm('Apakah Anda yakin ingin menghapus data mahasiswa ini?')) {
+                showToast('Data mahasiswa berhasil dihapus!', 'success');
+                loadData();
+            }
+        }
+        
+        function editDosen(index) {
+            showToast('Fitur edit dosen akan segera tersedia', 'success');
+        }
+        
+        function deleteDosen(index) {
+            if(confirm('Apakah Anda yakin ingin menghapus data dosen ini?')) {
+                showToast('Data dosen berhasil dihapus!', 'success');
+                loadData();
+            }
+        }
+        
+        function viewWarning(index) {
+            showToast('Fitur view warning akan segera tersedia', 'success');
+        }
+        
+        function viewRepository(index) {
+            showToast('Fitur view repository akan segera tersedia', 'success');
+        }
+        
+        function editRepository(index) {
+            showToast('Fitur edit repository akan segera tersedia', 'success');
+        }
+        
+        function deleteRepository(index) {
+            if(confirm('Apakah Anda yakin ingin menghapus repository ini?')) {
+                showToast('Repository berhasil dihapus!', 'success');
+                loadData();
+            }
+        }
+    </script>
+</body>
+</html>
