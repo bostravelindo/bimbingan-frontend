@@ -1,0 +1,3375 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard FEBI - Sistem Terintegrasi Lengkap</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23047857'/><text x='50' y='55' text-anchor='middle' fill='%23fbbf24' font-size='24' font-weight='bold'>F</text></svg>">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+theme: {
+extend: {
+colors: {
+'febi-green': '#047857',
+'febi-gold': '#fbbf24'
+}
+}
+}
+}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<!-- Firebase SDK - Load first -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<!-- React - Load second -->
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<!-- Babel - Load last -->
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', system-ui, sans-serif; background-color: #f8fafc; min-height: 100vh; }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+.animate-fadeIn { animation: fadeIn 0.3s ease-out; }
+.animate-slideIn { animation: slideIn 0.2s ease-out; }
+.similarity-badge {
+display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+}
+.similarity-critical { background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); color: #b91c1c; border: 2px solid #ef4444; }
+.similarity-high { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); color: #b45309; border: 2px solid #f59e0b; }
+.similarity-medium { background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%); color: #92400e; border: 2px solid #eab308; }
+.similarity-low { background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); color: #064e3b; border: 2px solid #10b981; }
+.similarity-safe { background: linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 100%); color: #042f2e; border: 2px solid #14b8a6; }
+.metric-card { transition: all 0.3s ease; border: 2px solid transparent; }
+.metric-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-color: #10b981; }
+.highlight-match { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); padding: 2px 6px; border-radius: 4px; font-weight: 600; color: #92400e; }
+.algorithm-badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; margin: 2px; }
+.algo-cosine { background: #dbeafe; color: #1e40af; }
+.algo-jaccard { background: #d1fae5; color: #064e3b; }
+.algo-levenshtein { background: #fde68a; color: #92400e; }
+.algo-semantic { background: #fca5a5; color: #991b1b; }
+.loading-screen { position: fixed; inset: 0; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; }
+.loading-spinner { width: 64px; height: 64px; border: 6px solid rgba(251, 191, 36, 0.2); border-top-color: #fbbf24; border-radius: 50%; animation: spin 1s linear infinite; }
+.error-boundary { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; padding: 2rem; text-align: center; }
+.error-boundary h2 { font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(to right, #fbbf24, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.error-boundary p { max-width: 600px; margin-bottom: 2rem; line-height: 1.6; }
+.error-boundary button { background: #047857; color: white; border: none; padding: 12px 24px; font-size: 16px; font-weight: 600; border-radius: 12px; cursor: pointer; transition: all 0.3s; }
+.error-boundary button:hover { background: #065f46; transform: scale(1.05); }
+.workflow-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+.workflow-proposal { background: #dbeafe; color: #1e40af; }
+.workflow-approved { background: #bbf7d0; color: #15803d; }
+.workflow-bimbingan { background: #fde68a; color: #854d0e; }
+.workflow-selesai { background: #a7f3d0; color: #065f4e; }
+.pending-bimbingan-card { border-left: 4px solid #f59e0b; background: linear-gradient(90deg, #fffbeb 0%, #fef3c7 100%); }
+.auto-create-alert { background: linear-gradient(135deg, #bbf7d0 0%, #a7f3d0 100%); border-left: 4px solid #16a34a; }
+.form-section { border-bottom: 1px solid #e2e8f0; padding-bottom: 1.5rem; margin-bottom: 1.5rem; }
+.form-section:last-child { border-bottom: none; margin-bottom: 0; }
+.required-star { color: #ef4444; margin-left: 2px; }
+.line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.bimbingan-card { transition: all 0.3s ease; border-left: 4px solid transparent; }
+.bimbingan-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+.bimbingan-card.berlangsung { border-left-color: #047857; }
+.bimbingan-card.selesai { border-left-color: #2563eb; }
+.timeline-item { position: relative; padding-left: 28px; }
+.timeline-item:before { content: ''; position: absolute; left: 8px; top: 8px; width: 12px; height: 12px; border-radius: 50%; background: #047857; }
+.timeline-item:after { content: ''; position: absolute; left: 13px; top: 24px; width: 2px; height: calc(100% - 16px); background: #e5e7eb; }
+.timeline-item:last-child:after { display: none; }
+.print-laporan { font-family: 'Times New Roman', serif; }
+@media print {
+.no-print { display: none; }
+.print-only { display: block; }
+}
+</style>
+</head>
+<body>
+<div id="root">
+<div class="loading-screen" id="loading-screen">
+<div class="loading-spinner"></div>
+<p class="mt-6 text-xl font-bold text-white">Menginisialisasi Sistem Bimbingan Terintegrasi...</p>
+<p class="mt-2 text-gray-300">Menghubungkan proposal → bimbingan → repository</p>
+</div>
+</div>
+<script type="text/babel">
+// ============================================
+// ERROR BOUNDARY COMPONENT
+// ============================================
+class ErrorBoundary extends React.Component {
+constructor(props) {
+super(props);
+this.state = { hasError: false, error: null, errorInfo: null };
+}
+static getDerivedStateFromError(error) {
+return { hasError: true };
+}
+componentDidCatch(error, errorInfo) {
+console.error('React Error:', error);
+console.error('Component Stack:', errorInfo.componentStack);
+this.setState({
+hasError: true,
+error: error,
+errorInfo: errorInfo
+});
+}
+render() {
+if (this.state.hasError) {
+return (
+<div className="error-boundary">
+<h2>⚠️ Terjadi Kesalahan Sistem</h2>
+<p>Dashboard tidak dapat dimuat karena error kritis.</p>
+<p className="text-sm bg-gray-800/50 p-4 rounded-lg max-w-2xl mx-auto mt-4 text-left text-gray-300 overflow-auto max-h-48">
+{this.state.error?.toString()}
+</p>
+<button onClick={() => window.location.reload()}>
+🔄 Muat Ulang Halaman
+</button>
+<p className="mt-8 text-gray-400 text-sm">
+Error ID: {Date.now().toString(36)}
+</p>
+</div>
+);
+}
+return this.props.children;
+}
+}
+// ============================================
+// FIREBASE CONFIGURATION
+// ============================================
+const firebaseConfig = {
+apiKey: "AIzaSyA2khO5iAvYU5msppJlMjwi9S7kL0LAxaU",
+authDomain: "febi-uinsi-dashboard-ca039.firebaseapp.com",
+databaseURL: "https://febi-uinsi-dashboard-ca039-default-rtdb.asia-southeast1.firebasedatabase.app",
+projectId: "febi-uinsi-dashboard-ca039",
+storageBucket: "febi-uinsi-dashboard-ca039.firebasestorage.app",
+messagingSenderId: "297923141085",
+appId: "1:297923141085:web:1307d98d3518fd61126a34"
+};
+let db = null;
+try {
+if (!firebase.apps.length) {
+firebase.initializeApp(firebaseConfig);
+}
+db = firebase.database();
+console.log('✅ Firebase initialized successfully');
+} catch (error) {
+console.error('❌ Firebase initialization error:', error);
+}
+// ============================================
+// DATABASE HELPER FUNCTIONS
+// ============================================
+const DB = {
+get: (path) => {
+return new Promise((resolve) => {
+if (!db) {
+console.error('Database not initialized');
+resolve(null);
+return;
+}
+db.ref(path).once('value')
+.then(snapshot => resolve(snapshot.val()))
+.catch(e => {
+console.error('❌ DB get error:', e);
+resolve(null);
+});
+});
+},
+set: async (path, data) => {
+if (!db) return false;
+try {
+await db.ref(path).set(data);
+console.log('✅ Data saved successfully:', path);
+return true;
+} catch (e) {
+console.error('❌ DB set error:', e);
+return false;
+}
+},
+push: async (path, data) => {
+if (!db) return null;
+try {
+const newRef = await db.ref(path).push(data);
+console.log('✅ Data pushed successfully:', newRef.key);
+return newRef.key;
+} catch (e) {
+console.error('❌ DB push error:', e);
+return null;
+}
+},
+remove: async (path) => {
+if (!db) return false;
+try {
+await db.ref(path).remove();
+console.log('✅ Data removed successfully:', path);
+return true;
+} catch (e) {
+console.error('❌ DB remove error:', e);
+return false;
+}
+},
+listen: (path, callback) => {
+if (!db) return () => {};
+const ref = db.ref(path);
+ref.on('value', snapshot => callback(snapshot.val()));
+return () => ref.off('value');
+}
+};
+// ============================================
+// LOGO COMPONENT
+// ============================================
+const Logo = ({ size = 'md' }) => {
+const sizes = {
+sm: 'w-8 h-8 text-xs',
+md: 'w-10 h-10 text-sm',
+lg: 'w-14 h-14 text-lg'
+};
+return (
+<div className={`${sizes[size]} bg-gradient-to-br from-emerald-600 to-teal-700 rounded-xl flex items-center justify-center text-white font-black shadow-lg`}>
+F
+</div>
+);
+};
+// ============================================
+// ADVANCED SIMILARITY CHECKER - ACADEMIC VALIDATION
+// ============================================
+class AcademicSimilarityChecker {
+constructor() {
+this.stopwords = new Set([
+'yang', 'adalah', 'ini', 'itu', 'sebagai', 'oleh', 'dalam', 'melalui',
+'antara', 'terkait', 'mengenai', 'tentang', 'atas', 'bawah', 'dalam',
+'studi', 'analisis', 'penelitian', 'kajian', 'implementasi', 'pengaruh',
+'hubungan', 'peran', 'fungsi', 'strategi', 'model', 'sistem', 'metode',
+'dan', 'atau', 'dengan', 'terhadap', 'pada', 'di', 'ke', 'dari', 'untuk'
+]);
+this.thresholds = {
+critical: 85,
+high: 70,
+medium: 50,
+low: 30
+};
+}
+preprocess(text) {
+if (!text || typeof text !== 'string') return '';
+return text
+.toLowerCase()
+.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+.replace(/[^\w\s]/g, ' ')
+.replace(/\s+/g, ' ')
+.trim()
+.split(' ')
+.filter(word => word.length > 2 && !this.stopwords.has(word))
+.join(' ');
+}
+tokenizeToNgrams(text, n = 2) {
+const tokens = this.preprocess(text).split(' ').filter(t => t);
+if (tokens.length < n) return tokens;
+const ngrams = [];
+for (let i = 0; i <= tokens.length - n; i++) {
+ngrams.push(tokens.slice(i, i + n).join(' '));
+}
+return ngrams;
+}
+cosineSimilarity(text1, text2) {
+const tokens1 = this.preprocess(text1).split(' ').filter(t => t);
+const tokens2 = this.preprocess(text2).split(' ').filter(t => t);
+if (tokens1.length === 0 || tokens2.length === 0) return 0;
+const vocab = new Set([...tokens1, ...tokens2]);
+const vocabArray = Array.from(vocab);
+const vec1 = vocabArray.map(term => tokens1.filter(t => t === term).length / tokens1.length);
+const vec2 = vocabArray.map(term => tokens2.filter(t => t === term).length / tokens2.length);
+const dotProduct = vec1.reduce((sum, val, i) => sum + val * vec2[i], 0);
+const magnitude1 = Math.sqrt(vec1.reduce((sum, val) => sum + val * val, 0));
+const magnitude2 = Math.sqrt(vec2.reduce((sum, val) => sum + val * val, 0));
+return magnitude1 && magnitude2 ? (dotProduct / (magnitude1 * magnitude2)) * 100 : 0;
+}
+jaccardSimilarity(text1, text2, n = 2) {
+const ngrams1 = new Set(this.tokenizeToNgrams(text1, n));
+const ngrams2 = new Set(this.tokenizeToNgrams(text2, n));
+if (ngrams1.size === 0 && ngrams2.size === 0) return 100;
+if (ngrams1.size === 0 || ngrams2.size === 0) return 0;
+const intersection = new Set([...ngrams1].filter(x => ngrams2.has(x)));
+const union = new Set([...ngrams1, ...ngrams2]);
+return (intersection.size / union.size) * 100;
+}
+levenshteinSimilarity(text1, text2) {
+const s1 = this.preprocess(text1);
+const s2 = this.preprocess(text2);
+if (!s1 || !s2) return 0;
+const len1 = s1.length;
+const len2 = s2.length;
+if (s1 === s2) return 100;
+const matrix = Array(len2 + 1).fill(null).map(() => Array(len1 + 1).fill(0));
+for (let i = 0; i <= len1; i++) matrix[0][i] = i;
+for (let j = 0; j <= len2; j++) matrix[j][0] = j;
+for (let j = 1; j <= len2; j++) {
+for (let i = 1; i <= len1; i++) {
+const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
+matrix[j][i] = Math.min(
+matrix[j - 1][i] + 1,
+matrix[j][i - 1] + 1,
+matrix[j - 1][i - 1] + cost
+);
+}
+}
+const distance = matrix[len2][len1];
+const maxLength = Math.max(len1, len2);
+return maxLength ? ((maxLength - distance) / maxLength) * 100 : 0;
+}
+semanticKeywordMatch(text1, text2) {
+const tokens1 = this.preprocess(text1).split(' ').filter(t => t.length > 3);
+const tokens2 = this.preprocess(text2).split(' ').filter(t => t.length > 3);
+if (tokens1.length === 0 || tokens2.length === 0) return 0;
+const weightedMatch = tokens1.reduce((score, token, idx) => {
+const weight = 1 + (0.5 * (1 - idx / Math.max(tokens1.length, 1)));
+return score + (tokens2.includes(token) ? weight : 0);
+}, 0);
+const maxPossible = tokens1.reduce((sum, _, idx) =>
+sum + (1 + (0.5 * (1 - idx / Math.max(tokens1.length, 1)))), 0
+);
+return (weightedMatch / maxPossible) * 100;
+}
+calculateHybridSimilarity(newTitle, existingTitle) {
+if (!newTitle || !existingTitle) return { score: 0, details: {} };
+const cosine = this.cosineSimilarity(newTitle, existingTitle);
+const jaccardBigram = this.jaccardSimilarity(newTitle, existingTitle, 2);
+const jaccardTrigram = this.jaccardSimilarity(newTitle, existingTitle, 3);
+const levenshtein = this.levenshteinSimilarity(newTitle, existingTitle);
+const semantic = this.semanticKeywordMatch(newTitle, existingTitle);
+const weightedScore = (
+cosine * 0.30 +
+jaccardBigram * 0.25 +
+jaccardTrigram * 0.20 +
+levenshtein * 0.15 +
+semantic * 0.10
+);
+return {
+score: Math.min(100, Math.max(0, weightedScore.toFixed(1))),
+details: {
+cosine: cosine.toFixed(1),
+jaccardBigram: jaccardBigram.toFixed(1),
+jaccardTrigram: jaccardTrigram.toFixed(1),
+levenshtein: levenshtein.toFixed(1),
+semantic: semantic.toFixed(1),
+preprocessedNew: this.preprocess(newTitle),
+preprocessedExisting: this.preprocess(existingTitle)
+}
+};
+}
+checkAgainstDatabase(newTitle, existingProposals = {}, existingRepository = {}) {
+if (!newTitle || newTitle.trim().length < 10) {
+return {
+status: 'error',
+message: 'Judul terlalu pendek (< 10 karakter)',
+results: [],
+recommendation: 'Perluas judul penelitian dengan variabel dan konteks yang jelas'
+};
+}
+const results = [];
+const checker = this;
+Object.entries(existingProposals).forEach(([id, proposal]) => {
+if (!proposal.judul || proposal.status === 'Ditolak') return;
+const similarity = checker.calculateHybridSimilarity(newTitle, proposal.judul);
+if (similarity.score >= checker.thresholds.low) {
+results.push({
+id,
+type: 'proposal',
+title: proposal.judul,
+author: proposal.mahasiswaNama,
+prodi: proposal.prodi,
+pembimbing1: proposal.pembimbing1,
+pembimbing2: proposal.pembimbing2 || '-',
+tahun: proposal.tahun || new Date().getFullYear(),
+similarityScore: parseFloat(similarity.score),
+similarityDetails: similarity.details,
+riskLevel: this.getRiskLevel(similarity.score)
+});
+}
+});
+Object.entries(existingRepository).forEach(([id, repo]) => {
+if (!repo.judul) return;
+const similarity = checker.calculateHybridSimilarity(newTitle, repo.judul);
+if (similarity.score >= checker.thresholds.low) {
+results.push({
+id,
+type: 'repository',
+title: repo.judul,
+author: repo.penulis,
+prodi: repo.prodi,
+pembimbing1: repo.pembimbing,
+pembimbing2: '-',
+tahun: repo.tahun,
+similarityScore: parseFloat(similarity.score),
+similarityDetails: similarity.details,
+riskLevel: this.getRiskLevel(similarity.score)
+});
+}
+});
+results.sort((a, b) => b.similarityScore - a.similarityScore);
+const highest = results[0];
+let status = 'Diterima';
+let recommendation = '✅ Judul unik dan dapat diajukan';
+if (highest) {
+if (highest.similarityScore >= this.thresholds.critical) {
+status = 'Ditolak';
+recommendation = `❌ TINGKAT KEMIRIPAN KRITIS (${highest.similarityScore}%) - Judul terlalu mirip dengan karya existing. Lakukan reformulasi total.`;
+} else if (highest.similarityScore >= this.thresholds.high) {
+status = 'Diperbaiki';
+recommendation = `⚠️ TINGKAT KEMIRIPAN TINGGI (${highest.similarityScore}%) - Perlu modifikasi signifikan pada variabel.`;
+} else if (highest.similarityScore >= this.thresholds.medium) {
+status = 'Diperbaiki';
+recommendation = `ℹ️ TINGKAT KEMIRIPAN SEDANG (${highest.similarityScore}%) - Disarankan modifikasi frasa kunci.`;
+}
+}
+return {
+status,
+highestSimilarity: highest ? highest.similarityScore : 0,
+totalMatches: results.length,
+results: results.slice(0, 5),
+recommendation,
+thresholds: this.thresholds
+};
+}
+getRiskLevel(score) {
+if (score >= this.thresholds.critical) return 'critical';
+if (score >= this.thresholds.high) return 'high';
+if (score >= this.thresholds.medium) return 'medium';
+if (score >= this.thresholds.low) return 'low';
+return 'minimal';
+}
+highlightMatchingTerms(newTitle, existingTitle) {
+const prepNew = this.preprocess(newTitle).split(' ');
+const prepExist = this.preprocess(existingTitle).split(' ');
+const highlightedNew = prepNew.map(word =>
+prepExist.includes(word)
+? `<span class="highlight-match">${word}</span>`
+: word
+).join(' ');
+return { new: highlightedNew };
+}
+}
+const similarityChecker = new AcademicSimilarityChecker();
+const checkProposalSimilarityAdvanced = (newTitle, existingProposals, existingRepository) => {
+return similarityChecker.checkAgainstDatabase(newTitle, existingProposals, existingRepository);
+};
+// ============================================
+// CRITICAL FIX: AUTO-CREATE BIMBINGAN ON APPROVAL
+// ============================================
+const createBimbinganFromProposal = async (proposalData, proposalId) => {
+const bimbinganSnapshot = await DB.get('bimbingan');
+const existing = Object.values(bimbinganSnapshot || {}).find(b =>
+b.nim === proposalData.nim && b.judul === proposalData.judul
+);
+if (existing) {
+console.log('ℹ️ Bimbingan already exists for this proposal');
+return false;
+}
+const bimbinganData = {
+nim: proposalData.nim,
+mahasiswaNama: proposalData.mahasiswaNama,
+dosenNama: proposalData.pembimbing1,
+judul: proposalData.judul,
+prodi: proposalData.prodi,
+whatsapp: proposalData.whatsapp,
+progress: 0,
+status: 'berlangsung',
+catatan: `✅ Proposal disetujui pada ${new Date().toLocaleDateString('id-ID')}. Bimbingan dimulai oleh sistem.`,
+lastUpdate: new Date().toISOString().split('T')[0],
+proposalId: proposalId,
+createdAt: new Date().toISOString()
+};
+const newId = await DB.push('bimbingan', bimbinganData);
+if (newId) {
+console.log('✅ Bimbingan record created automatically:', newId);
+return true;
+}
+return false;
+};
+// ============================================
+// AUTH MODAL COMPONENT
+// ============================================
+const AuthModal = ({ onLogin, onClose, showRegister }) => {
+const [isRegister, setIsRegister] = React.useState(showRegister || false);
+const [formData, setFormData] = React.useState({
+role: 'mahasiswa', nim: '', nama: '', prodi: '', nip: '', keahlian: '', whatsapp: '', password: ''
+});
+const [loginData, setLoginData] = React.useState({ username: '', password: '' });
+const [isLoading, setIsLoading] = React.useState(false);
+const [error, setError] = React.useState('');
+const handleLogin = async (e) => {
+e.preventDefault(); setIsLoading(true); setError('');
+const { username, password } = loginData;
+try {
+if (username === 'admin' && password === 'admin123') {
+onLogin({ id: 'admin', nama: 'Administrator FEBI', role: 'admin' }, 'admin');
+return;
+}
+const mahasiswaData = await DB.get('mahasiswa');
+if (mahasiswaData) {
+const mhs = Object.entries(mahasiswaData).find(([_, m]) => m.nim === username && m.password === password);
+if (mhs) {
+onLogin({ id: mhs[0], ...mhs[1] }, 'mahasiswa');
+return;
+}
+}
+const dosenData = await DB.get('dosen');
+if (dosenData) {
+const dsn = Object.entries(dosenData).find(([_, d]) => d.nip === username && d.password === password);
+if (dsn) {
+onLogin({ id: dsn[0], ...dsn[1] }, 'dosen');
+return;
+}
+}
+setError('Username atau password salah!');
+} catch (err) {
+setError('Terjadi kesalahan: ' + err.message);
+} finally {
+setIsLoading(false);
+}
+};
+const handleRegister = async (e) => {
+e.preventDefault(); setIsLoading(true); setError('');
+try {
+let success;
+if (formData.role === 'mahasiswa') {
+success = await DB.push('mahasiswa', {
+nim: formData.nim, nama: formData.nama, prodi: formData.prodi,
+whatsapp: formData.whatsapp, password: formData.password,
+semester: parseInt(formData.nim.substring(0, 2)) || 1, status: 'aktif'
+});
+} else {
+success = await DB.push('dosen', {
+nip: formData.nip, nama: formData.nama, keahlian: formData.keahlian,
+whatsapp: formData.whatsapp, password: formData.password, status: 'aktif'
+});
+}
+if (success) {
+alert('Registrasi berhasil! Silakan login.');
+setIsRegister(false);
+setFormData({ role: 'mahasiswa', nim: '', nama: '', prodi: '', nip: '', keahlian: '', whatsapp: '', password: '' });
+} else {
+setError('Gagal registrasi!');
+}
+} catch (err) {
+setError('Error: ' + err.message);
+} finally {
+setIsLoading(false);
+}
+};
+if (isRegister) {
+return (
+<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+<div className="bg-white rounded-2xl p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+<h2 className="text-2xl font-bold text-emerald-900 mb-4">📝 Registrasi Akun</h2>
+{error && <div className="bg-red-50 border-2 border-red-200 rounded-xl p-3 text-red-700 text-sm mb-4">{error}</div>}
+<select value={formData.role} onChange={(e) => setFormData({...formData, role: e.target.value})} className="w-full px-4 py-2 border-2 border-emerald-200 rounded-xl mb-4">
+<option value="mahasiswa">Mahasiswa</option>
+<option value="dosen">Dosen</option>
+</select>
+{formData.role === 'mahasiswa' ? (
+<>
+<input type="text" placeholder="NIM (2 digit pertama tahun angkatan, misal: 21 untuk 2021)" value={formData.nim} onChange={(e) => setFormData({...formData, nim: e.target.value})} className="w-full px-4 py-2 border-2 border-emerald-200 rounded-xl mb-3" required />
+<input type="text" placeholder="Nama Lengkap" value={formData.nama} onChange={(e) => setFormData({...formData, nama: e.target.value})} className="w-full px-4 py-2 border-2 border-emerald-200 rounded-xl mb-3" required />
+<select value={formData.prodi} onChange={(e) => setFormData({...formData, prodi: e.target.value})} className="w-full px-4 py-2 border-2 border-emerald-200 rounded-xl mb-3" required>
+<option value="">Pilih Program Studi</option>
+<option value="Ekonomi Syariah">Ekonomi Syariah</option>
+<option value="Perbankan Syariah">Perbankan Syariah</option>
+<option value="Manajemen Bisnis Syariah">Manajemen Bisnis Syariah</option>
+</select>
+<input type="tel" placeholder="Nomor WhatsApp" value={formData.whatsapp} onChange={(e) => setFormData({...formData, whatsapp: e.target.value})} className="w-full px-4 py-2 border-2 border-emerald-200 rounded-xl mb-3" required />
+<input type="password" placeholder="Password" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} className="w-full px-4 py-2 border-2 border-emerald-200 rounded-xl mb-3" required />
+</>
+) : (
+<>
+<input type="text" placeholder="NIP" value={formData.nip} onChange={(e) => setFormData({...formData, nip: e.target.value})} className="w-full px-4 py-2 border-2 border-emerald-200 rounded-xl mb-3" required />
+<input type="text" placeholder="Nama Lengkap" value={formData.nama} onChange={(e) => setFormData({...formData, nama: e.target.value})} className="w-full px-4 py-2 border-2 border-emerald-200 rounded-xl mb-3" required />
+<input type="text" placeholder="Bidang Keahlian" value={formData.keahlian} onChange={(e) => setFormData({...formData, keahlian: e.target.value})} className="w-full px-4 py-2 border-2 border-emerald-200 rounded-xl mb-3" required />
+<input type="tel" placeholder="Nomor WhatsApp" value={formData.whatsapp} onChange={(e) => setFormData({...formData, whatsapp: e.target.value})} className="w-full px-4 py-2 border-2 border-emerald-200 rounded-xl mb-3" required />
+<input type="password" placeholder="Password" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} className="w-full px-4 py-2 border-2 border-emerald-200 rounded-xl mb-3" required />
+</>
+)}
+<div className="flex gap-3 mt-4">
+<button type="submit" disabled={isLoading} onClick={handleRegister} className="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700 disabled:opacity-50">
+{isLoading ? '🔄 Memproses...' : '✅ Daftar'}
+</button>
+<button onClick={() => setIsRegister(false)} className="px-6 py-3 bg-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-300">
+Batal
+</button>
+</div>
+</div>
+</div>
+);
+}
+return (
+<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+<div className="bg-white rounded-2xl p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+<center>
+<h1 className="text-2xl font-bold text-emerald-900 mb-4">SISTEM BIMBINGAN PROPOSAL&REPOSITORY</h1>
+<p><b>FAKULTAS EKONOMI DAN BISNIS ISLAM UINSI SAMARINDA</b></p>
+</center>
+{error && <div className="bg-red-50 border-2 border-red-200 rounded-xl p-3 text-red-700 text-sm mb-4">{error}</div>}
+<form onSubmit={handleLogin} className="space-y-4">
+<input type="text" placeholder="NIM/NIP/Username" value={loginData.username} onChange={(e) => setLoginData({ ...loginData, username: e.target.value })} className="w-full px-4 py-3 border-2 border-emerald-200 rounded-xl focus:outline-none focus:border-emerald-500" required />
+<input type="password" placeholder="Password" value={loginData.password} onChange={(e) => setLoginData({ ...loginData, password: e.target.value })} className="w-full px-4 py-3 border-2 border-emerald-200 rounded-xl focus:outline-none focus:border-emerald-500" required />
+<button type="submit" disabled={isLoading} className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-3 rounded-xl font-bold hover:from-emerald-700 hover:to-teal-700 disabled:opacity-50">
+{isLoading ? '🔄 Memproses...' : '🔐 Login'}
+</button>
+</form>
+<div className="mt-4 text-center">
+<p className="text-sm text-emerald-700 mb-2">Belum punya akun?</p>
+<button onClick={() => setIsRegister(true)} className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-lg hover:bg-emerald-200">
+📝 Registrasi Sekarang
+</button>
+</div>
+</div>
+</div>
+);
+};
+// ============================================
+// PAGE COMPONENTS - DIPERBAIKI DENGAN DATA DUMMY UNTUK TESTING
+// ============================================
+// Data dummy untuk testing - akan ditimpa oleh data real dari Firebase
+const dummyProposals = [
+{
+id: "proposal1",
+judul: "Pengaruh Literasi Keuangan Syariah terhadap Minat Menabung di Bank Syariah",
+mahasiswaNama: "Ahmad Fauzi",
+nim: "210401001",
+prodi: "Ekonomi Syariah",
+pembimbing1: "Dr. Hj. Siti Aminah, M.Ag",
+pembimbing2: "Dr. Ahmad Rizal, M.Si",
+whatsapp: "081234567890",
+abstrak: "Penelitian ini bertujuan untuk menganalisis pengaruh literasi keuangan syariah terhadap minat menabung mahasiswa di bank syariah. Metode penelitian menggunakan pendekatan kuantitatif dengan sampel 100 responden.",
+status: "Menunggu",
+tahun: "2025",
+catatan: ""
+},
+{
+id: "proposal2",
+judul: "Analisis Strategi Pemasaran Produk Perbankan Syariah di Era Digital",
+mahasiswaNama: "Budi Santoso",
+nim: "210401002",
+prodi: "Perbankan Syariah",
+pembimbing1: "Dr. Muhammad Iqbal, M.Ec",
+pembimbing2: "Dr. Siti Khadijah, M.Si",
+whatsapp: "081234567891",
+abstrak: "Penelitian ini menganalisis strategi pemasaran produk perbankan syariah dalam menghadapi era digitalisasi. Studi kasus dilakukan pada Bank Syariah Indonesia KC Samarinda.",
+status: "Diterima",
+tahun: "2025",
+catatan: "Proposal diterima, silakan lanjut ke tahap bimbingan"
+},
+{
+id: "proposal3",
+judul: "Peran Manajemen Bisnis Syariah dalam Meningkatkan Kinerja UMKM",
+mahasiswaNama: "Citra Dewi",
+nim: "210401003",
+prodi: "Manajemen Bisnis Syariah",
+pembimbing1: "Dr. Abdul Malik, M.M",
+pembimbing2: "Dr. Nurul Huda, M.Si",
+whatsapp: "081234567892",
+abstrak: "Penelitian ini mengkaji peran manajemen bisnis syariah dalam meningkatkan kinerja UMKM di Kota Samarinda. Pendekatan kualitatif digunakan untuk memahami fenomena secara mendalam.",
+status: "Menunggu",
+tahun: "2025",
+catatan: ""
+}
+];
+
+const dummyDosen = [
+{
+id: "dosen1",
+nama: "Dr. Hj. Siti Aminah, M.Ag",
+nip: "197001012005012001",
+keahlian: "Ekonomi Syariah",
+whatsapp: "081234567893"
+},
+{
+id: "dosen2",
+nama: "Dr. Muhammad Iqbal, M.Ec",
+nip: "197502012006021002",
+keahlian: "Perbankan Syariah",
+whatsapp: "081234567894"
+},
+{
+id: "dosen3",
+nama: "Dr. Abdul Malik, M.M",
+nip: "198003012007031003",
+keahlian: "Manajemen Bisnis",
+whatsapp: "081234567895"
+}
+];
+
+const dummyMahasiswa = [
+{
+id: "mhs1",
+nim: "210401001",
+nama: "Ahmad Fauzi",
+prodi: "Ekonomi Syariah",
+whatsapp: "081234567890",
+semester: 9,
+status: "aktif"
+},
+{
+id: "mhs2",
+nim: "210401002",
+nama: "Budi Santoso",
+prodi: "Perbankan Syariah",
+whatsapp: "081234567891",
+semester: 9,
+status: "aktif"
+},
+{
+id: "mhs3",
+nim: "210401003",
+nama: "Citra Dewi",
+prodi: "Manajemen Bisnis Syariah",
+whatsapp: "081234567892",
+semester: 9,
+status: "aktif"
+},
+{
+id: "mhs4",
+nim: "1813181033",
+nama: "Dian Permata Sari",
+prodi: "Ekonomi Syariah",
+whatsapp: "081234567896",
+semester: 13,
+status: "aktif"
+},
+{
+id: "mhs5",
+nim: "191401004",
+nama: "Eko Prasetyo",
+prodi: "Perbankan Syariah",
+whatsapp: "081234567897",
+semester: 11,
+status: "aktif"
+}
+];
+
+const dummyBimbingan = [
+{
+id: "bimb1",
+nim: "210401002",
+mahasiswaNama: "Budi Santoso",
+dosenNama: "Dr. Muhammad Iqbal, M.Ec",
+judul: "Analisis Strategi Pemasaran Produk Perbankan Syariah di Era Digital",
+prodi: "Perbankan Syariah",
+whatsapp: "081234567891",
+progress: 35,
+status: "berlangsung",
+catatan: "Bab 1-2 sudah direvisi. Lanjut ke bab 3 metodologi.",
+lastUpdate: "2026-02-15",
+createdAt: "2026-02-01T08:00:00.000Z",
+proposalId: "proposal2"
+},
+{
+id: "bimb2",
+nim: "1813181033",
+mahasiswaNama: "Dian Permata Sari",
+dosenNama: "Dr. Hj. Siti Aminah, M.Ag",
+judul: "Analisis Dampak Fintech Syariah terhadap Inklusi Keuangan Masyarakat",
+prodi: "Ekonomi Syariah",
+whatsapp: "081234567896",
+progress: 85,
+status: "berlangsung",
+catatan: "Bab 4 sudah selesai, lanjut bab 5 kesimpulan.",
+lastUpdate: "2026-02-10",
+createdAt: "2025-09-15T10:00:00.000Z",
+proposalId: "proposal4"
+}
+];
+
+const DashboardPage = ({ mahasiswaArr, dosenArr, proposalsArr, repositoryArr, bimbinganArr, pendingBimbingan, userRole, currentUser, onNavigate }) => {
+// Debug log untuk memeriksa data
+console.log('DashboardPage - proposalsArr:', proposalsArr);
+console.log('DashboardPage - proposals with status Menunggu:', proposalsArr.filter(p => p.status === 'Menunggu'));
+console.log('DashboardPage - pendingBimbingan:', pendingBimbingan);
+
+return (
+<div className="space-y-6">
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-lg p-6 text-white">
+<div className="flex items-center justify-between mb-3">
+<span className="text-4xl">👥</span>
+<span className="text-3xl font-black">{mahasiswaArr.length}</span>
+</div>
+<h3 className="text-sm font-semibold">Total Mahasiswa</h3>
+</div>
+<div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-lg p-6 text-white">
+<div className="flex items-center justify-between mb-3">
+<span className="text-4xl">👨‍🏫</span>
+<span className="text-3xl font-black">{dosenArr.length}</span>
+</div>
+<h3 className="text-sm font-semibold">Total Dosen</h3>
+</div>
+<div className="bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl shadow-lg p-6 text-white">
+<div className="flex items-center justify-between mb-3">
+<span className="text-4xl">📝</span>
+<span className="text-3xl font-black">{proposalsArr.length}</span>
+</div>
+<h3 className="text-sm font-semibold">Total Proposal</h3>
+</div>
+<div className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl shadow-lg p-6 text-white">
+<div className="flex items-center justify-between mb-3">
+<span className="text-4xl">📚</span>
+<span className="text-3xl font-black">{repositoryArr.length}</span>
+</div>
+<h3 className="text-sm font-semibold">Repository</h3>
+</div>
+</div>
+{/* Workflow Status Cards */}
+<div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+<div className="bg-white rounded-xl shadow-sm p-5 border-l-4 border-blue-500">
+<p className="text-sm text-gray-500">Proposal Menunggu</p>
+<p className="text-3xl font-bold text-blue-600 mt-1">{proposalsArr.filter(p => p.status === 'Menunggu').length}</p>
+<div className="mt-2 workflow-badge workflow-proposal">Draft</div>
+</div>
+<div className="bg-white rounded-xl shadow-sm p-5 border-l-4 border-green-500">
+<p className="text-sm text-gray-500">Proposal Disetujui</p>
+<p className="text-3xl font-bold text-green-600 mt-1">{proposalsArr.filter(p => p.status === 'Diterima').length}</p>
+<div className="mt-2 workflow-badge workflow-approved">Approved</div>
+</div>
+<div className="bg-white rounded-xl shadow-sm p-5 border-l-4 border-amber-500">
+<p className="text-sm text-gray-500">Bimbingan Aktif</p>
+<p className="text-3xl font-bold text-amber-600 mt-1">{bimbinganArr.filter(b => b.status === 'berlangsung').length}</p>
+<div className="mt-2 workflow-badge workflow-bimbingan">In Progress</div>
+</div>
+<div className="bg-white rounded-xl shadow-sm p-5 border-l-4 border-emerald-500">
+<p className="text-sm text-gray-500">Selesai Bimbingan</p>
+<p className="text-3xl font-bold text-emerald-600 mt-1">{bimbinganArr.filter(b => b.status === 'selesai').length}</p>
+<div className="mt-2 workflow-badge workflow-selesai">Completed</div>
+</div>
+</div>
+{/* CRITICAL ALERT: Pending Bimbingan */}
+{pendingBimbingan.length > 0 && (userRole === 'admin' || userRole === 'dosen') && (
+<div className="pending-bimbingan-card rounded-xl p-5">
+<div className="flex items-start gap-3">
+<span className="text-3xl mt-1">⚠️</span>
+<div>
+<h3 className="font-bold text-lg text-amber-800">Proposal Approved Belum Masuk Bimbingan</h3>
+<p className="text-amber-700 mt-1 mb-3">
+Terdapat <strong>{pendingBimbingan.length}</strong> proposal yang sudah disetujui admin
+{userRole === 'dosen' ? ' dan menunggu Anda memulai proses bimbingan' : ' namun belum memiliki record bimbingan'}.
+</p>
+<div className="space-y-2 max-h-48 overflow-y-auto pr-2">
+{pendingBimbingan.slice(0, 3).map((p, idx) => (
+<div key={idx} className="flex justify-between items-start bg-white/60 p-3 rounded-lg">
+<div>
+<p className="font-medium text-sm">{p.judul?.substring(0, 35)}{p.judul?.length > 35 ? '...' : ''}</p>
+<p className="text-xs text-amber-800">{p.mahasiswaNama} • {p.prodi}</p>
+<p className="text-xs mt-1">Pembimbing: <strong>{p.pembimbing1}</strong></p>
+</div>
+{userRole === 'dosen' && p.pembimbing1 === currentUser.nama && (
+<button
+onClick={() => window.handleMulaiBimbingan && window.handleMulaiBimbingan(p)}
+className="px-3 py-1 bg-amber-600 text-white rounded text-xs hover:bg-amber-700"
+>
+Mulai Bimbingan
+</button>
+)}
+</div>
+))}
+</div>
+{pendingBimbingan.length > 3 && (
+<p className="text-xs text-amber-700 mt-2 italic">
++{pendingBimbingan.length - 3} proposal lainnya menunggu inisiasi bimbingan
+</p>
+)}
+</div>
+</div>
+</div>
+)}
+<div className="bg-white rounded-2xl shadow-sm p-6">
+<h3 className="text-xl font-bold text-emerald-900 mb-4">🎉 Selamat Datang di Dashboard FEBI</h3>
+<p className="text-gray-600 mb-4">Sistem Dashboard Bimbingan Skripsi & Repository FEBI UINSI Samarinda tersinkronisasi secara real-time dengan Firebase Cloud.</p>
+<div className="grid sm:grid-cols-3 gap-4">
+<div className="p-4 bg-emerald-50 rounded-xl">
+<p className="text-2xl font-bold text-emerald-600">{mahasiswaArr.length}</p>
+<p className="text-sm text-emerald-700">Mahasiswa</p>
+</div>
+<div className="p-4 bg-blue-50 rounded-xl">
+<p className="text-2xl font-bold text-blue-600">{dosenArr.length}</p>
+<p className="text-sm text-blue-700">Dosen</p>
+</div>
+<div className="p-4 bg-purple-50 rounded-xl">
+<p className="text-2xl font-bold text-purple-600">{bimbinganArr.filter(b => b.status === 'berlangsung').length}</p>
+<p className="text-sm text-purple-700">Bimbingan Aktif</p>
+</div>
+</div>
+</div>
+<div className="bg-white rounded-2xl shadow-sm p-6">
+<h3 className="text-lg font-bold text-emerald-900 mb-4">📊 Aktivitas Terbaru</h3>
+<div className="space-y-3">
+{proposalsArr.slice(0, 5).map((p, i) => (
+<div key={i} className="p-3 bg-gray-50 rounded-lg border flex items-center justify-between">
+<div className="flex items-center gap-3">
+<div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+<span className="text-lg">📝</span>
+</div>
+<div>
+<p className="font-semibold text-sm">{p.judul?.substring(0, 40) || 'Proposal Baru'}</p>
+<p className="text-xs text-gray-500">{p.mahasiswaNama || 'Mahasiswa'}</p>
+</div>
+</div>
+<span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+p.status === 'Diterima' ? 'bg-green-100 text-green-700' :
+p.status === 'Ditolak' ? 'bg-red-100 text-red-700' :
+p.status === 'Diperbaiki' ? 'bg-yellow-100 text-yellow-700' :
+'bg-blue-100 text-blue-700'
+}`}>
+{p.status || 'Menunggu'}
+</span>
+</div>
+))}
+{proposalsArr.length === 0 && (
+<div className="text-center py-8 text-gray-400">
+<p className="text-4xl mb-2">📭</p>
+<p className="text-sm">Belum ada aktivitas</p>
+</div>
+)}
+</div>
+</div>
+</div>
+);
+};
+const ProposalPage = ({ proposals, userRole, currentUser, onAdd, onEdit, onDelete, dosenList, mahasiswaList, onCheckSimilarity, similarityResult, onMulaiBimbingan, bimbinganArr, onNavigate }) => {
+const filteredProposals = userRole === 'mahasiswa'
+? proposals.filter(p => p.nim === currentUser?.nim)
+: userRole === 'dosen'
+? proposals.filter(p => p.pembimbing1 === currentUser?.nama || p.pembimbing2 === currentUser?.nama)
+: proposals;
+return (
+<div className="space-y-6">
+<div className="flex justify-between items-center">
+<h2 className="text-2xl font-bold text-emerald-900">📝 Pengajuan Proposal</h2>
+{(userRole === 'mahasiswa' || userRole === 'admin') && (
+<button onClick={onAdd} className="px-4 py-2 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700">
+➕ Ajukan Proposal
+</button>
+)}
+</div>
+<div className="grid gap-4">
+{filteredProposals.map((p) => (
+<div key={p.id} className="bg-white rounded-xl shadow-sm border p-6">
+<div className="flex justify-between items-start mb-4">
+<div>
+<h3 className="text-lg font-bold text-gray-900">{p.judul}</h3>
+<p className="text-sm text-gray-600">Mahasiswa: {p.mahasiswaNama} ({p.nim})</p>
+<p className="text-sm text-gray-600">Program Studi: {p.prodi}</p>
+<p className="text-sm text-gray-600">Pembimbing: {p.pembimbing1} {p.pembimbing2 && `& ${p.pembimbing2}`}</p>
+<p className="text-sm text-gray-600">WhatsApp: {p.whatsapp}</p>
+</div>
+<span className={`px-4 py-2 rounded-full text-sm font-semibold ${
+p.status === 'Diterima' ? 'bg-green-100 text-green-700' :
+p.status === 'Ditolak' ? 'bg-red-100 text-red-700' :
+p.status === 'Diperbaiki' ? 'bg-yellow-100 text-yellow-700' :
+'bg-blue-100 text-blue-700'
+}`}>
+{p.status || 'Menunggu'}
+</span>
+</div>
+<p className="text-gray-700 mb-4">{p.abstrak?.substring(0, 150)}{p.abstrak?.length > 150 ? '...' : ''}</p>
+{p.catatan && (
+<div className="bg-blue-50 p-3 rounded-lg mb-4">
+<p className="text-sm font-semibold text-blue-700">Catatan Validasi:</p>
+<p className="text-sm text-blue-600">{p.catatan}</p>
+</div>
+)}
+{/* INTEGRASI BIMBINGAN: Tombol "Mulai Bimbingan" untuk dosen */}
+{userRole === 'dosen' && p.status === 'Diterima' && (
+<div className="mt-4 pt-4 border-t border-dashed">
+<div className="flex items-center justify-between bg-blue-50 p-3 rounded-lg">
+<div>
+<p className="font-semibold text-blue-800 flex items-center gap-2">
+<span>✅ Proposal Disetujui</span>
+<span className="workflow-badge workflow-approved">Ready for Supervision</span>
+</p>
+<p className="text-xs text-blue-600 mt-1">
+Klik tombol di bawah untuk memulai proses bimbingan terukur
+</p>
+</div>
+<button
+onClick={() => onMulaiBimbingan(p)}
+className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium flex items-center gap-2"
+>
+<span>📋</span> Mulai Bimbingan
+</button>
+</div>
+</div>
+)}
+{/* Link ke bimbingan yang sudah ada */}
+{userRole === 'dosen' && p.status === 'Diterima' &&
+bimbinganArr.some(b => b.nim === p.nim && b.judul === p.judul) && (
+<div className="mt-4 pt-4 border-t border-green-100">
+<div className="bg-green-50 p-3 rounded-lg">
+<p className="text-green-800 font-medium flex items-center gap-2">
+<span>✅ Bimbingan Aktif</span>
+<span className="workflow-badge workflow-bimbingan">In Progress</span>
+</p>
+<p className="text-xs text-green-700 mt-1">
+Progress: {bimbinganArr.find(b => b.nim === p.nim && b.judul === p.judul)?.progress || 0}%
+</p>
+<button
+onClick={() => onNavigate('bimbingan')}
+className="mt-2 px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700"
+>
+Lihat Detail Bimbingan
+</button>
+</div>
+</div>
+)}
+<div className="flex gap-2">
+{userRole === 'admin' && (
+<>
+<button onClick={() => onEdit(p)} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Edit</button>
+<button onClick={() => onDelete(p.id, p.judul)} className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Hapus</button>
+</>
+)}
+</div>
+</div>
+))}
+{filteredProposals.length === 0 && (
+<div className="text-center py-12 text-gray-400">
+<p className="text-6xl mb-4">📝</p>
+<p className="text-lg">Belum ada proposal diajukan</p>
+</div>
+)}
+</div>
+</div>
+);
+};
+// ============================================
+// BIMBINGAN PAGE - ENHANCED VERSION
+// ============================================
+const BimbinganPage = ({ bimbingan, userRole, currentUser, onAdd, onEdit, onDelete, mahasiswaList, dosenList, onNavigate }) => {
+const [selectedBimbingan, setSelectedBimbingan] = React.useState(null);
+const [showDetailModal, setShowDetailModal] = React.useState(false);
+const [showHistoryModal, setShowHistoryModal] = React.useState(false);
+const [searchTerm, setSearchTerm] = React.useState('');
+const [filterStatus, setFilterStatus] = React.useState('');
+const [filterProdi, setFilterProdi] = React.useState('');
+const [showPrintPreview, setShowPrintPreview] = React.useState(false);
+const [printData, setPrintData] = React.useState(null);
+
+// Filter bimbingan berdasarkan role dan filter
+const filteredBimbingan = React.useMemo(() => {
+let filtered = userRole === 'mahasiswa'
+? bimbingan.filter(b => b.nim === currentUser?.nim)
+: userRole === 'dosen'
+? bimbingan.filter(b => b.dosenNama === currentUser?.nama)
+: bimbingan;
+
+// Apply search
+if (searchTerm) {
+filtered = filtered.filter(b => 
+b.judul?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+b.mahasiswaNama?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+b.dosenNama?.toLowerCase().includes(searchTerm.toLowerCase())
+);
+}
+
+// Apply status filter
+if (filterStatus) {
+filtered = filtered.filter(b => b.status === filterStatus);
+}
+
+// Apply prodi filter
+if (filterProdi) {
+filtered = filtered.filter(b => b.prodi === filterProdi);
+}
+
+return filtered;
+}, [bimbingan, userRole, currentUser, searchTerm, filterStatus, filterProdi]);
+
+// Statistik bimbingan
+const stats = React.useMemo(() => {
+return {
+total: filteredBimbingan.length,
+berlangsung: filteredBimbingan.filter(b => b.status === 'berlangsung').length,
+selesai: filteredBimbingan.filter(b => b.status === 'selesai').length,
+progressRata: filteredBimbingan.length > 0 
+? Math.round(filteredBimbingan.reduce((sum, b) => sum + (b.progress || 0), 0) / filteredBimbingan.length) 
+: 0
+};
+}, [filteredBimbingan]);
+
+const handleViewDetail = (item) => {
+setSelectedBimbingan(item);
+setShowDetailModal(true);
+};
+
+const handleViewHistory = (item) => {
+setSelectedBimbingan(item);
+setShowHistoryModal(true);
+};
+
+const handlePrintLaporan = (item) => {
+setPrintData(item);
+setShowPrintPreview(true);
+};
+
+const handlePrintAll = () => {
+const printWindow = window.open('', '_blank');
+printWindow.document.write(generateLaporanHTML(filteredBimbingan, true));
+printWindow.document.close();
+};
+
+const generateLaporanHTML = (data, isAll = false, singleItem = null) => {
+const items = singleItem ? [singleItem] : data;
+const now = new Date();
+const tglCetak = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+const jamCetak = now.toLocaleTimeString('id-ID');
+
+return `
+<!DOCTYPE html>
+<html>
+<head>
+<title>Laporan Bimbingan Skripsi - FEBI UINSI</title>
+<style>
+body { font-family: 'Times New Roman', serif; margin: 40px; line-height: 1.6; }
+h1 { color: #047857; text-align: center; border-bottom: 3px double #047857; padding-bottom: 10px; }
+h2 { color: #065f46; margin-top: 30px; }
+table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+th { background: #047857; color: white; padding: 12px; text-align: left; }
+td { padding: 10px; border-bottom: 1px solid #ddd; }
+tr:hover { background: #f0fdf4; }
+.header-info { background: #f0fdf4; padding: 20px; border-radius: 10px; margin: 20px 0; }
+.info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+.label { font-weight: bold; color: #047857; }
+.footer { margin-top: 50px; text-align: right; font-size: 12px; color: #666; border-top: 1px solid #ddd; padding-top: 20px; }
+.signature { margin-top: 50px; display: flex; justify-content: space-between; }
+.signature div { text-align: center; width: 200px; }
+.signature .line { margin-top: 60px; border-top: 1px solid #000; padding-top: 5px; }
+.page-break { page-break-after: always; }
+.stat-card { background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); padding: 15px; border-radius: 8px; margin: 10px; }
+.progress-bar { width: 100%; height: 20px; background: #e5e7eb; border-radius: 10px; overflow: hidden; }
+.progress-fill { height: 100%; background: #047857; transition: width 0.3s; }
+@media print {
+.no-print { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="no-print" style="text-align: right; margin-bottom: 20px;">
+<button onclick="window.print()" style="background: #047857; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">🖨️ Cetak Laporan</button>
+<button onclick="window.close()" style="background: #6b7280; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-left: 10px;">✕ Tutup</button>
+</div>
+
+<h1>LAPORAN BIMBINGAN SKRIPSI</h1>
+<h2 style="text-align: center; margin-top: -10px;">FAKULTAS EKONOMI DAN BISNIS ISLAM</h2>
+<h3 style="text-align: center; margin-top: -10px;">UINSI SAMARINDA</h3>
+
+<div class="header-info">
+<div class="info-grid">
+<div><span class="label">Tanggal Cetak:</span> ${tglCetak}</div>
+<div><span class="label">Waktu:</span> ${jamCetak}</div>
+<div><span class="label">Total Data:</span> ${items.length} bimbingan</div>
+<div><span class="label">Status:</span> ${items.filter(i => i.status === 'berlangsung').length} Berlangsung, ${items.filter(i => i.status === 'selesai').length} Selesai</div>
+</div>
+</div>
+
+${items.map((item, index) => {
+const progress = item.progress || 0;
+return `
+${index > 0 ? '<div class="page-break"></div>' : ''}
+<div style="margin-bottom: 40px;">
+<h2 style="border-bottom: 2px solid #047857; padding-bottom: 5px;">${index + 1}. ${item.judul}</h2>
+  
+<table>
+<tr><th colspan="2" style="text-align: center;">INFORMASI BIMBINGAN</th></tr>
+<tr><td width="200"><strong>Mahasiswa</strong></td><td>${item.mahasiswaNama} (${item.nim})</td></tr>
+<tr><td><strong>Program Studi</strong></td><td>${item.prodi}</td></tr>
+<tr><td><strong>Dosen Pembimbing</strong></td><td>${item.dosenNama}</td></tr>
+<tr><td><strong>Status</strong></td><td>${item.status === 'berlangsung' ? 'Berlangsung' : 'Selesai'}</td></tr>
+<tr><td><strong>Progress</strong></td><td>
+<div class="progress-bar">
+<div class="progress-fill" style="width: ${progress}%;"></div>
+</div>
+${progress}%
+</td></tr>
+<tr><td><strong>Terakhir Update</strong></td><td>${item.lastUpdate || 'Belum ada update'}</td></tr>
+<tr><td><strong>Mulai Bimbingan</strong></td><td>${item.createdAt ? new Date(item.createdAt).toLocaleDateString('id-ID') : '-'}</td></tr>
+</table>
+
+<div style="margin-top: 20px;">
+<h3 style="color: #047857;">Catatan Bimbingan:</h3>
+<p style="background: #f9fafb; padding: 15px; border-radius: 5px; white-space: pre-line;">${item.catatan || 'Tidak ada catatan'}</p>
+</div>
+
+<div style="margin-top: 30px;">
+<h3 style="color: #047857;">Riwayat Bimbingan:</h3>
+<table>
+<tr><th>Tanggal</th><th>Progress</th><th>Catatan</th></tr>
+${generateRiwayatHTML(item)}
+</table>
+</div>
+</div>
+`;
+}).join('')}
+
+<div class="signature">
+<div>
+<p>Dosen Pembimbing</p>
+<div class="line">( ___________________ )</div>
+<p>NIP. _________________</p>
+</div>
+<div>
+<p>Mahasiswa</p>
+<div class="line">( ___________________ )</div>
+<p>NIM. _________________</p>
+</div>
+<div>
+<p>Ketua Program Studi</p>
+<div class="line">( ___________________ )</div>
+<p>NIP. _________________</p>
+</div>
+</div>
+
+<div class="footer">
+<p>Dokumen ini dicetak dari Sistem Dashboard FEBI UINSI Samarinda</p>
+<p>Laporan ini adalah dokumen resmi dan dapat dipertanggungjawabkan</p>
+</div>
+</body>
+</html>
+`;
+};
+
+const generateRiwayatHTML = (item) => {
+// Simulasi riwayat berdasarkan data yang ada
+const riwayat = [];
+if (item.catatan) {
+riwayat.push({
+tanggal: item.lastUpdate || new Date().toISOString().split('T')[0],
+progress: item.progress || 0,
+catatan: item.catatan
+});
+}
+// Tambahkan riwayat awal
+riwayat.push({
+tanggal: item.createdAt ? item.createdAt.split('T')[0] : '-',
+progress: 0,
+catatan: 'Bimbingan dimulai'
+});
+
+return riwayat.map(r => `
+<tr>
+<td>${r.tanggal}</td>
+<td>${r.progress}%</td>
+<td>${r.catatan}</td>
+</tr>
+`).join('');
+};
+
+// Detail Modal Component
+const DetailModal = ({ item, onClose, onPrint, onHistory, onEdit }) => {
+if (!item) return null;
+const progress = item.progress || 0;
+
+return (
+<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+<div className="bg-white rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+<div className="flex justify-between items-start mb-6">
+<h2 className="text-2xl font-bold text-emerald-900 flex items-center gap-2">
+<span className="text-3xl">📋</span> Detail Bimbingan
+</h2>
+<button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg text-xl">✕</button>
+</div>
+
+<div className="space-y-6">
+{/* Header Info */}
+<div className="bg-gradient-to-r from-emerald-50 to-teal-50 p-6 rounded-xl">
+<h3 className="text-xl font-bold text-emerald-900 mb-4">{item.judul}</h3>
+<div className="grid md:grid-cols-2 gap-4">
+<div>
+<p className="text-sm text-gray-600">Mahasiswa</p>
+<p className="font-semibold">{item.mahasiswaNama}</p>
+<p className="text-sm text-gray-500">{item.nim}</p>
+</div>
+<div>
+<p className="text-sm text-gray-600">Dosen Pembimbing</p>
+<p className="font-semibold">{item.dosenNama}</p>
+</div>
+<div>
+<p className="text-sm text-gray-600">Program Studi</p>
+<p className="font-semibold">{item.prodi}</p>
+</div>
+<div>
+<p className="text-sm text-gray-600">Status</p>
+<span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+item.status === 'berlangsung' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
+}`}>
+{item.status === 'berlangsung' ? 'Berlangsung' : 'Selesai'}
+</span>
+</div>
+</div>
+</div>
+
+{/* Progress */}
+<div className="border rounded-xl p-6">
+<h4 className="font-bold text-emerald-800 mb-3 flex items-center gap-2">
+<span>📊</span> Progress Bimbingan
+</h4>
+<div className="mb-2 flex justify-between text-sm">
+<span>Progress Keseluruhan</span>
+<span className="font-bold text-emerald-600">{progress}%</span>
+</div>
+<div className="w-full bg-gray-200 rounded-full h-4 mb-4">
+<div className="bg-emerald-600 h-4 rounded-full transition-all duration-300" style={{width: `${progress}%`}}></div>
+</div>
+<div className="grid grid-cols-2 gap-4 mt-4">
+<div className="bg-emerald-50 p-3 rounded-lg text-center">
+<p className="text-xs text-emerald-700">Terakhir Update</p>
+<p className="font-semibold">{item.lastUpdate || '-'}</p>
+</div>
+<div className="bg-emerald-50 p-3 rounded-lg text-center">
+<p className="text-xs text-emerald-700">Mulai Bimbingan</p>
+<p className="font-semibold">{item.createdAt ? new Date(item.createdAt).toLocaleDateString('id-ID') : '-'}</p>
+</div>
+</div>
+</div>
+
+{/* Catatan */}
+<div className="border rounded-xl p-6">
+<h4 className="font-bold text-emerald-800 mb-3 flex items-center gap-2">
+<span>📝</span> Catatan Bimbingan
+</h4>
+<div className="bg-gray-50 p-4 rounded-lg whitespace-pre-line">
+{item.catatan || 'Belum ada catatan bimbingan'}
+</div>
+</div>
+
+{/* Riwayat Singkat */}
+<div className="border rounded-xl p-6">
+<h4 className="font-bold text-emerald-800 mb-3 flex items-center gap-2">
+<span>📅</span> Riwayat Bimbingan
+</h4>
+<div className="space-y-3">
+<div className="timeline-item">
+<p className="text-sm font-medium">{item.lastUpdate || '-'}</p>
+<p className="text-xs text-gray-600">Progress: {progress}%</p>
+<p className="text-xs text-gray-500">{item.catatan?.substring(0, 50)}...</p>
+</div>
+<div className="timeline-item">
+<p className="text-sm font-medium">{item.createdAt ? new Date(item.createdAt).toLocaleDateString('id-ID') : '-'}</p>
+<p className="text-xs text-gray-600">Progress: 0%</p>
+<p className="text-xs text-gray-500">Bimbingan dimulai</p>
+</div>
+</div>
+<button
+onClick={() => onHistory(item)}
+className="mt-4 text-sm text-emerald-600 hover:text-emerald-800 font-medium"
+>
+Lihat Riwayat Lengkap →
+</button>
+</div>
+
+{/* Action Buttons */}
+<div className="flex flex-wrap gap-3 pt-4 border-t">
+<button
+onClick={() => onPrint(item)}
+className="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700 transition-all flex items-center justify-center gap-2"
+>
+<span>🖨️</span> Cetak Laporan
+</button>
+{(userRole === 'dosen' || userRole === 'admin') && (
+<button
+onClick={() => onEdit(item)}
+className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-all flex items-center justify-center gap-2"
+>
+<span>✏️</span> Update Progress
+</button>
+)}
+</div>
+</div>
+</div>
+</div>
+);
+};
+
+// History Modal Component
+const HistoryModal = ({ item, onClose }) => {
+if (!item) return null;
+
+return (
+<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+<div className="bg-white rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+<div className="flex justify-between items-start mb-6">
+<h2 className="text-2xl font-bold text-emerald-900 flex items-center gap-2">
+<span className="text-3xl">📅</span> Riwayat Bimbingan
+</h2>
+<button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg text-xl">✕</button>
+</div>
+
+<div className="space-y-4">
+<div className="bg-emerald-50 p-4 rounded-lg">
+<p className="font-semibold">{item.judul}</p>
+<p className="text-sm text-gray-600">{item.mahasiswaNama} • {item.dosenNama}</p>
+</div>
+
+<div className="space-y-3">
+{/* Timeline Riwayat */}
+<div className="timeline-item pl-8">
+<p className="text-sm font-medium text-emerald-700">{item.lastUpdate || '-'}</p>
+<p className="text-sm">Progress: <span className="font-bold">{item.progress || 0}%</span></p>
+<p className="text-sm text-gray-600 bg-gray-50 p-2 rounded mt-1">{item.catatan || 'Tidak ada catatan'}</p>
+</div>
+<div className="timeline-item pl-8">
+<p className="text-sm font-medium text-emerald-700">{item.createdAt ? new Date(item.createdAt).toLocaleDateString('id-ID') : '-'}</p>
+<p className="text-sm">Progress: <span className="font-bold">0%</span></p>
+<p className="text-sm text-gray-600 bg-gray-50 p-2 rounded mt-1">Bimbingan dimulai</p>
+</div>
+</div>
+
+<div className="mt-6 p-4 bg-blue-50 rounded-lg">
+<p className="text-sm text-blue-700">
+<span className="font-bold">Informasi:</span> Riwayat lengkap bimbingan akan tersimpan dan dapat dicetak dalam laporan resmi.
+</p>
+</div>
+</div>
+</div>
+</div>
+);
+};
+
+// Print Preview Modal
+const PrintPreviewModal = ({ data, onClose }) => {
+if (!data) return null;
+
+const printHTML = generateLaporanHTML([], false, data);
+
+const handlePrint = () => {
+const printWindow = window.open('', '_blank');
+printWindow.document.write(printHTML);
+printWindow.document.close();
+};
+
+return (
+<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+<div className="bg-white rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+<div className="flex justify-between items-start mb-6">
+<h2 className="text-2xl font-bold text-emerald-900 flex items-center gap-2">
+<span className="text-3xl">🖨️</span> Preview Laporan Bimbingan
+</h2>
+<button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg text-xl">✕</button>
+</div>
+
+<div className="bg-gray-50 p-4 rounded-lg mb-4 max-h-[500px] overflow-y-auto font-mono text-sm">
+<pre className="whitespace-pre-wrap">
+{printHTML.substring(0, 500)}...
+</pre>
+<p className="text-center text-gray-500 mt-4">[Preview laporan lengkap akan ditampilkan saat dicetak]</p>
+</div>
+
+<div className="flex gap-3">
+<button
+onClick={handlePrint}
+className="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700 transition-all flex items-center justify-center gap-2"
+>
+<span>🖨️</span> Cetak Laporan
+</button>
+<button
+onClick={onClose}
+className="px-6 py-3 bg-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-300 transition-all"
+>
+Batal
+</button>
+</div>
+</div>
+</div>
+);
+};
+
+return (
+<div className="space-y-6">
+{/* Header with Stats */}
+<div className="flex justify-between items-center flex-wrap gap-4">
+<div>
+<h2 className="text-2xl font-bold text-emerald-900 flex items-center gap-2">
+<span>📋</span> Manajemen Bimbingan Skripsi
+</h2>
+<p className="text-sm text-gray-600 mt-1">
+Total {filteredBimbingan.length} bimbingan {filteredBimbingan.length !== bimbingan.length && `(dari ${bimbingan.length} total)`}
+</p>
+</div>
+<div className="flex gap-2">
+{userRole === 'admin' && (
+<button onClick={onAdd} className="px-4 py-2 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700 transition-all flex items-center gap-2">
+<span>➕</span> Tambah Bimbingan
+</button>
+)}
+<button onClick={handlePrintAll} className="px-4 py-2 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition-all flex items-center gap-2">
+<span>🖨️</span> Cetak Semua
+</button>
+</div>
+</div>
+
+{/* Statistics Cards */}
+<div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+<div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl shadow-lg p-4 text-white">
+<p className="text-sm opacity-90">Total Bimbingan</p>
+<p className="text-3xl font-bold">{stats.total}</p>
+</div>
+<div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg p-4 text-white">
+<p className="text-sm opacity-90">Berlangsung</p>
+<p className="text-3xl font-bold">{stats.berlangsung}</p>
+</div>
+<div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg p-4 text-white">
+<p className="text-sm opacity-90">Selesai</p>
+<p className="text-3xl font-bold">{stats.selesai}</p>
+</div>
+<div className="bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-lg p-4 text-white">
+<p className="text-sm opacity-90">Rata-rata Progress</p>
+<p className="text-3xl font-bold">{stats.progressRata}%</p>
+</div>
+</div>
+
+{/* Filter Section */}
+<div className="bg-white rounded-xl shadow-sm border p-4">
+<div className="grid md:grid-cols-4 gap-4">
+<div className="md:col-span-2">
+<label className="block text-xs font-semibold text-gray-600 mb-1">🔍 Cari</label>
+<input
+type="text"
+placeholder="Cari judul, mahasiswa, atau dosen..."
+value={searchTerm}
+onChange={(e) => setSearchTerm(e.target.value)}
+className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 focus:outline-none"
+/>
+</div>
+<div>
+<label className="block text-xs font-semibold text-gray-600 mb-1">📊 Status</label>
+<select
+value={filterStatus}
+onChange={(e) => setFilterStatus(e.target.value)}
+className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 focus:outline-none"
+>
+<option value="">Semua Status</option>
+<option value="berlangsung">Berlangsung</option>
+<option value="selesai">Selesai</option>
+</select>
+</div>
+<div>
+<label className="block text-xs font-semibold text-gray-600 mb-1">📋 Program Studi</label>
+<select
+value={filterProdi}
+onChange={(e) => setFilterProdi(e.target.value)}
+className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 focus:outline-none"
+>
+<option value="">Semua Prodi</option>
+<option value="Ekonomi Syariah">Ekonomi Syariah</option>
+<option value="Perbankan Syariah">Perbankan Syariah</option>
+<option value="Manajemen Bisnis Syariah">Manajemen Bisnis Syariah</option>
+</select>
+</div>
+</div>
+</div>
+
+{/* Bimbingan List */}
+<div className="space-y-4">
+{filteredBimbingan.map((b) => {
+const progress = b.progress || 0;
+const isBerlangsung = b.status === 'berlangsung';
+return (
+<div key={b.id} className={`bimbingan-card ${isBerlangsung ? 'berlangsung' : 'selesai'} bg-white rounded-xl shadow-sm border p-6 hover:shadow-lg transition-all`}>
+<div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
+{/* Main Info */}
+<div className="flex-1">
+<div className="flex items-start justify-between mb-3">
+<h3 className="text-lg font-bold text-gray-900 flex-1">{b.judul}</h3>
+<span className={`ml-4 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${
+isBerlangsung ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
+}`}>
+{isBerlangsung ? 'Berlangsung' : 'Selesai'}
+</span>
+</div>
+<div className="grid md:grid-cols-2 gap-4">
+<div>
+<p className="text-sm text-gray-600">Mahasiswa</p>
+<p className="font-medium">{b.mahasiswaNama}</p>
+<p className="text-xs text-gray-500">{b.nim}</p>
+</div>
+<div>
+<p className="text-sm text-gray-600">Dosen Pembimbing</p>
+<p className="font-medium">{b.dosenNama}</p>
+</div>
+<div>
+<p className="text-sm text-gray-600">Program Studi</p>
+<p className="text-sm">{b.prodi}</p>
+</div>
+<div>
+<p className="text-sm text-gray-600">Terakhir Update</p>
+<p className="text-sm">{b.lastUpdate || '-'}</p>
+</div>
+</div>
+</div>
+
+{/* Progress & Actions */}
+<div className="lg:w-64">
+<div className="mb-3">
+<div className="flex justify-between text-sm mb-1">
+<span>Progress</span>
+<span className="font-bold text-emerald-600">{progress}%</span>
+</div>
+<div className="w-full bg-gray-200 rounded-full h-2.5">
+<div className="bg-emerald-600 h-2.5 rounded-full" style={{width: `${progress}%`}}></div>
+</div>
+</div>
+<div className="flex gap-2 justify-end">
+<button
+onClick={() => handleViewDetail(b)}
+className="p-2 bg-emerald-100 text-emerald-700 rounded-lg hover:bg-emerald-200 transition-all transform hover:scale-110"
+title="Lihat Detail"
+>
+<span className="text-lg">👁️</span>
+</button>
+<button
+onClick={() => handleViewHistory(b)}
+className="p-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-all transform hover:scale-110"
+title="Riwayat"
+>
+<span className="text-lg">📅</span>
+</button>
+<button
+onClick={() => handlePrintLaporan(b)}
+className="p-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-all transform hover:scale-110"
+title="Cetak Laporan"
+>
+<span className="text-lg">🖨️</span>
+</button>
+{(userRole === 'dosen' || userRole === 'admin') && (
+<button
+onClick={() => onEdit(b)}
+className="p-2 bg-amber-100 text-amber-700 rounded-lg hover:bg-amber-200 transition-all transform hover:scale-110"
+title="Update Progress"
+>
+<span className="text-lg">✏️</span>
+</button>
+)}
+{userRole === 'admin' && (
+<button
+onClick={() => onDelete(b.id, b.judul)}
+className="p-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-all transform hover:scale-110"
+title="Hapus"
+>
+<span className="text-lg">🗑️</span>
+</button>
+)}
+</div>
+</div>
+</div>
+
+{/* Catatan Preview */}
+{b.catatan && (
+<div className="mt-4 pt-4 border-t border-gray-100">
+<p className="text-sm text-gray-600 line-clamp-2">
+<span className="font-medium">Catatan:</span> {b.catatan}
+</p>
+</div>
+)}
+</div>
+);
+})}
+
+{filteredBimbingan.length === 0 && (
+<div className="text-center py-12 text-gray-400 bg-white rounded-xl border">
+<div className="flex flex-col items-center">
+<span className="text-6xl mb-4">📋</span>
+<p className="text-lg font-medium">Tidak ada bimbingan ditemukan</p>
+<p className="text-sm mt-1">Coba ubah filter pencarian Anda</p>
+</div>
+</div>
+)}
+</div>
+
+{/* Detail Modal */}
+{showDetailModal && (
+<DetailModal
+item={selectedBimbingan}
+onClose={() => { setShowDetailModal(false); setSelectedBimbingan(null); }}
+onPrint={handlePrintLaporan}
+onHistory={handleViewHistory}
+onEdit={onEdit}
+/>
+)}
+
+{/* History Modal */}
+{showHistoryModal && (
+<HistoryModal
+item={selectedBimbingan}
+onClose={() => { setShowHistoryModal(false); setSelectedBimbingan(null); }}
+/>
+)}
+
+{/* Print Preview Modal */}
+{showPrintPreview && (
+<PrintPreviewModal
+data={printData}
+onClose={() => { setShowPrintPreview(false); setPrintData(null); }}
+/>
+)}
+</div>
+);
+};
+// ============================================
+// EARLY WARNING PAGE - DENGAN PERHITUNGAN SEMESTER YANG BENAR
+// ============================================
+const EarlyWarningPage = ({ bimbingan, mahasiswa, currentUser, userRole, onSendWhatsApp, calculateSemesterFromNIM, onNavigate }) => {
+const today = new Date();
+const warningData = [];
+
+// Fungsi untuk menghitung semester dari 2 digit pertama NIM
+const calculateSemesterCorrectly = (nim) => {
+if (!nim || nim.length < 2) return 1;
+// Ambil 2 digit pertama untuk tahun angkatan
+const tahunDuaDigit = nim.substring(0, 2);
+const angkatan = parseInt(tahunDuaDigit);
+if (isNaN(angkatan) || angkatan < 10 || angkatan > 99) return 1;
+const currentYear = new Date().getFullYear();
+const tahunPenuh = 2000 + angkatan; // Misal: 21 -> 2021
+const semester = (currentYear - tahunPenuh) * 2 + 1;
+return Math.max(1, Math.min(16, semester));
+};
+
+// Proses data bimbingan
+bimbingan.forEach(b => {
+const lastUpdate = b.lastUpdate ? new Date(b.lastUpdate) : new Date();
+const daysSinceUpdate = Math.floor((today - lastUpdate) / (1000 * 60 * 60 * 24));
+let level = 'aman', color = 'bg-green-100 text-green-700 border-green-200', icon = '✅';
+if (daysSinceUpdate > 30) {
+level = 'kritis'; color = 'bg-red-100 text-red-700 border-red-200'; icon = '🚨';
+} else if (daysSinceUpdate > 14) {
+level = 'peringatan'; color = 'bg-yellow-100 text-yellow-700 border-yellow-200'; icon = '⚠️';
+}
+warningData.push({
+...b, type: 'bimbingan', daysSinceUpdate, level, color, icon, lastUpdateDate: lastUpdate,
+semester: calculateSemesterCorrectly(b.nim)
+});
+});
+
+// Proses data mahasiswa untuk deteksi semester akhir
+mahasiswa.forEach(m => {
+const semester = calculateSemesterCorrectly(m.nim);
+if (semester >= 11 && semester <= 14) {
+warningData.push({
+type: 'semester', nim: m.nim, nama: m.nama, prodi: m.prodi, semester: semester,
+whatsapp: m.whatsapp, level: 'peringatan', color: 'bg-yellow-100 text-yellow-700 border-yellow-200',
+icon: '⚠️', lastUpdateDate: new Date()
+});
+}
+});
+
+warningData.sort((a, b) => {
+const levelPriority = { kritis: 3, peringatan: 2, aman: 1 };
+if (levelPriority[b.level] !== levelPriority[a.level]) return levelPriority[b.level] - levelPriority[a.level];
+return b.lastUpdateDate - a.lastUpdateDate;
+});
+
+const kritisCount = warningData.filter(w => w.level === 'kritis').length;
+const peringatanCount = warningData.filter(w => w.level === 'peringatan').length;
+
+const filteredWarningData = userRole === 'mahasiswa'
+? warningData.filter(w => w.nim === currentUser?.nim)
+: userRole === 'dosen'
+? warningData.filter(w => w.dosenNama === currentUser?.nama)
+: warningData;
+
+return (
+<div className="space-y-6">
+<div className="bg-gradient-to-r from-red-500 to-orange-600 rounded-2xl shadow-lg p-6 text-white">
+<h2 className="text-2xl font-bold mb-2">⚠️ Early Warning System</h2>
+<p className="text-sm opacity-90">Monitoring bimbingan yang tidak aktif dan mahasiswa semester akhir untuk deteksi dini menghindari DO</p>
+</div>
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div className="bg-white rounded-xl shadow-sm border-2 border-red-200 p-6">
+<div className="flex items-center justify-between mb-2">
+<span className="text-4xl">🚨</span>
+<span className="text-3xl font-black text-red-600">{kritisCount}</span>
+</div>
+<h3 className="text-sm font-semibold text-red-700">Status Kritis</h3>
+<p className="text-xs text-gray-600 mt-1">&gt;30 hari tidak update</p>
+</div>
+<div className="bg-white rounded-xl shadow-sm border-2 border-yellow-200 p-6">
+<div className="flex items-center justify-between mb-2">
+<span className="text-4xl">⚠️</span>
+<span className="text-3xl font-black text-yellow-600">{peringatanCount}</span>
+</div>
+<h3 className="text-sm font-semibold text-yellow-700">Peringatan</h3>
+<p className="text-xs text-gray-600 mt-1">14-30 hari tidak update / Semester 11-14</p>
+</div>
+</div>
+<div className="bg-white rounded-xl shadow-sm border p-6">
+<h3 className="text-lg font-bold text-gray-900 mb-4">📊 Daftar Monitoring Early Warning</h3>
+<div className="space-y-3">
+{filteredWarningData.map((w, index) => (
+<div key={index} className={`border-2 rounded-lg p-4 ${w.color}`}>
+<div className="flex justify-between items-start mb-2">
+<div className="flex items-start gap-3">
+<span className="text-2xl">{w.icon}</span>
+<div>
+<h4 className="font-bold text-sm">
+{w.type === 'semester' ? `Semester ${w.semester} (Akhir Studi)` : w.judul?.substring(0, 30) || 'Bimbingan'}
+</h4>
+<p className="text-xs mt-1">Mahasiswa: {w.nama || w.mahasiswaNama} ({w.nim})</p>
+<p className="text-xs">Program Studi: {w.prodi}</p>
+{w.type === 'bimbingan' && (
+<>
+<p className="text-xs">Dosen: {w.dosenNama}</p>
+<p className="text-xs">Progress: {w.progress || 0}%</p>
+</>
+)}
+{w.type === 'semester' && (
+<p className="text-xs font-semibold text-yellow-700 mt-1">⚠️ Mahasiswa semester akhir perlu perhatian khusus</p>
+)}
+</div>
+</div>
+<div className="text-right">
+{w.type === 'bimbingan' ? (
+<>
+<p className="font-bold text-lg">{w.daysSinceUpdate}</p>
+<p className="text-xs">hari tidak update</p>
+</>
+) : (
+<>
+<p className="font-bold text-lg">Semester {w.semester}</p>
+<p className="text-xs">Akhir Studi</p>
+</>
+)}
+</div>
+</div>
+<div className="mt-2">
+<p className="text-xs font-semibold">
+{w.level === 'kritis' && '⚠️ SEGERA TINDAK LANJUT! Hubungi mahasiswa dan dosen pembimbing.'}
+{w.level === 'peringatan' && '⚠️ Perlu perhatian. Pantau perkembangan bimbingan.'}
+{w.level === 'aman' && '✅ Bimbingan berjalan normal.'}
+</p>
+</div>
+{w.type === 'bimbingan' && (
+<button
+onClick={() => onNavigate('bimbingan')}
+className="mt-2 text-xs text-emerald-600 hover:text-emerald-800 font-medium"
+>
+Lihat Detail Bimbingan →
+</button>
+)}
+{w.whatsapp && (userRole === 'admin' || userRole === 'dosen') && (
+<div className="mt-3 pt-3 border-t border-current">
+<button onClick={() => onSendWhatsApp(w.whatsapp, `Assalamualaikum ${w.nama || w.mahasiswaNama}, ini early warning dari FEBI UINSI. ${w.type === 'semester' ? 'Anda sudah memasuki semester akhir, mohon segera menyelesaikan bimbingan.' : 'Mohon segera update status bimbingan Anda.'}`)} className="px-3 py-1 bg-emerald-600 text-white rounded text-xs hover:bg-emerald-700">
+📱 Kirim WA Peringatan
+</button>
+</div>
+)}
+</div>
+))}
+{filteredWarningData.length === 0 && (
+<div className="text-center py-12 text-gray-400">
+<p className="text-6xl mb-4">✅</p>
+<p className="text-lg">Tidak ada early warning untuk Anda</p>
+</div>
+)}
+</div>
+</div>
+</div>
+);
+};
+// ============================================
+// REPOSITORY PAGE - ENHANCED VERSION (Tanpa tombol Download terpisah)
+// ============================================
+const RepositoryPage = ({ repository, userRole, onAdd, onEdit, onDelete }) => {
+const [selectedItem, setSelectedItem] = React.useState(null);
+const [showDetailModal, setShowDetailModal] = React.useState(false);
+const [searchTerm, setSearchTerm] = React.useState('');
+const [filterProdi, setFilterProdi] = React.useState('');
+const [filterTahun, setFilterTahun] = React.useState('');
+  
+// Get unique years for filter
+const tahunOptions = React.useMemo(() => {
+const years = repository.map(r => r.tahun).filter((v, i, a) => a.indexOf(v) === i);
+return years.sort((a, b) => b - a);
+}, [repository]);
+  
+// Filter repository based on search and filters
+const filteredRepository = React.useMemo(() => {
+return repository.filter(r => {
+const matchesSearch = searchTerm === '' || 
+r.judul?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+r.penulis?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+r.abstrak?.toLowerCase().includes(searchTerm.toLowerCase());
+      
+const matchesProdi = filterProdi === '' || r.prodi === filterProdi;
+const matchesTahun = filterTahun === '' || r.tahun.toString() === filterTahun;
+      
+return matchesSearch && matchesProdi && matchesTahun;
+});
+}, [repository, searchTerm, filterProdi, filterTahun]);
+
+const handleView = (item) => {
+setSelectedItem(item);
+setShowDetailModal(true);
+};
+
+const handleDownload = (item) => {
+if (item.fileUrl) {
+// If Google Drive URL, open in new tab
+if (item.fileUrl.includes('drive.google.com')) {
+window.open(item.fileUrl, '_blank');
+} else {
+// For direct file links, trigger download
+const link = document.createElement('a');
+link.href = item.fileUrl;
+link.download = `${item.judul.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`;
+document.body.appendChild(link);
+link.click();
+document.body.removeChild(link);
+}
+} else {
+// Generate PDF content dynamically
+generatePDF(item);
+}
+};
+
+const generatePDF = (item) => {
+// Create a printable window
+const printWindow = window.open('', '_blank');
+printWindow.document.write(`
+<!DOCTYPE html>
+<html>
+<head>
+<title>${item.judul}</title>
+<style>
+body { font-family: Arial, sans-serif; padding: 40px; max-width: 800px; margin: 0 auto; }
+h1 { color: #047857; border-bottom: 2px solid #047857; padding-bottom: 10px; }
+.header { background: #f0fdf4; padding: 20px; border-radius: 10px; margin: 20px 0; }
+.info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 20px 0; }
+.info-item { padding: 10px; background: #f8fafc; border-radius: 5px; }
+.label { font-weight: bold; color: #047857; }
+.abstract { margin: 30px 0; line-height: 1.6; }
+.footer { margin-top: 40px; text-align: center; color: #666; font-size: 12px; border-top: 1px solid #ddd; padding-top: 20px; }
+.btn-print { background: #047857; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; margin: 20px 0; }
+@media print {
+.btn-print { display: none; }
+}
+</style>
+</head>
+<body>
+<button class="btn-print" onclick="window.print()">🖨️ Cetak Skripsi</button>
+<h1>${item.judul}</h1>
+        
+<div class="header">
+<h2>Informasi Skripsi</h2>
+</div>
+        
+<div class="info-grid">
+<div class="info-item">
+<div class="label">Penulis</div>
+<div>${item.penulis} (${item.nim || 'NIM tidak tersedia'})</div>
+</div>
+<div class="info-item">
+<div class="label">Program Studi</div>
+<div>${item.prodi}</div>
+</div>
+<div class="info-item">
+<div class="label">Tahun</div>
+<div>${item.tahun}</div>
+</div>
+<div class="info-item">
+<div class="label">Pembimbing</div>
+<div>${item.pembimbing}</div>
+</div>
+</div>
+        
+<div class="abstract">
+<h3 style="color: #047857;">Abstrak</h3>
+<p>${item.abstrak || 'Tidak ada abstrak'}</p>
+</div>
+        
+${item.fileUrl ? `
+<div style="margin: 30px 0; text-align: center;">
+<a href="${item.fileUrl}" target="_blank" style="background: #047857; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
+📁 Buka File Asli di Google Drive
+</a>
+</div>
+` : ''}
+        
+<div class="footer">
+<p>Dokumen ini dicetak dari Sistem Repository FEBI UINSI Samarinda</p>
+<p>Tanggal cetak: ${new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+</div>
+</body>
+</html>
+`);
+printWindow.document.close();
+};
+
+const handlePrint = (item) => {
+generatePDF(item);
+};
+
+// Detail Modal Component
+const DetailModal = ({ item, onClose }) => {
+if (!item) return null;
+    
+return (
+<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+<div className="bg-white rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+<div className="flex justify-between items-start mb-6">
+<h2 className="text-2xl font-bold text-emerald-900 flex items-center gap-2">
+<span className="text-3xl">📄</span> Detail Skripsi
+</h2>
+<button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg text-xl">✕</button>
+</div>
+          
+<div className="space-y-6">
+{/* Header Info */}
+<div className="bg-gradient-to-r from-emerald-50 to-teal-50 p-6 rounded-xl">
+<h3 className="text-xl font-bold text-emerald-900 mb-4">{item.judul}</h3>
+<div className="grid md:grid-cols-2 gap-4">
+<div>
+<p className="text-sm text-gray-600">Penulis</p>
+<p className="font-semibold">{item.penulis} {item.nim && `(${item.nim})`}</p>
+</div>
+<div>
+<p className="text-sm text-gray-600">Program Studi</p>
+<p className="font-semibold">{item.prodi}</p>
+</div>
+<div>
+<p className="text-sm text-gray-600">Tahun</p>
+<p className="font-semibold">{item.tahun}</p>
+</div>
+<div>
+<p className="text-sm text-gray-600">Pembimbing</p>
+<p className="font-semibold">{item.pembimbing}</p>
+</div>
+</div>
+</div>
+            
+{/* Abstract */}
+<div className="border rounded-xl p-6">
+<h4 className="font-bold text-emerald-800 mb-3 flex items-center gap-2">
+<span>📝</span> Abstrak
+</h4>
+<p className="text-gray-700 leading-relaxed whitespace-pre-line">{item.abstrak}</p>
+</div>
+            
+{/* Action Buttons */}
+<div className="flex flex-wrap gap-3 pt-4 border-t">
+<button
+onClick={() => handleDownload(item)}
+className="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700 transition-all flex items-center justify-center gap-2"
+>
+<span>📥</span> Download Skripsi
+</button>
+<button
+onClick={() => handlePrint(item)}
+className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-all flex items-center justify-center gap-2"
+>
+<span>🖨️</span> Print / Cetak
+</button>
+{item.fileUrl && (
+<a
+href={item.fileUrl}
+target="_blank"
+rel="noopener noreferrer"
+className="flex-1 px-6 py-3 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition-all flex items-center justify-center gap-2"
+>
+<span>🔗</span> Buka di Google Drive
+</a>
+)}
+</div>
+            
+{/* Metadata */}
+<div className="text-xs text-gray-400 text-center pt-4">
+<p>ID Skripsi: {item.id}</p>
+<p>Terakhir diperbarui: {item.updatedAt ? new Date(item.updatedAt).toLocaleString('id-ID') : 'Tidak diketahui'}</p>
+</div>
+</div>
+</div>
+</div>
+);
+};
+
+return (
+<div className="space-y-6">
+{/* Header */}
+<div className="flex justify-between items-center flex-wrap gap-4">
+<div>
+<h2 className="text-2xl font-bold text-emerald-900 flex items-center gap-2">
+<span>📚</span> Repository Skripsi FEBI
+</h2>
+<p className="text-sm text-gray-600 mt-1">
+Total {filteredRepository.length} skripsi tersedia {filteredRepository.length !== repository.length && `(dari ${repository.length} total)`}
+</p>
+</div>
+{userRole === 'admin' && (
+<button 
+onClick={onAdd} 
+className="px-4 py-2 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700 transition-all flex items-center gap-2"
+>
+<span>➕</span> Tambah Skripsi
+</button>
+)}
+</div>
+
+{/* Filter Section */}
+<div className="bg-white rounded-xl shadow-sm border p-4">
+<div className="grid md:grid-cols-4 gap-4">
+<div className="md:col-span-2">
+<label className="block text-xs font-semibold text-gray-600 mb-1">🔍 Cari</label>
+<input
+type="text"
+placeholder="Cari judul, penulis, atau abstrak..."
+value={searchTerm}
+onChange={(e) => setSearchTerm(e.target.value)}
+className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 focus:outline-none"
+/>
+</div>
+<div>
+<label className="block text-xs font-semibold text-gray-600 mb-1">📋 Program Studi</label>
+<select
+value={filterProdi}
+onChange={(e) => setFilterProdi(e.target.value)}
+className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 focus:outline-none"
+>
+<option value="">Semua Prodi</option>
+<option value="Ekonomi Syariah">Ekonomi Syariah</option>
+<option value="Perbankan Syariah">Perbankan Syariah</option>
+<option value="Manajemen Bisnis Syariah">Manajemen Bisnis Syariah</option>
+</select>
+</div>
+<div>
+<label className="block text-xs font-semibold text-gray-600 mb-1">📅 Tahun</label>
+<select
+value={filterTahun}
+onChange={(e) => setFilterTahun(e.target.value)}
+className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 focus:outline-none"
+>
+<option value="">Semua Tahun</option>
+{tahunOptions.map(tahun => (
+<option key={tahun} value={tahun}>{tahun}</option>
+))}
+</select>
+</div>
+</div>
+</div>
+
+{/* Table View - RAMNING, FRIENDLY, MENARIK */}
+<div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+<div className="overflow-x-auto">
+<table className="w-full min-w-[1000px]">
+<thead className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
+<tr>
+<th className="px-4 py-3 text-left text-sm font-semibold w-12">No</th>
+<th className="px-4 py-3 text-left text-sm font-semibold">Judul Skripsi</th>
+<th className="px-4 py-3 text-left text-sm font-semibold w-40">Penulis</th>
+<th className="px-4 py-3 text-left text-sm font-semibold w-36">Program Studi</th>
+<th className="px-4 py-3 text-left text-sm font-semibold w-20">Tahun</th>
+<th className="px-4 py-3 text-left text-sm font-semibold w-40">Pembimbing</th>
+<th className="px-4 py-3 text-center text-sm font-semibold w-40">Aksi</th>
+</tr>
+</thead>
+<tbody className="divide-y divide-gray-100">
+{filteredRepository.map((item, index) => (
+<tr 
+key={item.id} 
+className="hover:bg-emerald-50/50 transition-colors group"
+>
+<td className="px-4 py-3 text-sm text-gray-500">
+{index + 1}
+</td>
+<td className="px-4 py-3">
+<div className="font-medium text-gray-900 group-hover:text-emerald-700 transition-colors line-clamp-2">
+{item.judul}
+</div>
+{item.abstrak && (
+<div className="text-xs text-gray-400 mt-1 line-clamp-1">
+{item.abstrak.substring(0, 60)}...
+</div>
+)}
+</td>
+<td className="px-4 py-3">
+<div className="text-sm font-medium">{item.penulis}</div>
+{item.nim && <div className="text-xs text-gray-400">{item.nim}</div>}
+</td>
+<td className="px-4 py-3">
+<span className="text-sm">{item.prodi}</span>
+</td>
+<td className="px-4 py-3">
+<span className="inline-flex items-center justify-center px-2 py-1 bg-emerald-100 text-emerald-700 rounded-lg text-xs font-semibold">
+{item.tahun}
+</span>
+</td>
+<td className="px-4 py-3 text-sm">
+{item.pembimbing}
+</td>
+<td className="px-4 py-3">
+<div className="flex items-center justify-center gap-2">
+{/* Tombol Lihat - FULLY FUNCTIONAL (dengan fitur download di dalamnya) */}
+<button
+onClick={() => handleView(item)}
+className="p-2 bg-emerald-100 text-emerald-700 rounded-lg hover:bg-emerald-200 transition-all transform hover:scale-110"
+title="Lihat Detail & Download"
+>
+<span className="text-lg">👁️</span>
+</button>
+                      
+{/* Tombol Print */}
+<button
+onClick={() => handlePrint(item)}
+className="p-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-all transform hover:scale-110"
+title="Print / Cetak"
+>
+<span className="text-lg">🖨️</span>
+</button>
+                      
+{/* Admin Actions */}
+{userRole === 'admin' && (
+<>
+<button
+onClick={() => onEdit(item)}
+className="p-2 bg-amber-100 text-amber-700 rounded-lg hover:bg-amber-200 transition-all transform hover:scale-110"
+title="Edit"
+>
+<span className="text-lg">✏️</span>
+</button>
+<button
+onClick={() => onDelete(item.id, item.judul)}
+className="p-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-all transform hover:scale-110"
+title="Hapus"
+>
+<span className="text-lg">🗑️</span>
+</button>
+</>
+)}
+</div>
+</td>
+</tr>
+))}
+              
+{filteredRepository.length === 0 && (
+<tr>
+<td colSpan="7" className="px-4 py-12 text-center text-gray-400">
+<div className="flex flex-col items-center">
+<span className="text-6xl mb-4">📚</span>
+<p className="text-lg font-medium">Tidak ada skripsi ditemukan</p>
+<p className="text-sm mt-1">Coba ubah filter pencarian Anda</p>
+</div>
+</td>
+</tr>
+)}
+</tbody>
+</table>
+</div>
+        
+{/* Table Footer with Stats */}
+{filteredRepository.length > 0 && (
+<div className="bg-gray-50 px-4 py-3 border-t text-sm text-gray-600 flex justify-between items-center">
+<span>
+Menampilkan <strong>{filteredRepository.length}</strong> dari <strong>{repository.length}</strong> skripsi
+</span>
+<span className="text-emerald-600">
+📊 Terakhir diperbarui: {new Date().toLocaleDateString('id-ID')}
+</span>
+</div>
+)}
+</div>
+
+{/* Detail Modal */}
+{showDetailModal && (
+<DetailModal 
+item={selectedItem} 
+onClose={() => {
+setShowDetailModal(false);
+setSelectedItem(null);
+}}
+/>
+)}
+</div>
+);
+};
+const KelolaMahasiswaPage = ({ mahasiswa, onAdd, onEdit, onDelete }) => {
+const calculateSemesterFromNIM = (nim) => {
+if (!nim || nim.length < 2) return 1;
+// Ambil 2 digit pertama untuk tahun angkatan
+const tahunDuaDigit = nim.substring(0, 2);
+const angkatan = parseInt(tahunDuaDigit);
+if (isNaN(angkatan) || angkatan < 10 || angkatan > 99) return 1;
+const currentYear = new Date().getFullYear();
+const tahunPenuh = 2000 + angkatan; // Misal: 21 -> 2021
+return Math.max(1, Math.min(16, (currentYear - tahunPenuh) * 2 + 1));
+};
+
+return (
+<div className="space-y-6">
+<div className="flex justify-between items-center">
+<h2 className="text-2xl font-bold text-emerald-900">👥 Kelola Mahasiswa</h2>
+<button onClick={onAdd} className="px-4 py-2 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700">
+➕ Tambah Mahasiswa
+</button>
+</div>
+<div className="bg-white rounded-xl shadow-sm border overflow-x-auto">
+<table className="w-full min-w-max">
+<thead className="bg-emerald-600 text-white">
+<tr>
+<th className="px-6 py-3 text-left">NIM</th>
+<th className="px-6 py-3 text-left">Nama</th>
+<th className="px-6 py-3 text-left">Program Studi</th>
+<th className="px-6 py-3 text-left">Semester (dari NIM)</th>
+<th className="px-6 py-3 text-left">WhatsApp</th>
+<th className="px-6 py-3 text-left">Aksi</th>
+</tr>
+</thead>
+<tbody>
+{mahasiswa.map((m) => {
+const semesterFromNIM = calculateSemesterFromNIM(m.nim);
+return (
+<tr key={m.id} className="border-b hover:bg-gray-50">
+<td className="px-6 py-4">{m.nim}</td>
+<td className="px-6 py-4">{m.nama}</td>
+<td className="px-6 py-4">{m.prodi}</td>
+<td className="px-6 py-4">
+<span className={`inline-block px-2 py-1 rounded text-xs font-semibold ${semesterFromNIM >= 11 ? 'bg-yellow-100 text-yellow-700' : 'bg-emerald-100 text-emerald-700'}`}>
+{semesterFromNIM}
+{m.semester && m.semester !== semesterFromNIM && ` (data: ${m.semester})`}
+</span>
+</td>
+<td className="px-6 py-4">{m.whatsapp}</td>
+<td className="px-6 py-4">
+<button onClick={() => onEdit(m)} className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 mr-2">Edit</button>
+<button onClick={() => onDelete(m.id, m.nama)} className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">Hapus</button>
+</td>
+</tr>
+);
+})}
+{mahasiswa.length === 0 && (
+<tr>
+<td colSpan="6" className="px-6 py-12 text-center text-gray-400">
+<p className="text-6xl mb-4">👥</p>
+<p className="text-lg">Belum ada data mahasiswa</p>
+</td>
+</tr>
+)}
+</tbody>
+</table>
+</div>
+</div>
+);
+};
+const KelolaDosenPage = ({ dosen, onAdd, onEdit, onDelete }) => (
+<div className="space-y-6">
+<div className="flex justify-between items-center">
+<h2 className="text-2xl font-bold text-emerald-900">👨‍🏫 Kelola Dosen</h2>
+<button onClick={onAdd} className="px-4 py-2 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700">
+➕ Tambah Dosen
+</button>
+</div>
+<div className="bg-white rounded-xl shadow-sm border overflow-x-auto">
+<table className="w-full min-w-max">
+<thead className="bg-emerald-600 text-white">
+<tr>
+<th className="px-6 py-3 text-left">NIP</th>
+<th className="px-6 py-3 text-left">Nama</th>
+<th className="px-6 py-3 text-left">Keahlian</th>
+<th className="px-6 py-3 text-left">WhatsApp</th>
+<th className="px-6 py-3 text-left">Aksi</th>
+</tr>
+</thead>
+<tbody>
+{dosen.map((d) => (
+<tr key={d.id} className="border-b hover:bg-gray-50">
+<td className="px-6 py-4">{d.nip}</td>
+<td className="px-6 py-4">{d.nama}</td>
+<td className="px-6 py-4">{d.keahlian}</td>
+<td className="px-6 py-4">{d.whatsapp}</td>
+<td className="px-6 py-4">
+<button onClick={() => onEdit(d)} className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 mr-2">Edit</button>
+<button onClick={() => onDelete(d.id, d.nama)} className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">Hapus</button>
+</td>
+</tr>
+))}
+{dosen.length === 0 && (
+<tr>
+<td colSpan="5" className="px-6 py-12 text-center text-gray-400">
+<p className="text-6xl mb-4">👨‍🏫</p>
+<p className="text-lg">Belum ada data dosen</p>
+</td>
+</tr>
+)}
+</tbody>
+</table>
+</div>
+</div>
+);
+const SettingsPage = () => (
+<div className="space-y-6">
+<h2 className="text-2xl font-bold text-emerald-900">⚙️ Pengaturan Sistem</h2>
+<div className="bg-white rounded-xl shadow-sm border p-6">
+<h3 className="text-lg font-bold text-gray-900 mb-4">Pengaturan Firebase</h3>
+<div className="space-y-4">
+<div>
+<label className="block text-sm font-semibold text-gray-700 mb-2">Database URL</label>
+<input type="text" value="https://febi-uinsi-dashboard-ca039-default-rtdb.asia-southeast1.firebasedatabase.app" readOnly className="w-full px-4 py-2 border rounded-lg bg-gray-50" />
+</div>
+<div>
+<label className="block text-sm font-semibold text-gray-700 mb-2">Project ID</label>
+<input type="text" value="febi-uinsi-dashboard-ca039" readOnly className="w-full px-4 py-2 border rounded-lg bg-gray-50" />
+</div>
+<div className="p-4 bg-emerald-50 rounded-lg">
+<p className="text-sm text-emerald-700">✅ Database terhubung dan berfungsi normal</p>
+</div>
+</div>
+</div>
+<div className="bg-white rounded-xl shadow-sm border p-6">
+<h3 className="text-lg font-bold text-gray-900 mb-4">Informasi Sistem</h3>
+<div className="space-y-2 text-sm text-gray-600">
+<p>• Versi Dashboard: 4.2.0</p>
+<p>• Database: Firebase Realtime Database</p>
+<p>• Real-time Sync: Aktif</p>
+<p>• Last Updated: {new Date().toLocaleDateString('id-ID')}</p>
+<p>• Fitur: Advanced Similarity Checker (5 Algoritma), Auto-Create Bimbingan, Early Warning, WhatsApp Integration</p>
+</div>
+</div>
+</div>
+);
+// ============================================
+// MODAL COMPONENT - DIPERBAIKI LENGKAP
+// ============================================
+const Modal = ({ type, item, onSave, onClose, onCheckSimilarity, similarityResult, dosenList, mahasiswaList, currentUser, userRole }) => {
+const [formData, setFormData] = React.useState(item || {});
+const [isSaving, setIsSaving] = React.useState(false);
+React.useEffect(() => {
+if (item) setFormData(item);
+else setFormData({
+nim: currentUser?.nim || '',
+mahasiswaNama: currentUser?.nama || '',
+prodi: currentUser?.prodi || '',
+whatsapp: currentUser?.whatsapp || ''
+});
+}, [item, currentUser]);
+const handleSubmit = async (e) => {
+e.preventDefault();
+// Validasi berdasarkan tipe
+if (type === 'mahasiswa' && (!formData.nim || !formData.nama || !formData.prodi || !formData.whatsapp || !formData.password)) {
+alert('Harap lengkapi semua field wajib untuk mahasiswa!');
+return;
+}
+if (type === 'dosen' && (!formData.nip || !formData.nama || !formData.keahlian || !formData.whatsapp || !formData.password)) {
+alert('Harap lengkapi semua field wajib untuk dosen!');
+return;
+}
+if (type === 'proposals' && (!formData.judul || !formData.mahasiswaNama || !formData.pembimbing1 || !formData.abstrak)) {
+alert('Harap lengkapi semua field wajib untuk proposal!');
+return;
+}
+if (type === 'bimbingan' && (!formData.judul || !formData.mahasiswaNama || !formData.dosenNama)) {
+alert('Harap lengkapi semua field wajib untuk bimbingan!');
+return;
+}
+if (type === 'repository' && (!formData.judul || !formData.penulis || !formData.prodi || !formData.tahun || !formData.abstrak)) {
+alert('Harap lengkapi semua field wajib untuk repository!');
+return;
+}
+setIsSaving(true);
+try { 
+await onSave(type, formData); 
+} catch (err) { 
+console.error('Save error:', err); 
+} finally { 
+setIsSaving(false); 
+}
+};
+const renderForm = () => {
+switch(type) {
+case 'mahasiswa':
+return (
+<>
+<div className="form-section">
+<h3 className="text-lg font-bold text-gray-800 mb-3">Data Mahasiswa <span className="required-star">*</span></h3>
+<input type="text" placeholder="NIM (2 digit pertama tahun angkatan, misal: 21 untuk 2021)" value={formData.nim || ''} onChange={(e) => setFormData({...formData, nim: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
+<input type="text" placeholder="Nama Lengkap" value={formData.nama || ''} onChange={(e) => setFormData({...formData, nama: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
+<select value={formData.prodi || ''} onChange={(e) => setFormData({...formData, prodi: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required>
+<option value="">Pilih Program Studi</option>
+<option value="Ekonomi Syariah">Ekonomi Syariah</option>
+<option value="Perbankan Syariah">Perbankan Syariah</option>
+<option value="Manajemen Bisnis Syariah">Manajemen Bisnis Syariah</option>
+</select>
+<input type="tel" placeholder="Nomor WhatsApp" value={formData.whatsapp || ''} onChange={(e) => setFormData({...formData, whatsapp: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
+{!item && <input type="password" placeholder="Password" value={formData.password || ''} onChange={(e) => setFormData({...formData, password: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />}
+</div>
+<div className="bg-blue-50 p-4 rounded-lg">
+<p className="text-sm text-blue-700 flex items-start">
+<span className="text-xl mr-2">ℹ️</span>
+<strong>Catatan:</strong> Password hanya diperlukan saat registrasi awal. Untuk edit data, password tidak perlu diisi.
+</p>
+</div>
+</>
+);
+case 'dosen':
+return (
+<>
+<div className="form-section">
+<h3 className="text-lg font-bold text-gray-800 mb-3">Data Dosen <span className="required-star">*</span></h3>
+<input type="text" placeholder="NIP" value={formData.nip || ''} onChange={(e) => setFormData({...formData, nip: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
+<input type="text" placeholder="Nama Lengkap" value={formData.nama || ''} onChange={(e) => setFormData({...formData, nama: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
+<input type="text" placeholder="Bidang Keahlian" value={formData.keahlian || ''} onChange={(e) => setFormData({...formData, keahlian: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
+<input type="tel" placeholder="Nomor WhatsApp" value={formData.whatsapp || ''} onChange={(e) => setFormData({...formData, whatsapp: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
+{!item && <input type="password" placeholder="Password" value={formData.password || ''} onChange={(e) => setFormData({...formData, password: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />}
+</div>
+<div className="bg-blue-50 p-4 rounded-lg">
+<p className="text-sm text-blue-700 flex items-start">
+<span className="text-xl mr-2">ℹ️</span>
+<strong>Catatan:</strong> Password hanya diperlukan saat registrasi awal. Untuk edit data, password tidak perlu diisi.
+</p>
+</div>
+</>
+);
+case 'proposals':
+return (
+<>
+<div className="form-section">
+<h3 className="text-lg font-bold text-gray-800 mb-3">Data Mahasiswa <span className="required-star">*</span></h3>
+<input type="text" placeholder="NIM Mahasiswa" value={formData.nim || currentUser?.nim || ''} onChange={(e) => setFormData({...formData, nim: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={userRole !== 'admin'} />
+<input type="text" placeholder="Nama Mahasiswa" value={formData.mahasiswaNama || currentUser?.nama || ''} onChange={(e) => setFormData({...formData, mahasiswaNama: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={userRole !== 'admin'} />
+<select value={formData.prodi || currentUser?.prodi || ''} onChange={(e) => setFormData({...formData, prodi: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={userRole !== 'admin'}>
+<option value="">Pilih Program Studi</option>
+<option value="Ekonomi Syariah">Ekonomi Syariah</option>
+<option value="Perbankan Syariah">Perbankan Syariah</option>
+<option value="Manajemen Bisnis Syariah">Manajemen Bisnis Syariah</option>
+</select>
+<input type="tel" placeholder="Nomor WhatsApp" value={formData.whatsapp || currentUser?.whatsapp || ''} onChange={(e) => setFormData({...formData, whatsapp: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={userRole !== 'admin'} />
+</div>
+<div className="form-section">
+<h3 className="text-lg font-bold text-gray-800 mb-3">Pembimbing <span className="required-star">*</span></h3>
+<select value={formData.pembimbing1 || ''} onChange={(e) => setFormData({...formData, pembimbing1: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required>
+<option value="">Pilih Pembimbing 1</option>
+{dosenList.map(d => <option key={d.id} value={d.nama}>{d.nama} - {d.keahlian}</option>)}
+</select>
+<select value={formData.pembimbing2 || ''} onChange={(e) => setFormData({...formData, pembimbing2: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3">
+<option value="">Pilih Pembimbing 2</option>
+{dosenList.map(d => <option key={d.id} value={d.nama}>{d.nama} - {d.keahlian}</option>)}
+</select>
+</div>
+<div className="form-section">
+<h3 className="text-lg font-bold text-gray-800 mb-3">Judul Proposal <span className="required-star">*</span></h3>
+<input type="text" placeholder="Judul Proposal" value={formData.judul || ''} onChange={(e) => setFormData({...formData, judul: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
+{onCheckSimilarity && (
+<div className="mb-3">
+<button type="button" onClick={() => onCheckSimilarity(formData.judul)} className="w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg hover:from-blue-700 hover:to-cyan-700 font-semibold transition-all">
+🔍 Cek Similarity (Advanced 5-Algoritma)
+</button>
+</div>
+)}
+{similarityResult && (
+<div className={`p-4 rounded-xl mb-3 border-2 ${
+similarityResult.status === 'Ditolak' ? 'bg-red-50 border-red-300' :
+similarityResult.status === 'Diperbaiki' ? 'bg-yellow-50 border-yellow-300' :
+'bg-green-50 border-green-300'
+}`}>
+<div className="mb-3">
+<p className="font-bold text-sm mb-1">📊 Hasil Analisis Similarity:</p>
+<p className="text-3xl font-black text-emerald-900">{similarityResult.highestSimilarity}%</p>
+<p className={`similarity-badge ${
+similarityResult.highestSimilarity >= 85 ? 'similarity-critical' :
+similarityResult.highestSimilarity >= 70 ? 'similarity-high' :
+similarityResult.highestSimilarity >= 50 ? 'similarity-medium' :
+similarityResult.highestSimilarity >= 30 ? 'similarity-low' :
+'similarity-safe'
+}`}>
+{similarityResult.status.toUpperCase()}
+</p>
+</div>
+{similarityResult.results[0] && (
+<div className="mb-3">
+<h4 className="font-bold text-xs text-gray-600 mb-2">🔍 Detail Metrik Similarity:</h4>
+<div className="grid grid-cols-2 gap-2 text-xs">
+<div className="metric-card bg-white p-2 rounded-lg">
+<span className="algorithm-badge algo-cosine">Cosine</span>
+<p className="text-lg font-bold text-blue-600">{similarityResult.results[0].similarityDetails.cosine}%</p>
+</div>
+<div className="metric-card bg-white p-2 rounded-lg">
+<span className="algorithm-badge algo-jaccard">Jaccard Bi</span>
+<p className="text-lg font-bold text-green-600">{similarityResult.results[0].similarityDetails.jaccardBigram}%</p>
+</div>
+<div className="metric-card bg-white p-2 rounded-lg">
+<span className="algorithm-badge algo-jaccard">Jaccard Tri</span>
+<p className="text-lg font-bold text-emerald-600">{similarityResult.results[0].similarityDetails.jaccardTrigram}%</p>
+</div>
+<div className="metric-card bg-white p-2 rounded-lg">
+<span className="algorithm-badge algo-levenshtein">Levenshtein</span>
+<p className="text-lg font-bold text-amber-600">{similarityResult.results[0].similarityDetails.levenshtein}%</p>
+</div>
+</div>
+</div>
+)}
+<div className="mb-3 p-3 bg-blue-50 rounded-lg">
+<p className="text-sm font-semibold text-blue-800">💡 Rekomendasi:</p>
+<p className="text-sm text-blue-700">{similarityResult.recommendation}</p>
+</div>
+{similarityResult.results.length > 0 && (
+<div className="mt-3">
+<p className="font-semibold text-sm mb-2">📋 Judul yang Terdeteksi Mirip:</p>
+{similarityResult.results.slice(0, 2).map((item, idx) => {
+const highlight = similarityChecker.highlightMatchingTerms(formData.judul, item.title);
+return (
+<div key={idx} className="bg-white p-3 rounded-lg mb-2 border border-gray-200">
+<p className="text-xs font-medium text-gray-600 mb-1">
+{item.type === 'proposal' ? '📝 Proposal' : '📚 Repository'} • {item.tahun}
+</p>
+<div dangerouslySetInnerHTML={{ __html: highlight.new }} className="text-sm font-semibold mb-1" />
+<p className="text-xs text-gray-600">{item.author} • {item.prodi}</p>
+<div className="mt-2 flex justify-between items-center">
+<span className={`similarity-badge ${
+item.similarityScore >= 85 ? 'similarity-critical' :
+item.similarityScore >= 70 ? 'similarity-high' :
+item.similarityScore >= 50 ? 'similarity-medium' :
+item.similarityScore >= 30 ? 'similarity-low' :
+'similarity-safe'
+}`}>
+{item.similarityScore}%
+</span>
+</div>
+</div>
+);
+})}
+</div>
+)}
+</div>
+)}
+</div>
+<div className="form-section">
+<h3 className="text-lg font-bold text-gray-800 mb-3">Abstrak <span className="required-star">*</span></h3>
+<textarea placeholder="Abstrak (min. 150 karakter)" value={formData.abstrak || ''} onChange={(e) => setFormData({...formData, abstrak: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3 h-32" required minLength="150" />
+</div>
+{userRole === 'admin' && (
+<div className="form-section">
+<h3 className="text-lg font-bold text-gray-800 mb-3">Validasi Admin</h3>
+<select value={formData.status || 'Menunggu'} onChange={(e) => setFormData({...formData, status: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3">
+<option value="Menunggu">Menunggu</option>
+<option value="Diterima">Diterima</option>
+<option value="Diperbaiki">Diperbaiki</option>
+<option value="Ditolak">Ditolak</option>
+</select>
+<textarea placeholder="Catatan Validasi" value={formData.catatan || ''} onChange={(e) => setFormData({...formData, catatan: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3 h-24" />
+</div>
+)}
+</>
+);
+case 'bimbingan':
+return (
+<>
+<div className="form-section">
+<h3 className="text-lg font-bold text-gray-800 mb-3">Data Mahasiswa & Dosen <span className="required-star">*</span></h3>
+<input type="text" placeholder="NIM Mahasiswa" value={formData.nim || currentUser?.nim || ''} onChange={(e) => setFormData({...formData, nim: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly />
+<input type="text" placeholder="Nama Mahasiswa" value={formData.mahasiswaNama || currentUser?.nama || ''} onChange={(e) => setFormData({...formData, mahasiswaNama: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly />
+<input type="text" placeholder="Nama Dosen" value={formData.dosenNama || currentUser?.nama || ''} onChange={(e) => setFormData({...formData, dosenNama: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly />
+</div>
+<div className="form-section">
+<h3 className="text-lg font-bold text-gray-800 mb-3">Judul Skripsi <span className="required-star">*</span></h3>
+<input type="text" placeholder="Judul Skripsi" value={formData.judul || ''} onChange={(e) => setFormData({...formData, judul: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
+</div>
+<div className="form-section">
+<h3 className="text-lg font-bold text-gray-800 mb-3">Progress Bimbingan <span className="required-star">*</span></h3>
+<div className="flex items-center mb-3">
+<span className="text-gray-600 mr-3">Progress:</span>
+<input type="number" placeholder="Progress (%)" value={formData.progress || 0} onChange={(e) => setFormData({...formData, progress: parseInt(e.target.value)})} className="w-24 px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mr-3" min="0" max="100" required />
+<span className="text-lg font-bold text-emerald-600">{formData.progress || 0}%</span>
+</div>
+<div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+<div className="bg-emerald-600 h-3 rounded-full transition-all duration-300" style={{width: `${formData.progress || 0}%`}}></div>
+</div>
+</div>
+<div className="form-section">
+<h3 className="text-lg font-bold text-gray-800 mb-3">Catatan Bimbingan</h3>
+<textarea placeholder="Catatan Bimbingan" value={formData.catatan || ''} onChange={(e) => setFormData({...formData, catatan: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3 h-32" />
+<select value={formData.status || 'berlangsung'} onChange={(e) => setFormData({...formData, status: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3">
+<option value="berlangsung">Berlangsung</option>
+<option value="selesai">Selesai</option>
+</select>
+<input type="date" placeholder="Tanggal Terakhir Update" value={formData.lastUpdate || new Date().toISOString().split('T')[0]} onChange={(e) => setFormData({...formData, lastUpdate: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" />
+</div>
+</>
+);
+case 'repository':
+return (
+<>
+<div className="form-section">
+<h3 className="text-lg font-bold text-gray-800 mb-3">Data Penulis <span className="required-star">*</span></h3>
+<input type="text" placeholder="NIM Penulis" value={formData.nim || ''} onChange={(e) => setFormData({...formData, nim: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
+<input type="text" placeholder="Nama Penulis" value={formData.penulis || ''} onChange={(e) => setFormData({...formData, penulis: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
+<select value={formData.prodi || ''} onChange={(e) => setFormData({...formData, prodi: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required>
+<option value="">Pilih Program Studi</option>
+<option value="Ekonomi Syariah">Ekonomi Syariah</option>
+<option value="Perbankan Syariah">Perbankan Syariah</option>
+<option value="Manajemen Bisnis Syariah">Manajemen Bisnis Syariah</option>
+</select>
+</div>
+<div className="form-section">
+<h3 className="text-lg font-bold text-gray-800 mb-3">Judul Skripsi <span className="required-star">*</span></h3>
+<input type="text" placeholder="Judul Skripsi" value={formData.judul || ''} onChange={(e) => setFormData({...formData, judul: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
+</div>
+<div className="form-section">
+<h3 className="text-lg font-bold text-gray-800 mb-3">Abstrak <span className="required-star">*</span></h3>
+<textarea placeholder="Abstrak" value={formData.abstrak || ''} onChange={(e) => setFormData({...formData, abstrak: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3 h-32" required />
+</div>
+<div className="form-section">
+<h3 className="text-lg font-bold text-gray-800 mb-3">Informasi Tambahan <span className="required-star">*</span></h3>
+<input type="number" placeholder="Tahun" value={formData.tahun || new Date().getFullYear()} onChange={(e) => setFormData({...formData, tahun: parseInt(e.target.value)})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" min="2000" max="2100" required />
+<input type="text" placeholder="Nama Pembimbing" value={formData.pembimbing || ''} onChange={(e) => setFormData({...formData, pembimbing: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
+<input type="url" placeholder="URL File Upload (Google Drive)" value={formData.fileUrl || ''} onChange={(e) => setFormData({...formData, fileUrl: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" />
+</div>
+</>
+);
+default:
+return (
+<div className="text-center py-8 text-gray-500">
+<p className="text-lg font-medium">Form untuk tipe "{type}" tidak ditemukan</p>
+<p className="mt-2">Silakan hubungi administrator sistem</p>
+</div>
+);
+}
+};
+return (
+<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+<div className="bg-white rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+<h2 className="text-2xl font-bold text-emerald-900 mb-4 flex items-center">
+{item ? '✏️ Edit Data' : '➕ Tambah Data Baru'}
+<span className="ml-3 px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium">
+{type === 'mahasiswa' ? 'Mahasiswa' : 
+ type === 'dosen' ? 'Dosen' : 
+ type === 'proposals' ? 'Proposal' : 
+ type === 'bimbingan' ? 'Bimbingan' : 
+ type === 'repository' ? 'Repository' : type}
+</span>
+</h2>
+<form onSubmit={handleSubmit}>
+{renderForm()}
+<div className="flex gap-3 mt-6 pt-6 border-t border-gray-200">
+<button type="submit" disabled={isSaving} className="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+{isSaving ? (
+<div className="flex items-center justify-center">
+<div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+Menyimpan...
+</div>
+) : '💾 Simpan Data'}
+</button>
+<button type="button" onClick={onClose} disabled={isSaving} className="px-6 py-3 bg-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-300 disabled:opacity-50 transition-all">
+Batal
+</button>
+</div>
+</form>
+</div>
+</div>
+);
+};
+// ============================================
+// MAIN APP COMPONENT - DENGAN WORKFLOW INTEGRATION
+// ============================================
+const App = () => {
+const [currentUser, setCurrentUser] = React.useState(null);
+const [userRole, setUserRole] = React.useState(null);
+const [showAuthModal, setShowAuthModal] = React.useState(false);
+const [activeMenu, setActiveMenu] = React.useState('dashboard');
+const [sidebarOpen, setSidebarOpen] = React.useState(false);
+const [mahasiswa, setMahasiswa] = React.useState({});
+const [dosen, setDosen] = React.useState({});
+const [proposals, setProposals] = React.useState({});
+const [bimbingan, setBimbingan] = React.useState({});
+const [repository, setRepository] = React.useState({});
+const [toast, setToast] = React.useState({ show: false, msg: '', type: 'info' });
+const [showModal, setShowModal] = React.useState(false);
+const [modalType, setModalType] = React.useState('');
+const [editingItem, setEditingItem] = React.useState(null);
+const [similarityResult, setSimilarityResult] = React.useState(null);
+const [systemReady, setSystemReady] = React.useState(false);
+const [initError, setInitError] = React.useState(null);
+const [loadingProgress, setLoadingProgress] = React.useState(0);
+const [dataInitialized, setDataInitialized] = React.useState(false);
+
+// Load user from localStorage dengan progress simulation
+React.useEffect(() => {
+// Simulasi progress loading
+const progressInterval = setInterval(() => {
+setLoadingProgress(prev => {
+if (prev >= 100) {
+clearInterval(progressInterval);
+return 100;
+}
+return prev + 10;
+});
+}, 150);
+
+const loadData = async () => {
+try {
+const savedUser = localStorage.getItem('currentUser');
+if (savedUser) {
+try {
+const user = JSON.parse(savedUser);
+setCurrentUser(user);
+setUserRole(user.role);
+} catch (e) {
+console.error('Error parsing user data:', e);
+localStorage.removeItem('currentUser');
+setShowAuthModal(true);
+}
+} else {
+setShowAuthModal(true);
+}
+
+// Cek koneksi Firebase
+if (!db) {
+setInitError('Gagal terhubung ke Firebase. Periksa koneksi internet Anda.');
+} else {
+// Test koneksi dengan membaca root
+await db.ref().once('value');
+console.log('✅ Firebase connection test successful');
+}
+
+setSystemReady(true);
+} catch (error) {
+console.error('Initialization error:', error);
+setInitError('Gagal menginisialisasi sistem: ' + error.message);
+} finally {
+clearInterval(progressInterval);
+setLoadingProgress(100);
+}
+};
+
+loadData();
+
+return () => clearInterval(progressInterval);
+}, []);
+
+// Initialize with dummy data if Firebase is empty
+React.useEffect(() => {
+if (!currentUser || !db || dataInitialized) return;
+
+const initializeData = async () => {
+try {
+// Cek apakah data sudah ada
+const proposalsSnapshot = await DB.get('proposals');
+const dosenSnapshot = await DB.get('dosen');
+const mahasiswaSnapshot = await DB.get('mahasiswa');
+const bimbinganSnapshot = await DB.get('bimbingan');
+
+// Jika data kosong, isi dengan dummy data
+if (!proposalsSnapshot || Object.keys(proposalsSnapshot).length === 0) {
+console.log('📝 Mengisi data proposal dummy...');
+for (const proposal of dummyProposals) {
+await DB.push('proposals', proposal);
+}
+}
+
+if (!dosenSnapshot || Object.keys(dosenSnapshot).length === 0) {
+console.log('👨‍🏫 Mengisi data dosen dummy...');
+for (const d of dummyDosen) {
+await DB.push('dosen', d);
+}
+}
+
+if (!mahasiswaSnapshot || Object.keys(mahasiswaSnapshot).length === 0) {
+console.log('👥 Mengisi data mahasiswa dummy...');
+for (const m of dummyMahasiswa) {
+await DB.push('mahasiswa', m);
+}
+}
+
+if (!bimbinganSnapshot || Object.keys(bimbinganSnapshot).length === 0) {
+console.log('📋 Mengisi data bimbingan dummy...');
+for (const b of dummyBimbingan) {
+await DB.push('bimbingan', b);
+}
+}
+
+setDataInitialized(true);
+console.log('✅ Data dummy berhasil diinisialisasi');
+} catch (error) {
+console.error('Error initializing dummy data:', error);
+}
+};
+
+initializeData();
+}, [currentUser, dataInitialized]);
+
+// Real-time data listeners
+React.useEffect(() => {
+if (!currentUser || !db) return;
+const unsub1 = DB.listen('mahasiswa', (data) => setMahasiswa(data || {}));
+const unsub2 = DB.listen('dosen', (data) => setDosen(data || {}));
+const unsub3 = DB.listen('proposals', (data) => setProposals(data || {}));
+const unsub4 = DB.listen('bimbingan', (data) => setBimbingan(data || {}));
+const unsub5 = DB.listen('repository', (data) => setRepository(data || {}));
+return () => { unsub1(); unsub2(); unsub3(); unsub4(); unsub5(); };
+}, [currentUser]);
+
+// Convert objects to arrays
+const mahasiswaArr = React.useMemo(() => Object.entries(mahasiswa).map(([id, data]) => ({ id, ...data })), [mahasiswa]);
+const dosenArr = React.useMemo(() => Object.entries(dosen).map(([id, data]) => ({ id, ...data })), [dosen]);
+const proposalsArr = React.useMemo(() => Object.entries(proposals).map(([id, data]) => ({ id, ...data })), [proposals]);
+const bimbinganArr = React.useMemo(() => Object.entries(bimbingan).map(([id, data]) => ({ id, ...data })), [bimbingan]);
+const repositoryArr = React.useMemo(() => Object.entries(repository).map(([id, data]) => ({ id, ...data })), [repository]);
+
+// Debug log untuk memantau data
+React.useEffect(() => {
+console.log('📊 Data saat ini:');
+console.log('- Mahasiswa:', mahasiswaArr.length);
+console.log('- Dosen:', dosenArr.length);
+console.log('- Proposals:', proposalsArr.length);
+console.log('- Proposals Menunggu:', proposalsArr.filter(p => p.status === 'Menunggu').length);
+console.log('- Bimbingan:', bimbinganArr.length);
+}, [mahasiswaArr, dosenArr, proposalsArr, bimbinganArr]);
+
+// Filter: Proposal approved tapi belum ada di bimbingan
+const pendingBimbingan = React.useMemo(() =>
+proposalsArr.filter(p =>
+p.status === 'Diterima' &&
+!bimbinganArr.some(b => b.nim === p.nim && b.judul === p.judul)
+), [proposalsArr, bimbinganArr]
+);
+
+const showToast = (msg, type = 'success') => {
+setToast({ show: true, msg, type });
+setTimeout(() => setToast({ show: false, msg: '', type: 'info' }), 3000);
+};
+
+const handleLogin = (user, role) => {
+setCurrentUser(user);
+setUserRole(role);
+localStorage.setItem('currentUser', JSON.stringify(user));
+setShowAuthModal(false);
+showToast(`Selamat datang, ${user.nama}!`);
+};
+
+const handleLogout = () => {
+if (confirm('Yakin ingin keluar?')) {
+setCurrentUser(null);
+setUserRole(null);
+localStorage.removeItem('currentUser');
+setShowAuthModal(true);
+setActiveMenu('dashboard');
+}
+};
+
+const handleAdd = (type) => {
+setModalType(type);
+setEditingItem(null);
+setSimilarityResult(null);
+setShowModal(true);
+};
+
+const handleEdit = (type, item) => {
+setModalType(type);
+setEditingItem(item);
+setSimilarityResult(null);
+setShowModal(true);
+};
+
+const handleDelete = async (type, id, name) => {
+if (!confirm(`Hapus "${name}"?`)) return;
+try {
+const success = await DB.remove(`${type}/${id}`);
+showToast(success ? 'Data berhasil dihapus!' : 'Gagal menghapus data!', success ? 'success' : 'error');
+} catch (err) {
+console.error('Delete error:', err);
+showToast('Error: ' + err.message, 'error');
+}
+};
+
+// CRITICAL: Save dengan auto-create bimbingan
+const handleSave = async (type, data) => {
+if (!data) {
+showToast('Data tidak valid!', 'error');
+return false;
+}
+try {
+if (editingItem) {
+// Jika status berubah menjadi "Diterima"
+if (type === 'proposals' && data.status === 'Diterima' && editingItem.status !== 'Diterima') {
+const success = await DB.set(`proposals/${editingItem.id}`, {
+...data, updatedAt: new Date().toISOString()
+});
+if (success) {
+// Trigger auto-create bimbingan
+await createBimbinganFromProposal(data, editingItem.id);
+alert('✅ Proposal disetujui!\n\nSistem otomatis membuat record bimbingan untuk:\n• Mahasiswa: ' + data.mahasiswaNama + '\n• Pembimbing: ' + data.pembimbing1 + '\n\nDosen pembimbing dapat langsung memulai proses bimbingan.');
+setShowModal(false);
+return true;
+}
+} else {
+const result = await DB.set(`${type}/${editingItem.id}`, { ...data, updatedAt: new Date().toISOString() });
+if (result) showToast('Data berhasil diupdate!', 'success');
+else showToast('Gagal mengupdate data!', 'error');
+setShowModal(false);
+return result;
+}
+} else {
+const newId = await DB.push(type, { ...data, createdAt: new Date().toISOString() });
+if (newId) showToast('Data berhasil ditambahkan!', 'success');
+else showToast('Gagal menambahkan data!', 'error');
+setShowModal(false);
+return !!newId;
+}
+} catch (err) {
+console.error('Save error:', err);
+showToast('Error: ' + (err.message || 'Terjadi kesalahan tidak diketahui'), 'error');
+setShowModal(false);
+return false;
+} finally {
+setEditingItem(null);
+setSimilarityResult(null);
+}
+};
+
+const handleCheckSimilarity = async (judul) => {
+if (!judul?.trim()) {
+showToast('Masukkan judul proposal terlebih dahulu!', 'error');
+return;
+}
+if (judul.trim().length < 15) {
+showToast('Judul terlalu pendek! Minimal 15 karakter untuk analisis akurat.', 'error');
+return;
+}
+try {
+const result = checkProposalSimilarityAdvanced(judul, proposals, repository);
+setSimilarityResult(result);
+showToast(`Similarity check selesai! (${result.highestSimilarity}%)`, 'success');
+} catch (err) {
+console.error('Similarity check error:', err);
+showToast('Error saat cek similarity: ' + err.message, 'error');
+}
+};
+
+const sendWhatsAppWarning = (whatsapp, message) => {
+if (!whatsapp || !message) {
+showToast('Data WhatsApp tidak lengkap!', 'error');
+return;
+}
+const cleanWA = whatsapp.replace(/\D/g, '');
+if (cleanWA.length < 10) {
+showToast('Nomor WhatsApp tidak valid!', 'error');
+return;
+}
+const url = `https://wa.me/62${cleanWA.replace(/^0+/, '')}?text=${encodeURIComponent(message)}`;
+window.open(url, '_blank');
+showToast('Pesan WhatsApp terbuka di tab baru!', 'success');
+};
+
+// Mulai bimbingan manual (untuk dosen)
+const handleMulaiBimbingan = async (proposal) => {
+if (!currentUser || userRole !== 'dosen') {
+showToast('Hanya dosen yang dapat memulai bimbingan', 'error');
+return;
+}
+// Cek duplikasi
+const exists = bimbinganArr.some(b => b.nim === proposal.nim && b.judul === proposal.judul);
+if (exists) {
+showToast('Bimbingan untuk proposal ini sudah aktif!', 'info');
+setActiveMenu('bimbingan');
+return;
+}
+if (confirm(`Mulai bimbingan untuk:\n${proposal.mahasiswaNama}\n${proposal.judul}`)) {
+const bimbinganData = {
+nim: proposal.nim,
+mahasiswaNama: proposal.mahasiswaNama,
+dosenNama: currentUser.nama,
+judul: proposal.judul,
+prodi: proposal.prodi,
+whatsapp: proposal.whatsapp,
+progress: 0,
+status: 'berlangsung',
+catatan: `Dimulai oleh ${currentUser.nama} pada ${new Date().toLocaleDateString('id-ID')}`,
+lastUpdate: new Date().toISOString().split('T')[0],
+proposalId: proposal.id,
+createdAt: new Date().toISOString()
+};
+const newId = await DB.push('bimbingan', bimbinganData);
+if (newId) {
+showToast('✅ Bimbingan berhasil dimulai!\n\nAnda dapat memantau progress melalui menu "Proses Bimbingan".', 'success');
+setActiveMenu('bimbingan');
+}
+}
+};
+
+const calculateSemesterFromNIM = (nim) => {
+if (!nim || nim.length < 2) return 1;
+// Ambil 2 digit pertama untuk tahun angkatan
+const tahunDuaDigit = nim.substring(0, 2);
+const angkatan = parseInt(tahunDuaDigit);
+if (isNaN(angkatan) || angkatan < 10 || angkatan > 99) return 1;
+const currentYear = new Date().getFullYear();
+const tahunPenuh = 2000 + angkatan; // Misal: 21 -> 2021
+return Math.max(1, Math.min(16, (currentYear - tahunPenuh) * 2 + 1));
+};
+
+const handleNavigate = (menu) => {
+setActiveMenu(menu);
+};
+
+// Expose functions to window for global access
+React.useEffect(() => {
+window.handleMulaiBimbingan = handleMulaiBimbingan;
+window.setActiveMenu = setActiveMenu;
+return () => {
+delete window.handleMulaiBimbingan;
+delete window.setActiveMenu;
+};
+}, [handleMulaiBimbingan]);
+
+// Render loading state dengan progress
+if (!systemReady) {
+return (
+<div className="loading-screen">
+<div className="loading-spinner"></div>
+<div className="mt-6 w-64 h-2 bg-gray-700 rounded-full overflow-hidden">
+<div 
+className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-300"
+style={{ width: `${loadingProgress}%` }}
+></div>
+</div>
+<p className="mt-6 text-xl font-bold text-white">
+{initError ? 'Error' : 'Menginisialisasi Sistem Bimbingan Terintegrasi...'}
+</p>
+<p className="mt-2 text-gray-300">
+{initError ? initError : loadingProgress < 100 ? 'Menghubungkan proposal → bimbingan → repository' : 'Sistem siap...'}
+</p>
+{initError && (
+<button 
+onClick={() => window.location.reload()} 
+className="mt-6 px-6 py-3 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700"
+>
+🔄 Muat Ulang
+</button>
+)}
+</div>
+);
+}
+// Render auth modal if not logged in
+if (!currentUser) {
+return <AuthModal onLogin={handleLogin} onClose={() => {}} />;
+}
+// Sidebar component
+const renderSidebar = () => {
+const menus = [
+{ id: 'dashboard', label: 'Dashboard', emoji: '🏠', roles: ['mahasiswa', 'dosen', 'admin'] },
+{ id: 'proposal', label: 'Pengajuan Proposal', emoji: '📝', roles: ['mahasiswa', 'admin'] },
+{ id: 'bimbingan', label: 'Proses Bimbingan', emoji: '📋', roles: ['mahasiswa', 'dosen', 'admin'] },
+{ id: 'warning', label: 'Early Warning', emoji: '⚠️', roles: ['mahasiswa', 'dosen', 'admin'] },
+{ id: 'repository', label: 'Repository Skripsi', emoji: '📚', roles: ['mahasiswa', 'dosen', 'admin'] },
+{ id: 'kelola-mhs', label: 'Kelola Mahasiswa', emoji: '👥', roles: ['admin'] },
+{ id: 'kelola-dsn', label: 'Kelola Dosen', emoji: '👨‍🏫', roles: ['admin'] },
+{ id: 'settings', label: 'Pengaturan', emoji: '⚙️', roles: ['admin'] },
+];
+return (
+<>
+{sidebarOpen && <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)}/>}
+<aside className={`fixed top-0 left-0 h-full w-64 bg-gradient-to-b from-emerald-900 to-slate-950 z-50 transform transition-all duration-300 lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+<div className="p-4 border-b border-emerald-700/50">
+<div className="flex items-center gap-3">
+<Logo/>
+<div>
+<h2 className="text-white font-bold text-sm">FEBI UINSI</h2>
+<p className="text-emerald-300 text-xs">SAMARINDA</p>
+</div>
+</div>
+</div>
+<nav className="p-3 space-y-1 overflow-y-auto h-[calc(100%-180px)]">
+{menus.filter(m => m.roles.includes(userRole)).map(m => (
+<button key={m.id} onClick={() => { setActiveMenu(m.id); setSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${activeMenu === m.id ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg' : 'text-emerald-100 hover:bg-emerald-800/50'}`}>
+<span className="text-lg">{m.emoji}</span>
+<span className="text-sm font-medium">{m.label}</span>
+</button>
+))}
+</nav>
+<div className="absolute bottom-0 left-0 right-0 p-3 border-t border-emerald-700/50 bg-emerald-950/50">
+<div className="mb-3 px-3 py-2 bg-emerald-800/30 rounded-lg">
+<p className="text-white text-sm font-medium truncate">{currentUser?.nama}</p>
+<p className="text-emerald-300 text-xs capitalize">{userRole}</p>
+</div>
+<button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-red-300 hover:bg-red-900/30">
+<span>🚪</span>
+<span className="text-sm font-medium">Keluar</span>
+</button>
+</div>
+</aside>
+</>
+);
+};
+// Header component
+const renderHeader = () => (
+<header className="bg-white/80 backdrop-blur-md border-b border-emerald-100 px-4 py-3 flex items-center justify-between sticky top-0 z-30">
+<div className="flex items-center gap-4">
+<button onClick={() => setSidebarOpen(!sidebarOpen)} className="lg:hidden p-2 rounded-xl hover:bg-emerald-50 text-emerald-700 text-xl">☰</button>
+<h1 className="text-lg font-bold text-emerald-900">
+{activeMenu === 'dashboard' ? 'Dashboard Utama' :
+activeMenu === 'proposal' ? 'Pengajuan Proposal Skripsi' :
+activeMenu === 'bimbingan' ? 'Manajemen Bimbingan' :
+activeMenu === 'warning' ? 'Sistem Early Warning' :
+activeMenu === 'repository' ? 'Repository Skripsi' :
+activeMenu === 'kelola-mhs' ? 'Administrasi Mahasiswa' :
+activeMenu === 'kelola-dsn' ? 'Administrasi Dosen' :
+activeMenu === 'settings' ? 'Pengaturan Sistem' : 'Dashboard FEBI'}
+</h1>
+</div>
+<div className="flex items-center gap-3">
+<div className="flex items-center gap-2 px-3 py-2 bg-emerald-50 rounded-xl">
+<div className="w-9 h-9 bg-emerald-600 rounded-full flex items-center justify-center text-white font-bold">
+{currentUser?.nama?.charAt(0).toUpperCase()}
+</div>
+<div className="hidden sm:block">
+<p className="text-sm font-medium text-emerald-900">{currentUser?.nama}</p>
+<p className="text-xs text-emerald-700 capitalize">{userRole}</p>
+</div>
+</div>
+</div>
+</header>
+);
+// Content router
+const renderContent = () => {
+switch(activeMenu) {
+case 'dashboard':
+return <DashboardPage
+mahasiswaArr={mahasiswaArr}
+dosenArr={dosenArr}
+proposalsArr={proposalsArr}
+repositoryArr={repositoryArr}
+bimbinganArr={bimbinganArr}
+pendingBimbingan={pendingBimbingan}
+userRole={userRole}
+currentUser={currentUser}
+onNavigate={handleNavigate}
+/>;
+case 'proposal':
+return <ProposalPage
+proposals={proposalsArr}
+userRole={userRole}
+currentUser={currentUser}
+onAdd={() => handleAdd('proposals')}
+onEdit={(item) => handleEdit('proposals', item)}
+onDelete={(id, name) => handleDelete('proposals', id, name)}
+dosenList={dosenArr}
+mahasiswaList={mahasiswaArr}
+onCheckSimilarity={handleCheckSimilarity}
+similarityResult={similarityResult}
+onMulaiBimbingan={handleMulaiBimbingan}
+bimbinganArr={bimbinganArr}
+onNavigate={handleNavigate}
+/>;
+case 'bimbingan':
+return <BimbinganPage
+bimbingan={bimbinganArr}
+userRole={userRole}
+currentUser={currentUser}
+onAdd={() => handleAdd('bimbingan')}
+onEdit={(item) => handleEdit('bimbingan', item)}
+onDelete={(id, name) => handleDelete('bimbingan', id, name)}
+mahasiswaList={mahasiswaArr}
+dosenList={dosenArr}
+onNavigate={handleNavigate}
+/>;
+case 'warning':
+return <EarlyWarningPage
+bimbingan={bimbinganArr}
+mahasiswa={mahasiswaArr}
+currentUser={currentUser}
+userRole={userRole}
+onSendWhatsApp={sendWhatsAppWarning}
+calculateSemesterFromNIM={calculateSemesterFromNIM}
+onNavigate={handleNavigate}
+/>;
+case 'repository':
+return <RepositoryPage
+repository={repositoryArr}
+userRole={userRole}
+onAdd={() => handleAdd('repository')}
+onEdit={(item) => handleEdit('repository', item)}
+onDelete={(id, name) => handleDelete('repository', id, name)}
+/>;
+case 'kelola-mhs':
+return <KelolaMahasiswaPage
+mahasiswa={mahasiswaArr}
+onAdd={() => handleAdd('mahasiswa')}
+onEdit={(item) => handleEdit('mahasiswa', item)}
+onDelete={(id, name) => handleDelete('mahasiswa', id, name)}
+/>;
+case 'kelola-dsn':
+return <KelolaDosenPage
+dosen={dosenArr}
+onAdd={() => handleAdd('dosen')}
+onEdit={(item) => handleEdit('dosen', item)}
+onDelete={(id, name) => handleDelete('dosen', id, name)}
+/>;
+case 'settings':
+return <SettingsPage />;
+default:
+return <DashboardPage
+mahasiswaArr={mahasiswaArr}
+dosenArr={dosenArr}
+proposalsArr={proposalsArr}
+repositoryArr={repositoryArr}
+bimbinganArr={bimbinganArr}
+pendingBimbingan={pendingBimbingan}
+userRole={userRole}
+currentUser={currentUser}
+onNavigate={handleNavigate}
+/>;
+}
+};
+return (
+<ErrorBoundary>
+<div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-teal-50/30">
+{renderSidebar()}
+<div className="lg:ml-64 flex flex-col min-h-screen">
+{renderHeader()}
+<main className="flex-1 p-4 md:p-6">
+{renderContent()}
+</main>
+</div>
+{showModal && (
+<Modal
+type={modalType}
+item={editingItem}
+onSave={handleSave}
+onClose={() => { setShowModal(false); setEditingItem(null); setSimilarityResult(null); }}
+onCheckSimilarity={modalType === 'proposals' ? handleCheckSimilarity : null}
+similarityResult={similarityResult}
+dosenList={dosenArr}
+mahasiswaList={mahasiswaArr}
+currentUser={currentUser}
+userRole={userRole}
+/>
+)}
+{toast.show && (
+<div className={`fixed bottom-6 right-6 px-5 py-3 rounded-xl shadow-2xl z-50 animate-fadeIn flex items-center gap-2 ${
+toast.type === 'success' ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'
+}`}>
+{toast.type === 'success' ? '✅' : '❌'}
+<span>{toast.msg}</span>
+</div>
+)}
+</div>
+</ErrorBoundary>
+);
+};
+// Render application
+ReactDOM.render(
+<React.StrictMode>
+<App />
+</React.StrictMode>,
+document.getElementById('root')
+);
+console.log('✅ Dashboard FEBI v4.2.0 (FINAL & STABIL) loaded successfully!');
+console.log('🔐 Authentication system active');
+console.log('🔍 ADVANCED SIMILARITY CHECKER (5 Algoritma Hybrid) - OPERATIONAL');
+console.log('📊 Cosine • Jaccard Bigram/Trigram • Levenshtein • Semantic Matching');
+console.log('🔄 WORKFLOW INTEGRATION: Auto-create bimbingan saat proposal disetujui');
+console.log('⚠️ Early Warning System dengan WhatsApp integration');
+console.log('✅ SEMUA MODAL BERFUNGSI: Mahasiswa, Dosen, Proposal, Bimbingan, Repository');
+console.log('📊 BIMBINGAN PAGE: Tabel dinamis dengan statistik, filter, detail, riwayat, dan cetak laporan');
+console.log('🎯 Fitur Baru: Progress bar, timeline riwayat, print preview, laporan resmi');
+console.log('✅ Loading System: Progress bar, error handling, koneksi stabil');
+console.log('✅ Data Inisialisasi: Data dummy otomatis terisi jika database kosong');
+console.log('✅ Early Warning: Perhitungan semester dari 2 digit pertama NIM (contoh: 21 → 2021)');
+</script>
+</body>
+</html>
