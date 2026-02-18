@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard FEBI - Sistem Terintegrasi Lengkap</title>
+<title>FEBI UINSI - Bimbingan Proposal dan Repository</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23047857'/><text x='50' y='55' text-anchor='middle' fill='%23fbbf24' font-size='24' font-weight='bold'>F</text></svg>">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
@@ -36,8 +36,14 @@ body { font-family: 'Inter', system-ui, sans-serif; background-color: #f8fafc; m
 @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes slideIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 @keyframes spin { to { transform: rotate(360deg); } }
+@keyframes float {
+0% { transform: translateY(0px); }
+50% { transform: translateY(-10px); }
+100% { transform: translateY(0px); }
+}
 .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
 .animate-slideIn { animation: slideIn 0.2s ease-out; }
+.animate-float { animation: float 3s ease-in-out infinite; }
 .similarity-badge {
 display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
 }
@@ -86,16 +92,11 @@ display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; 
 .no-print { display: none; }
 .print-only { display: block; }
 }
+.role-badge-operator { background: #fef3c7; color: #92400e; border: 2px solid #fbbf24; }
 </style>
 </head>
 <body>
-<div id="root">
-<div class="loading-screen" id="loading-screen">
-<div class="loading-spinner"></div>
-<p class="mt-6 text-xl font-bold text-white">Menginisialisasi Sistem Bimbingan Terintegrasi...</p>
-<p class="mt-2 text-gray-300">Menghubungkan proposal → bimbingan → repository</p>
-</div>
-</div>
+<div id="root"></div>
 <script type="text/babel">
 // ============================================
 // ERROR BOUNDARY COMPONENT
@@ -222,15 +223,24 @@ return () => ref.off('value');
 // ============================================
 // LOGO COMPONENT
 // ============================================
-const Logo = ({ size = 'md' }) => {
+const Logo = ({ size = 'md', showText = true }) => {
 const sizes = {
-sm: 'w-8 h-8 text-xs',
-md: 'w-10 h-10 text-sm',
-lg: 'w-14 h-14 text-lg'
+sm: 'w-16 h-16 text-xl',
+md: 'w-24 h-24 text-2xl',
+lg: 'w-32 h-32 text-3xl'
 };
 return (
-<div className={`${sizes[size]} bg-gradient-to-br from-emerald-600 to-teal-700 rounded-xl flex items-center justify-center text-white font-black shadow-lg`}>
-F
+<div className="flex flex-col items-center">
+<div className={`${sizes[size]} bg-gradient-to-br from-emerald-600 to-teal-700 rounded-2xl flex items-center justify-center text-white font-black shadow-lg mb-3`}>
+<span className="text-4xl">F</span>
+</div>
+{showText && (
+<div className="text-center">
+<div className="text-2xl font-bold text-emerald-900">FEBI</div>
+<div className="text-sm text-emerald-700 tracking-wider">FACULTY OF ISLAMIC ECONOMICS AND BUSINESS</div>
+<div className="text-xs text-emerald-600 mt-1">UINSI SAMARINDA</div>
+</div>
+)}
 </div>
 );
 };
@@ -490,7 +500,7 @@ return true;
 return false;
 };
 // ============================================
-// AUTH MODAL COMPONENT
+// AUTH MODAL COMPONENT - DENGAN ROLE OPERATOR
 // ============================================
 const AuthModal = ({ onLogin, onClose, showRegister }) => {
 const [isRegister, setIsRegister] = React.useState(showRegister || false);
@@ -500,14 +510,30 @@ role: 'mahasiswa', nim: '', nama: '', prodi: '', nip: '', keahlian: '', whatsapp
 const [loginData, setLoginData] = React.useState({ username: '', password: '' });
 const [isLoading, setIsLoading] = React.useState(false);
 const [error, setError] = React.useState('');
+const [showLoginForm, setShowLoginForm] = React.useState(false);
+
 const handleLogin = async (e) => {
 e.preventDefault(); setIsLoading(true); setError('');
 const { username, password } = loginData;
 try {
+// Cek login operator default
+if (username === 'operator' && password === 'operator123') {
+onLogin({ 
+id: 'operator-default', 
+nama: 'Operator FEBI', 
+role: 'operator',
+username: 'operator'
+}, 'operator');
+return;
+}
+
+// Cek login admin default
 if (username === 'admin' && password === 'admin123') {
 onLogin({ id: 'admin', nama: 'Administrator FEBI', role: 'admin' }, 'admin');
 return;
 }
+
+// Cek data mahasiswa
 const mahasiswaData = await DB.get('mahasiswa');
 if (mahasiswaData) {
 const mhs = Object.entries(mahasiswaData).find(([_, m]) => m.nim === username && m.password === password);
@@ -516,6 +542,8 @@ onLogin({ id: mhs[0], ...mhs[1] }, 'mahasiswa');
 return;
 }
 }
+
+// Cek data dosen
 const dosenData = await DB.get('dosen');
 if (dosenData) {
 const dsn = Object.entries(dosenData).find(([_, d]) => d.nip === username && d.password === password);
@@ -524,6 +552,17 @@ onLogin({ id: dsn[0], ...dsn[1] }, 'dosen');
 return;
 }
 }
+
+// Cek data operator yang tersimpan di database
+const operatorData = await DB.get('operator');
+if (operatorData) {
+const op = Object.entries(operatorData).find(([_, o]) => o.username === username && o.password === password);
+if (op) {
+onLogin({ id: op[0], ...op[1] }, 'operator');
+return;
+}
+}
+
 setError('Username atau password salah!');
 } catch (err) {
 setError('Terjadi kesalahan: ' + err.message);
@@ -531,6 +570,7 @@ setError('Terjadi kesalahan: ' + err.message);
 setIsLoading(false);
 }
 };
+
 const handleRegister = async (e) => {
 e.preventDefault(); setIsLoading(true); setError('');
 try {
@@ -541,7 +581,7 @@ nim: formData.nim, nama: formData.nama, prodi: formData.prodi,
 whatsapp: formData.whatsapp, password: formData.password,
 semester: parseInt(formData.nim.substring(0, 2)) || 1, status: 'aktif'
 });
-} else {
+} else if (formData.role === 'dosen') {
 success = await DB.push('dosen', {
 nip: formData.nip, nama: formData.nama, keahlian: formData.keahlian,
 whatsapp: formData.whatsapp, password: formData.password, status: 'aktif'
@@ -560,11 +600,56 @@ setError('Error: ' + err.message);
 setIsLoading(false);
 }
 };
+
+// Jika belum memilih untuk login, tampilkan halaman selamat datang dengan logo
+if (!showLoginForm && !isRegister) {
+return (
+<div className="fixed inset-0 bg-gradient-to-br from-emerald-50 via-white to-teal-50 flex items-center justify-center z-50 p-4">
+<div className="max-w-md w-full">
+<div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl p-8 border border-emerald-100">
+<div className="animate-float">
+<Logo size="lg" showText={true} />
+</div>
+<h1 className="text-3xl font-bold text-center text-emerald-900 mt-6 mb-2">
+BIMBINGAN PROPOSAL DAN REPOSITORY
+</h1>
+
+
+<div className="space-y-4">
+<button
+onClick={() => setShowLoginForm(true)}
+className="w-full px-6 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-semibold hover:from-emerald-700 hover:to-teal-700 transition-all transform hover:scale-105 shadow-lg"
+>
+<span className="text-xl">🔐</span> Masuk ke Dashboard
+</button>
+<button
+onClick={() => setIsRegister(true)}
+className="w-full px-6 py-4 bg-white text-emerald-700 border-2 border-emerald-200 rounded-xl font-semibold hover:bg-emerald-50 transition-all transform hover:scale-105"
+>
+<span className="text-xl">📝</span> Daftar Akun Baru
+</button>
+</div>
+<div className="mt-8 text-center">
+<p className="text-xs text-emerald-400">
+Sistem Terintegrasi • Bimbingan Skripsi • Repository Digital
+</p>
+</div>
+</div>
+</div>
+</div>
+);
+}
+
 if (isRegister) {
 return (
-<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-<div className="bg-white rounded-2xl p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
-<h2 className="text-2xl font-bold text-emerald-900 mb-4">📝 Registrasi Akun</h2>
+<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto" onClick={onClose}>
+<div className="bg-white rounded-2xl p-6 max-w-md w-full my-8" onClick={(e) => e.stopPropagation()}>
+<div className="flex items-center gap-3 mb-6">
+<div className="w-12 h-12 bg-gradient-to-br from-emerald-600 to-teal-700 rounded-xl flex items-center justify-center text-white font-bold text-xl">
+F
+</div>
+<h2 className="text-2xl font-bold text-emerald-900">Registrasi Akun</h2>
+</div>
 {error && <div className="bg-red-50 border-2 border-red-200 rounded-xl p-3 text-red-700 text-sm mb-4">{error}</div>}
 <select value={formData.role} onChange={(e) => setFormData({...formData, role: e.target.value})} className="w-full px-4 py-2 border-2 border-emerald-200 rounded-xl mb-4">
 <option value="mahasiswa">Mahasiswa</option>
@@ -572,7 +657,7 @@ return (
 </select>
 {formData.role === 'mahasiswa' ? (
 <>
-<input type="text" placeholder="NIM (2 digit pertama tahun angkatan, misal: 21 untuk 2021)" value={formData.nim} onChange={(e) => setFormData({...formData, nim: e.target.value})} className="w-full px-4 py-2 border-2 border-emerald-200 rounded-xl mb-3" required />
+<input type="text" placeholder="NIM (2 digit pertama tahun angkatan)" value={formData.nim} onChange={(e) => setFormData({...formData, nim: e.target.value})} className="w-full px-4 py-2 border-2 border-emerald-200 rounded-xl mb-3" required />
 <input type="text" placeholder="Nama Lengkap" value={formData.nama} onChange={(e) => setFormData({...formData, nama: e.target.value})} className="w-full px-4 py-2 border-2 border-emerald-200 rounded-xl mb-3" required />
 <select value={formData.prodi} onChange={(e) => setFormData({...formData, prodi: e.target.value})} className="w-full px-4 py-2 border-2 border-emerald-200 rounded-xl mb-3" required>
 <option value="">Pilih Program Studi</option>
@@ -604,26 +689,31 @@ Batal
 </div>
 );
 }
+
 return (
 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
 <div className="bg-white rounded-2xl p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
-<center>
-<h1 className="text-2xl font-bold text-emerald-900 mb-4">SISTEM BIMBINGAN PROPOSAL&REPOSITORY</h1>
-<p><b>FAKULTAS EKONOMI DAN BISNIS ISLAM UINSI SAMARINDA</b></p>
-</center>
+<div className="flex items-center gap-3 mb-6">
+<div className="w-12 h-12 bg-gradient-to-br from-emerald-600 to-teal-700 rounded-xl flex items-center justify-center text-white font-bold text-xl">
+F
+</div>
+<h3 className="text-2xl font-bold text-emerald-900">Masuk ke Dashboard</h3>
+</div>
 {error && <div className="bg-red-50 border-2 border-red-200 rounded-xl p-3 text-red-700 text-sm mb-4">{error}</div>}
 <form onSubmit={handleLogin} className="space-y-4">
-<input type="text" placeholder="NIM/NIP/Username" value={loginData.username} onChange={(e) => setLoginData({ ...loginData, username: e.target.value })} className="w-full px-4 py-3 border-2 border-emerald-200 rounded-xl focus:outline-none focus:border-emerald-500" required />
+<input type="text" placeholder="NIM / NIP / Username" value={loginData.username} onChange={(e) => setLoginData({ ...loginData, username: e.target.value })} className="w-full px-4 py-3 border-2 border-emerald-200 rounded-xl focus:outline-none focus:border-emerald-500" required />
 <input type="password" placeholder="Password" value={loginData.password} onChange={(e) => setLoginData({ ...loginData, password: e.target.value })} className="w-full px-4 py-3 border-2 border-emerald-200 rounded-xl focus:outline-none focus:border-emerald-500" required />
 <button type="submit" disabled={isLoading} className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-3 rounded-xl font-bold hover:from-emerald-700 hover:to-teal-700 disabled:opacity-50">
 {isLoading ? '🔄 Memproses...' : '🔐 Login'}
 </button>
 </form>
 <div className="mt-4 text-center">
-<p className="text-sm text-emerald-700 mb-2">Belum punya akun?</p>
-<button onClick={() => setIsRegister(true)} className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-lg hover:bg-emerald-200">
-📝 Registrasi Sekarang
+<button onClick={() => { setShowLoginForm(false); setIsRegister(false); }} className="text-sm text-emerald-700 hover:text-emerald-900">
+← Kembali ke Beranda
 </button>
+</div>
+<div className="mt-4 text-xs text-gray-400 text-center">
+
 </div>
 </div>
 </div>
@@ -783,12 +873,18 @@ proposalId: "proposal4"
 }
 ];
 
-const DashboardPage = ({ mahasiswaArr, dosenArr, proposalsArr, repositoryArr, bimbinganArr, pendingBimbingan, userRole, currentUser, onNavigate }) => {
-// Debug log untuk memeriksa data
-console.log('DashboardPage - proposalsArr:', proposalsArr);
-console.log('DashboardPage - proposals with status Menunggu:', proposalsArr.filter(p => p.status === 'Menunggu'));
-console.log('DashboardPage - pendingBimbingan:', pendingBimbingan);
+const dummyOperator = [
+{
+id: "op1",
+username: "operator",
+nama: "Operator FEBI",
+password: "operator123",
+role: "operator",
+status: "aktif"
+}
+];
 
+const DashboardPage = ({ mahasiswaArr, dosenArr, proposalsArr, repositoryArr, bimbinganArr, pendingBimbingan, userRole, currentUser, onNavigate }) => {
 return (
 <div className="space-y-6">
 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -845,7 +941,7 @@ return (
 </div>
 </div>
 {/* CRITICAL ALERT: Pending Bimbingan */}
-{pendingBimbingan.length > 0 && (userRole === 'admin' || userRole === 'dosen') && (
+{pendingBimbingan.length > 0 && (userRole === 'admin' || userRole === 'operator' || userRole === 'dosen') && (
 <div className="pending-bimbingan-card rounded-xl p-5">
 <div className="flex items-start gap-3">
 <span className="text-3xl mt-1">⚠️</span>
@@ -942,11 +1038,16 @@ const filteredProposals = userRole === 'mahasiswa'
 : userRole === 'dosen'
 ? proposals.filter(p => p.pembimbing1 === currentUser?.nama || p.pembimbing2 === currentUser?.nama)
 : proposals;
+
+const canAdd = userRole === 'mahasiswa' || userRole === 'admin' || userRole === 'operator';
+const canEdit = userRole === 'admin' || userRole === 'operator';
+const canDelete = userRole === 'admin'; // Only admin can delete
+
 return (
 <div className="space-y-6">
 <div className="flex justify-between items-center">
 <h2 className="text-2xl font-bold text-emerald-900">📝 Pengajuan Proposal</h2>
-{(userRole === 'mahasiswa' || userRole === 'admin') && (
+{canAdd && (
 <button onClick={onAdd} className="px-4 py-2 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700">
 ➕ Ajukan Proposal
 </button>
@@ -1023,11 +1124,11 @@ Lihat Detail Bimbingan
 </div>
 )}
 <div className="flex gap-2">
-{userRole === 'admin' && (
-<>
+{canEdit && (
 <button onClick={() => onEdit(p)} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Edit</button>
+)}
+{canDelete && (
 <button onClick={() => onDelete(p.id, p.judul)} className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Hapus</button>
-</>
 )}
 </div>
 </div>
@@ -1096,6 +1197,10 @@ progressRata: filteredBimbingan.length > 0
 : 0
 };
 }, [filteredBimbingan]);
+
+const canAdd = userRole === 'admin' || userRole === 'operator';
+const canEdit = userRole === 'admin' || userRole === 'operator' || userRole === 'dosen';
+const canDelete = userRole === 'admin'; // Only admin can delete
 
 const handleViewDetail = (item) => {
 setSelectedBimbingan(item);
@@ -1375,7 +1480,7 @@ className="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-xl font-semibold h
 >
 <span>🖨️</span> Cetak Laporan
 </button>
-{(userRole === 'dosen' || userRole === 'admin') && (
+{(userRole === 'dosen' || userRole === 'admin' || userRole === 'operator') && (
 <button
 onClick={() => onEdit(item)}
 className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-all flex items-center justify-center gap-2"
@@ -1496,7 +1601,7 @@ Total {filteredBimbingan.length} bimbingan {filteredBimbingan.length !== bimbing
 </p>
 </div>
 <div className="flex gap-2">
-{userRole === 'admin' && (
+{canAdd && (
 <button onClick={onAdd} className="px-4 py-2 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700 transition-all flex items-center gap-2">
 <span>➕</span> Tambah Bimbingan
 </button>
@@ -1640,7 +1745,7 @@ title="Cetak Laporan"
 >
 <span className="text-lg">🖨️</span>
 </button>
-{(userRole === 'dosen' || userRole === 'admin') && (
+{(userRole === 'dosen' || userRole === 'admin' || userRole === 'operator') && (
 <button
 onClick={() => onEdit(b)}
 className="p-2 bg-amber-100 text-amber-700 rounded-lg hover:bg-amber-200 transition-all transform hover:scale-110"
@@ -1649,7 +1754,7 @@ title="Update Progress"
 <span className="text-lg">✏️</span>
 </button>
 )}
-{userRole === 'admin' && (
+{canDelete && (
 <button
 onClick={() => onDelete(b.id, b.judul)}
 className="p-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-all transform hover:scale-110"
@@ -1777,6 +1882,8 @@ const filteredWarningData = userRole === 'mahasiswa'
 ? warningData.filter(w => w.dosenNama === currentUser?.nama)
 : warningData;
 
+const canSendWhatsApp = userRole === 'admin' || userRole === 'operator' || userRole === 'dosen';
+
 return (
 <div className="space-y-6">
 <div className="bg-gradient-to-r from-red-500 to-orange-600 rounded-2xl shadow-lg p-6 text-white">
@@ -1855,7 +1962,7 @@ className="mt-2 text-xs text-emerald-600 hover:text-emerald-800 font-medium"
 Lihat Detail Bimbingan →
 </button>
 )}
-{w.whatsapp && (userRole === 'admin' || userRole === 'dosen') && (
+{w.whatsapp && canSendWhatsApp && (
 <div className="mt-3 pt-3 border-t border-current">
 <button onClick={() => onSendWhatsApp(w.whatsapp, `Assalamualaikum ${w.nama || w.mahasiswaNama}, ini early warning dari FEBI UINSI. ${w.type === 'semester' ? 'Anda sudah memasuki semester akhir, mohon segera menyelesaikan bimbingan.' : 'Mohon segera update status bimbingan Anda.'}`)} className="px-3 py-1 bg-emerald-600 text-white rounded text-xs hover:bg-emerald-700">
 📱 Kirim WA Peringatan
@@ -1905,6 +2012,10 @@ const matchesTahun = filterTahun === '' || r.tahun.toString() === filterTahun;
 return matchesSearch && matchesProdi && matchesTahun;
 });
 }, [repository, searchTerm, filterProdi, filterTahun]);
+
+const canAdd = userRole === 'admin' || userRole === 'operator';
+const canEdit = userRole === 'admin' || userRole === 'operator';
+const canDelete = userRole === 'admin'; // Only admin can delete
 
 const handleView = (item) => {
 setSelectedItem(item);
@@ -2103,7 +2214,7 @@ return (
 Total {filteredRepository.length} skripsi tersedia {filteredRepository.length !== repository.length && `(dari ${repository.length} total)`}
 </p>
 </div>
-{userRole === 'admin' && (
+{canAdd && (
 <button 
 onClick={onAdd} 
 className="px-4 py-2 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700 transition-all flex items-center gap-2"
@@ -2224,9 +2335,8 @@ title="Print / Cetak"
 <span className="text-lg">🖨️</span>
 </button>
                       
-{/* Admin Actions */}
-{userRole === 'admin' && (
-<>
+{/* Admin/Operator Actions */}
+{canEdit && (
 <button
 onClick={() => onEdit(item)}
 className="p-2 bg-amber-100 text-amber-700 rounded-lg hover:bg-amber-200 transition-all transform hover:scale-110"
@@ -2234,6 +2344,8 @@ title="Edit"
 >
 <span className="text-lg">✏️</span>
 </button>
+)}
+{canDelete && (
 <button
 onClick={() => onDelete(item.id, item.judul)}
 className="p-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-all transform hover:scale-110"
@@ -2241,7 +2353,6 @@ title="Hapus"
 >
 <span className="text-lg">🗑️</span>
 </button>
-</>
 )}
 </div>
 </td>
@@ -2289,7 +2400,10 @@ setSelectedItem(null);
 </div>
 );
 };
-const KelolaMahasiswaPage = ({ mahasiswa, onAdd, onEdit, onDelete }) => {
+// ============================================
+// KELOLA MAHASISWA PAGE - FIXED: userRole didefinisikan sebagai parameter
+// ============================================
+const KelolaMahasiswaPage = ({ mahasiswa, userRole, onAdd, onEdit, onDelete }) => {
 const calculateSemesterFromNIM = (nim) => {
 if (!nim || nim.length < 2) return 1;
 // Ambil 2 digit pertama untuk tahun angkatan
@@ -2301,13 +2415,19 @@ const tahunPenuh = 2000 + angkatan; // Misal: 21 -> 2021
 return Math.max(1, Math.min(16, (currentYear - tahunPenuh) * 2 + 1));
 };
 
+const canAdd = userRole === 'admin' || userRole === 'operator';
+const canEdit = userRole === 'admin' || userRole === 'operator';
+const canDelete = userRole === 'admin'; // Only admin can delete
+
 return (
 <div className="space-y-6">
 <div className="flex justify-between items-center">
 <h2 className="text-2xl font-bold text-emerald-900">👥 Kelola Mahasiswa</h2>
+{canAdd && (
 <button onClick={onAdd} className="px-4 py-2 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700">
 ➕ Tambah Mahasiswa
 </button>
+)}
 </div>
 <div className="bg-white rounded-xl shadow-sm border overflow-x-auto">
 <table className="w-full min-w-max">
@@ -2337,8 +2457,12 @@ return (
 </td>
 <td className="px-6 py-4">{m.whatsapp}</td>
 <td className="px-6 py-4">
+{canEdit && (
 <button onClick={() => onEdit(m)} className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 mr-2">Edit</button>
+)}
+{canDelete && (
 <button onClick={() => onDelete(m.id, m.nama)} className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">Hapus</button>
+)}
 </td>
 </tr>
 );
@@ -2357,13 +2481,23 @@ return (
 </div>
 );
 };
-const KelolaDosenPage = ({ dosen, onAdd, onEdit, onDelete }) => (
+// ============================================
+// KELOLA DOSEN PAGE - FIXED: userRole didefinisikan sebagai parameter
+// ============================================
+const KelolaDosenPage = ({ dosen, userRole, onAdd, onEdit, onDelete }) => {
+const canAdd = userRole === 'admin' || userRole === 'operator';
+const canEdit = userRole === 'admin' || userRole === 'operator';
+const canDelete = userRole === 'admin'; // Only admin can delete
+
+return (
 <div className="space-y-6">
 <div className="flex justify-between items-center">
 <h2 className="text-2xl font-bold text-emerald-900">👨‍🏫 Kelola Dosen</h2>
+{canAdd && (
 <button onClick={onAdd} className="px-4 py-2 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700">
 ➕ Tambah Dosen
 </button>
+)}
 </div>
 <div className="bg-white rounded-xl shadow-sm border overflow-x-auto">
 <table className="w-full min-w-max">
@@ -2384,8 +2518,12 @@ const KelolaDosenPage = ({ dosen, onAdd, onEdit, onDelete }) => (
 <td className="px-6 py-4">{d.keahlian}</td>
 <td className="px-6 py-4">{d.whatsapp}</td>
 <td className="px-6 py-4">
+{canEdit && (
 <button onClick={() => onEdit(d)} className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 mr-2">Edit</button>
+)}
+{canDelete && (
 <button onClick={() => onDelete(d.id, d.nama)} className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">Hapus</button>
+)}
 </td>
 </tr>
 ))}
@@ -2402,7 +2540,9 @@ const KelolaDosenPage = ({ dosen, onAdd, onEdit, onDelete }) => (
 </div>
 </div>
 );
-const SettingsPage = () => (
+};
+const SettingsPage = ({ userRole }) => {
+return (
 <div className="space-y-6">
 <h2 className="text-2xl font-bold text-emerald-900">⚙️ Pengaturan Sistem</h2>
 <div className="bg-white rounded-xl shadow-sm border p-6">
@@ -2424,15 +2564,18 @@ const SettingsPage = () => (
 <div className="bg-white rounded-xl shadow-sm border p-6">
 <h3 className="text-lg font-bold text-gray-900 mb-4">Informasi Sistem</h3>
 <div className="space-y-2 text-sm text-gray-600">
-<p>• Versi Dashboard: 4.2.0</p>
+<p>• Versi Dashboard: 4.3.0 (DENGAN ROLE OPERATOR)</p>
 <p>• Database: Firebase Realtime Database</p>
 <p>• Real-time Sync: Aktif</p>
 <p>• Last Updated: {new Date().toLocaleDateString('id-ID')}</p>
 <p>• Fitur: Advanced Similarity Checker (5 Algoritma), Auto-Create Bimbingan, Early Warning, WhatsApp Integration</p>
+<p>• Role: Admin (full akses), Operator (tanpa hapus), Dosen, Mahasiswa</p>
+<p>• Login Demo: admin/admin123 • operator/operator123</p>
 </div>
 </div>
 </div>
 );
+};
 // ============================================
 // MODAL COMPONENT - DIPERBAIKI LENGKAP
 // ============================================
@@ -2469,6 +2612,10 @@ return;
 }
 if (type === 'repository' && (!formData.judul || !formData.penulis || !formData.prodi || !formData.tahun || !formData.abstrak)) {
 alert('Harap lengkapi semua field wajib untuk repository!');
+return;
+}
+if (type === 'operator' && (!formData.username || !formData.nama || !formData.password)) {
+alert('Harap lengkapi semua field wajib untuk operator!');
 return;
 }
 setIsSaving(true);
@@ -2525,20 +2672,38 @@ return (
 </div>
 </>
 );
+case 'operator':
+return (
+<>
+<div className="form-section">
+<h3 className="text-lg font-bold text-gray-800 mb-3">Data Operator <span className="required-star">*</span></h3>
+<input type="text" placeholder="Username" value={formData.username || ''} onChange={(e) => setFormData({...formData, username: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
+<input type="text" placeholder="Nama Lengkap" value={formData.nama || ''} onChange={(e) => setFormData({...formData, nama: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
+<input type="tel" placeholder="Nomor WhatsApp" value={formData.whatsapp || ''} onChange={(e) => setFormData({...formData, whatsapp: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" />
+{!item && <input type="password" placeholder="Password" value={formData.password || ''} onChange={(e) => setFormData({...formData, password: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />}
+</div>
+<div className="bg-yellow-50 p-4 rounded-lg">
+<p className="text-sm text-yellow-700 flex items-start">
+<span className="text-xl mr-2">⚠️</span>
+<strong>Catatan:</strong> Operator memiliki akses penuh seperti admin, namun tidak bisa menghapus data.
+</p>
+</div>
+</>
+);
 case 'proposals':
 return (
 <>
 <div className="form-section">
 <h3 className="text-lg font-bold text-gray-800 mb-3">Data Mahasiswa <span className="required-star">*</span></h3>
-<input type="text" placeholder="NIM Mahasiswa" value={formData.nim || currentUser?.nim || ''} onChange={(e) => setFormData({...formData, nim: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={userRole !== 'admin'} />
-<input type="text" placeholder="Nama Mahasiswa" value={formData.mahasiswaNama || currentUser?.nama || ''} onChange={(e) => setFormData({...formData, mahasiswaNama: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={userRole !== 'admin'} />
-<select value={formData.prodi || currentUser?.prodi || ''} onChange={(e) => setFormData({...formData, prodi: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={userRole !== 'admin'}>
+<input type="text" placeholder="NIM Mahasiswa" value={formData.nim || currentUser?.nim || ''} onChange={(e) => setFormData({...formData, nim: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={userRole !== 'admin' && userRole !== 'operator'} />
+<input type="text" placeholder="Nama Mahasiswa" value={formData.mahasiswaNama || currentUser?.nama || ''} onChange={(e) => setFormData({...formData, mahasiswaNama: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={userRole !== 'admin' && userRole !== 'operator'} />
+<select value={formData.prodi || currentUser?.prodi || ''} onChange={(e) => setFormData({...formData, prodi: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={userRole !== 'admin' && userRole !== 'operator'}>
 <option value="">Pilih Program Studi</option>
 <option value="Ekonomi Syariah">Ekonomi Syariah</option>
 <option value="Perbankan Syariah">Perbankan Syariah</option>
 <option value="Manajemen Bisnis Syariah">Manajemen Bisnis Syariah</option>
 </select>
-<input type="tel" placeholder="Nomor WhatsApp" value={formData.whatsapp || currentUser?.whatsapp || ''} onChange={(e) => setFormData({...formData, whatsapp: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={userRole !== 'admin'} />
+<input type="tel" placeholder="Nomor WhatsApp" value={formData.whatsapp || currentUser?.whatsapp || ''} onChange={(e) => setFormData({...formData, whatsapp: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={userRole !== 'admin' && userRole !== 'operator'} />
 </div>
 <div className="form-section">
 <h3 className="text-lg font-bold text-gray-800 mb-3">Pembimbing <span className="required-star">*</span></h3>
@@ -2642,9 +2807,9 @@ item.similarityScore >= 30 ? 'similarity-low' :
 <h3 className="text-lg font-bold text-gray-800 mb-3">Abstrak <span className="required-star">*</span></h3>
 <textarea placeholder="Abstrak (min. 150 karakter)" value={formData.abstrak || ''} onChange={(e) => setFormData({...formData, abstrak: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3 h-32" required minLength="150" />
 </div>
-{userRole === 'admin' && (
+{(userRole === 'admin' || userRole === 'operator') && (
 <div className="form-section">
-<h3 className="text-lg font-bold text-gray-800 mb-3">Validasi Admin</h3>
+<h3 className="text-lg font-bold text-gray-800 mb-3">Validasi Admin/Operator</h3>
 <select value={formData.status || 'Menunggu'} onChange={(e) => setFormData({...formData, status: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3">
 <option value="Menunggu">Menunggu</option>
 <option value="Diterima">Diterima</option>
@@ -2738,6 +2903,7 @@ return (
 <span className="ml-3 px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium">
 {type === 'mahasiswa' ? 'Mahasiswa' : 
  type === 'dosen' ? 'Dosen' : 
+ type === 'operator' ? 'Operator' : 
  type === 'proposals' ? 'Proposal' : 
  type === 'bimbingan' ? 'Bimbingan' : 
  type === 'repository' ? 'Repository' : type}
@@ -2777,6 +2943,7 @@ const [dosen, setDosen] = React.useState({});
 const [proposals, setProposals] = React.useState({});
 const [bimbingan, setBimbingan] = React.useState({});
 const [repository, setRepository] = React.useState({});
+const [operator, setOperator] = React.useState({});
 const [toast, setToast] = React.useState({ show: false, msg: '', type: 'info' });
 const [showModal, setShowModal] = React.useState(false);
 const [modalType, setModalType] = React.useState('');
@@ -2852,6 +3019,7 @@ const proposalsSnapshot = await DB.get('proposals');
 const dosenSnapshot = await DB.get('dosen');
 const mahasiswaSnapshot = await DB.get('mahasiswa');
 const bimbinganSnapshot = await DB.get('bimbingan');
+const operatorSnapshot = await DB.get('operator');
 
 // Jika data kosong, isi dengan dummy data
 if (!proposalsSnapshot || Object.keys(proposalsSnapshot).length === 0) {
@@ -2882,6 +3050,13 @@ await DB.push('bimbingan', b);
 }
 }
 
+if (!operatorSnapshot || Object.keys(operatorSnapshot).length === 0) {
+console.log('👤 Mengisi data operator dummy...');
+for (const op of dummyOperator) {
+await DB.push('operator', op);
+}
+}
+
 setDataInitialized(true);
 console.log('✅ Data dummy berhasil diinisialisasi');
 } catch (error) {
@@ -2900,7 +3075,8 @@ const unsub2 = DB.listen('dosen', (data) => setDosen(data || {}));
 const unsub3 = DB.listen('proposals', (data) => setProposals(data || {}));
 const unsub4 = DB.listen('bimbingan', (data) => setBimbingan(data || {}));
 const unsub5 = DB.listen('repository', (data) => setRepository(data || {}));
-return () => { unsub1(); unsub2(); unsub3(); unsub4(); unsub5(); };
+const unsub6 = DB.listen('operator', (data) => setOperator(data || {}));
+return () => { unsub1(); unsub2(); unsub3(); unsub4(); unsub5(); unsub6(); };
 }, [currentUser]);
 
 // Convert objects to arrays
@@ -2909,6 +3085,7 @@ const dosenArr = React.useMemo(() => Object.entries(dosen).map(([id, data]) => (
 const proposalsArr = React.useMemo(() => Object.entries(proposals).map(([id, data]) => ({ id, ...data })), [proposals]);
 const bimbinganArr = React.useMemo(() => Object.entries(bimbingan).map(([id, data]) => ({ id, ...data })), [bimbingan]);
 const repositoryArr = React.useMemo(() => Object.entries(repository).map(([id, data]) => ({ id, ...data })), [repository]);
+const operatorArr = React.useMemo(() => Object.entries(operator).map(([id, data]) => ({ id, ...data })), [operator]);
 
 // Debug log untuk memantau data
 React.useEffect(() => {
@@ -2916,9 +3093,10 @@ console.log('📊 Data saat ini:');
 console.log('- Mahasiswa:', mahasiswaArr.length);
 console.log('- Dosen:', dosenArr.length);
 console.log('- Proposals:', proposalsArr.length);
-console.log('- Proposals Menunggu:', proposalsArr.filter(p => p.status === 'Menunggu').length);
 console.log('- Bimbingan:', bimbinganArr.length);
-}, [mahasiswaArr, dosenArr, proposalsArr, bimbinganArr]);
+console.log('- Operator:', operatorArr.length);
+console.log('- User Role:', userRole);
+}, [mahasiswaArr, dosenArr, proposalsArr, bimbinganArr, operatorArr, userRole]);
 
 // Filter: Proposal approved tapi belum ada di bimbingan
 const pendingBimbingan = React.useMemo(() =>
@@ -3151,14 +3329,14 @@ return <AuthModal onLogin={handleLogin} onClose={() => {}} />;
 // Sidebar component
 const renderSidebar = () => {
 const menus = [
-{ id: 'dashboard', label: 'Dashboard', emoji: '🏠', roles: ['mahasiswa', 'dosen', 'admin'] },
-{ id: 'proposal', label: 'Pengajuan Proposal', emoji: '📝', roles: ['mahasiswa', 'admin'] },
-{ id: 'bimbingan', label: 'Proses Bimbingan', emoji: '📋', roles: ['mahasiswa', 'dosen', 'admin'] },
-{ id: 'warning', label: 'Early Warning', emoji: '⚠️', roles: ['mahasiswa', 'dosen', 'admin'] },
-{ id: 'repository', label: 'Repository Skripsi', emoji: '📚', roles: ['mahasiswa', 'dosen', 'admin'] },
-{ id: 'kelola-mhs', label: 'Kelola Mahasiswa', emoji: '👥', roles: ['admin'] },
-{ id: 'kelola-dsn', label: 'Kelola Dosen', emoji: '👨‍🏫', roles: ['admin'] },
-{ id: 'settings', label: 'Pengaturan', emoji: '⚙️', roles: ['admin'] },
+{ id: 'dashboard', label: 'Dashboard', emoji: '🏠', roles: ['mahasiswa', 'dosen', 'admin', 'operator'] },
+{ id: 'proposal', label: 'Pengajuan Proposal', emoji: '📝', roles: ['mahasiswa', 'admin', 'operator'] },
+{ id: 'bimbingan', label: 'Proses Bimbingan', emoji: '📋', roles: ['mahasiswa', 'dosen', 'admin', 'operator'] },
+{ id: 'warning', label: 'Early Warning', emoji: '⚠️', roles: ['mahasiswa', 'dosen', 'admin', 'operator'] },
+{ id: 'repository', label: 'Repository Skripsi', emoji: '📚', roles: ['mahasiswa', 'dosen', 'admin', 'operator'] },
+{ id: 'kelola-mhs', label: 'Kelola Mahasiswa', emoji: '👥', roles: ['admin', 'operator'] },
+{ id: 'kelola-dsn', label: 'Kelola Dosen', emoji: '👨‍🏫', roles: ['admin', 'operator'] },
+{ id: 'settings', label: 'Pengaturan', emoji: '⚙️', roles: ['admin', 'operator'] },
 ];
 return (
 <>
@@ -3166,7 +3344,7 @@ return (
 <aside className={`fixed top-0 left-0 h-full w-64 bg-gradient-to-b from-emerald-900 to-slate-950 z-50 transform transition-all duration-300 lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
 <div className="p-4 border-b border-emerald-700/50">
 <div className="flex items-center gap-3">
-<Logo/>
+<Logo size="sm" showText={false}/>
 <div>
 <h2 className="text-white font-bold text-sm">FEBI UINSI</h2>
 <p className="text-emerald-300 text-xs">SAMARINDA</p>
@@ -3184,7 +3362,9 @@ return (
 <div className="absolute bottom-0 left-0 right-0 p-3 border-t border-emerald-700/50 bg-emerald-950/50">
 <div className="mb-3 px-3 py-2 bg-emerald-800/30 rounded-lg">
 <p className="text-white text-sm font-medium truncate">{currentUser?.nama}</p>
-<p className="text-emerald-300 text-xs capitalize">{userRole}</p>
+<p className="text-xs capitalize text-emerald-300">
+{userRole}
+</p>
 </div>
 <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-red-300 hover:bg-red-900/30">
 <span>🚪</span>
@@ -3218,7 +3398,9 @@ activeMenu === 'settings' ? 'Pengaturan Sistem' : 'Dashboard FEBI'}
 </div>
 <div className="hidden sm:block">
 <p className="text-sm font-medium text-emerald-900">{currentUser?.nama}</p>
-<p className="text-xs text-emerald-700 capitalize">{userRole}</p>
+<p className="text-xs capitalize text-emerald-700">
+{userRole}
+</p>
 </div>
 </div>
 </div>
@@ -3288,6 +3470,7 @@ onDelete={(id, name) => handleDelete('repository', id, name)}
 case 'kelola-mhs':
 return <KelolaMahasiswaPage
 mahasiswa={mahasiswaArr}
+userRole={userRole}
 onAdd={() => handleAdd('mahasiswa')}
 onEdit={(item) => handleEdit('mahasiswa', item)}
 onDelete={(id, name) => handleDelete('mahasiswa', id, name)}
@@ -3295,12 +3478,13 @@ onDelete={(id, name) => handleDelete('mahasiswa', id, name)}
 case 'kelola-dsn':
 return <KelolaDosenPage
 dosen={dosenArr}
+userRole={userRole}
 onAdd={() => handleAdd('dosen')}
 onEdit={(item) => handleEdit('dosen', item)}
 onDelete={(id, name) => handleDelete('dosen', id, name)}
 />;
 case 'settings':
-return <SettingsPage />;
+return <SettingsPage userRole={userRole} />;
 default:
 return <DashboardPage
 mahasiswaArr={mahasiswaArr}
@@ -3358,18 +3542,21 @@ ReactDOM.render(
 </React.StrictMode>,
 document.getElementById('root')
 );
-console.log('✅ Dashboard FEBI v4.2.0 (FINAL & STABIL) loaded successfully!');
+console.log('✅ Dashboard FEBI v4.3.0 (DENGAN ROLE OPERATOR) loaded successfully!');
 console.log('🔐 Authentication system active');
 console.log('🔍 ADVANCED SIMILARITY CHECKER (5 Algoritma Hybrid) - OPERATIONAL');
 console.log('📊 Cosine • Jaccard Bigram/Trigram • Levenshtein • Semantic Matching');
 console.log('🔄 WORKFLOW INTEGRATION: Auto-create bimbingan saat proposal disetujui');
 console.log('⚠️ Early Warning System dengan WhatsApp integration');
-console.log('✅ SEMUA MODAL BERFUNGSI: Mahasiswa, Dosen, Proposal, Bimbingan, Repository');
+console.log('✅ ROLE OPERATOR: Akses penuh seperti admin, namun tanpa hak hapus');
+console.log('✅ Login Demo: admin/admin123 • operator/operator123');
+console.log('✅ SEMUA MODAL BERFUNGSI: Mahasiswa, Dosen, Proposal, Bimbingan, Repository, Operator');
 console.log('📊 BIMBINGAN PAGE: Tabel dinamis dengan statistik, filter, detail, riwayat, dan cetak laporan');
-console.log('🎯 Fitur Baru: Progress bar, timeline riwayat, print preview, laporan resmi');
 console.log('✅ Loading System: Progress bar, error handling, koneksi stabil');
 console.log('✅ Data Inisialisasi: Data dummy otomatis terisi jika database kosong');
 console.log('✅ Early Warning: Perhitungan semester dari 2 digit pertama NIM (contoh: 21 → 2021)');
+console.log('✅ FIXED: Error userRole is not defined pada KelolaMahasiswaPage dan KelolaDosenPage');
+console.log('✅ REMOVED: Label "(tanpa hapus)" dan "(no delete)" dari tampilan');
 </script>
 </body>
 </html>
