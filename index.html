@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FEBI UINSI - Bimbingan Proposal dan Repository</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23047857'/><text x='50' y='55' text-anchor='middle' fill='%23fbbf24' font-size='24' font-weight='bold'>F</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23047857'/><text x='50' y='65' text-anchor='middle' fill='%23fbbf24' font-size='40' font-weight='bold'>🎓</text></svg>">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
 tailwind.config = {
@@ -221,23 +221,23 @@ return () => ref.off('value');
 }
 };
 // ============================================
-// LOGO COMPONENT
+// LOGO COMPONENT - UPDATED WITH MORTARBOARD (TOPI TOGA)
 // ============================================
 const Logo = ({ size = 'md', showText = true }) => {
 const sizes = {
-sm: 'w-16 h-16 text-xl',
-md: 'w-24 h-24 text-2xl',
-lg: 'w-32 h-32 text-3xl'
+sm: 'w-16 h-16 text-3xl',
+md: 'w-24 h-24 text-5xl',
+lg: 'w-32 h-32 text-6xl'
 };
 return (
 <div className="flex flex-col items-center">
 <div className={`${sizes[size]} bg-gradient-to-br from-emerald-600 to-teal-700 rounded-2xl flex items-center justify-center text-white font-black shadow-lg mb-3`}>
-<span className="text-4xl">F</span>
+<span>🎓</span>
 </div>
 {showText && (
 <div className="text-center">
-<div className="text-2xl font-bold text-emerald-900">FEBI</div>
-<div className="text-sm text-emerald-700 tracking-wider">FACULTY OF ISLAMIC ECONOMICS AND BUSINESS</div>
+<div className="text-2xl font-bold text-emerald-900">BIMBINGAN SKRIPSI DAN REPOSITORY</div>
+<div className="text-sm text-emerald-700 tracking-wider">FAKULTAS EKONOMI DAN BISNIS ISLAM</div>
 <div className="text-xs text-emerald-600 mt-1">UINSI SAMARINDA</div>
 </div>
 )}
@@ -500,7 +500,7 @@ return true;
 return false;
 };
 // ============================================
-// AUTH MODAL COMPONENT - DENGAN ROLE OPERATOR
+// AUTH MODAL COMPONENT - DENGAN LOGO TOPI TOGA
 // ============================================
 const AuthModal = ({ onLogin, onClose, showRegister }) => {
 const [isRegister, setIsRegister] = React.useState(showRegister || false);
@@ -610,10 +610,6 @@ return (
 <div className="animate-float">
 <Logo size="lg" showText={true} />
 </div>
-<h1 className="text-3xl font-bold text-center text-emerald-900 mt-6 mb-2">
-BIMBINGAN PROPOSAL DAN REPOSITORY
-</h1>
-
 
 <div className="space-y-4">
 <button
@@ -645,8 +641,8 @@ return (
 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto" onClick={onClose}>
 <div className="bg-white rounded-2xl p-6 max-w-md w-full my-8" onClick={(e) => e.stopPropagation()}>
 <div className="flex items-center gap-3 mb-6">
-<div className="w-12 h-12 bg-gradient-to-br from-emerald-600 to-teal-700 rounded-xl flex items-center justify-center text-white font-bold text-xl">
-F
+<div className="w-12 h-12 bg-gradient-to-br from-emerald-600 to-teal-700 rounded-xl flex items-center justify-center text-white text-2xl font-bold">
+🎓
 </div>
 <h2 className="text-2xl font-bold text-emerald-900">Registrasi Akun</h2>
 </div>
@@ -694,8 +690,8 @@ return (
 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
 <div className="bg-white rounded-2xl p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
 <div className="flex items-center gap-3 mb-6">
-<div className="w-12 h-12 bg-gradient-to-br from-emerald-600 to-teal-700 rounded-xl flex items-center justify-center text-white font-bold text-xl">
-F
+<div className="w-12 h-12 bg-gradient-to-br from-emerald-600 to-teal-700 rounded-xl flex items-center justify-center text-white text-2xl font-bold">
+🎓
 </div>
 <h3 className="text-2xl font-bold text-emerald-900">Masuk ke Dashboard</h3>
 </div>
@@ -713,6 +709,7 @@ F
 </button>
 </div>
 <div className="mt-4 text-xs text-gray-400 text-center">
+
 
 </div>
 </div>
@@ -2564,7 +2561,7 @@ return (
 <div className="bg-white rounded-xl shadow-sm border p-6">
 <h3 className="text-lg font-bold text-gray-900 mb-4">Informasi Sistem</h3>
 <div className="space-y-2 text-sm text-gray-600">
-<p>• Versi Dashboard: 4.3.0 (DENGAN ROLE OPERATOR)</p>
+<p>• Versi Dashboard: 4.3.0 (DENGAN LOGO TOPI TOGA)</p>
 <p>• Database: Firebase Realtime Database</p>
 <p>• Real-time Sync: Aktif</p>
 <p>• Last Updated: {new Date().toLocaleDateString('id-ID')}</p>
@@ -3393,8 +3390,8 @@ activeMenu === 'settings' ? 'Pengaturan Sistem' : 'Dashboard FEBI'}
 </div>
 <div className="flex items-center gap-3">
 <div className="flex items-center gap-2 px-3 py-2 bg-emerald-50 rounded-xl">
-<div className="w-9 h-9 bg-emerald-600 rounded-full flex items-center justify-center text-white font-bold">
-{currentUser?.nama?.charAt(0).toUpperCase()}
+<div className="w-9 h-9 bg-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
+🎓
 </div>
 <div className="hidden sm:block">
 <p className="text-sm font-medium text-emerald-900">{currentUser?.nama}</p>
@@ -3542,7 +3539,7 @@ ReactDOM.render(
 </React.StrictMode>,
 document.getElementById('root')
 );
-console.log('✅ Dashboard FEBI v4.3.0 (DENGAN ROLE OPERATOR) loaded successfully!');
+console.log('✅ Dashboard FEBI v4.4.0 (DENGAN LOGO TOPI TOGA) loaded successfully!');
 console.log('🔐 Authentication system active');
 console.log('🔍 ADVANCED SIMILARITY CHECKER (5 Algoritma Hybrid) - OPERATIONAL');
 console.log('📊 Cosine • Jaccard Bigram/Trigram • Levenshtein • Semantic Matching');
@@ -3555,8 +3552,7 @@ console.log('📊 BIMBINGAN PAGE: Tabel dinamis dengan statistik, filter, detail
 console.log('✅ Loading System: Progress bar, error handling, koneksi stabil');
 console.log('✅ Data Inisialisasi: Data dummy otomatis terisi jika database kosong');
 console.log('✅ Early Warning: Perhitungan semester dari 2 digit pertama NIM (contoh: 21 → 2021)');
-console.log('✅ FIXED: Error userRole is not defined pada KelolaMahasiswaPage dan KelolaDosenPage');
-console.log('✅ REMOVED: Label "(tanpa hapus)" dan "(no delete)" dari tampilan');
+console.log('✅ LOGO: Topi Toga (🎓) sebagai pengganti huruf F');
 </script>
 </body>
 </html>
