@@ -486,38 +486,57 @@ const checkProposalSimilarityAdvanced = (newTitle, existingProposals, existingRe
 return similarityChecker.checkAgainstDatabase(newTitle, existingProposals, existingRepository);
 };
 // ============================================
-// CRITICAL FIX: AUTO-CREATE BIMBINGAN ON APPROVAL
+// CRITICAL FIX: AUTO-CREATE BIMBINGAN ON APPROVAL (UNTUK 2 DOSEN)
 // ============================================
 const createBimbinganFromProposal = async (proposalData, proposalId) => {
-const bimbinganSnapshot = await DB.get('bimbingan');
-const existing = Object.values(bimbinganSnapshot || {}).find(b =>
-b.nim === proposalData.nim && b.judul === proposalData.judul
+const bimbinganSnapshot = await DB.get('bimbingan') || {};
+const results = [];
+
+// Fungsi untuk membuat record bimbingan untuk dosen tertentu
+const createForDosen = async (dosenNama, pembimbingKe) => {
+if (!dosenNama || dosenNama === '-') return null;
+  
+// Cek apakah sudah ada
+const exists = Object.values(bimbinganSnapshot).find(b =>
+b.nim === proposalData.nim && b.judul === proposalData.judul && b.dosenNama === dosenNama
 );
-if (existing) {
-console.log('ℹ️ Bimbingan already exists for this proposal');
-return false;
+if (exists) {
+console.log(`ℹ️ Bimbingan already exists for ${dosenNama}`);
+return null;
 }
+
 const bimbinganData = {
 nim: proposalData.nim,
 mahasiswaNama: proposalData.mahasiswaNama,
-dosenNama: proposalData.pembimbing1,
+dosenNama: dosenNama,
 judul: proposalData.judul,
 prodi: proposalData.prodi,
 whatsapp: proposalData.whatsapp,
 progress: 0,
 status: 'berlangsung',
-meetings: [], // Array untuk menyimpan riwayat pertemuan
-catatan: `✅ Proposal disetujui pada ${new Date().toLocaleDateString('id-ID')}. Bimbingan dimulai oleh sistem.`,
+pembimbingKe: pembimbingKe, // 1 atau 2
+meetings: [],
+catatan: `✅ Proposal disetujui pada ${new Date().toLocaleDateString('id-ID')}. Bimbingan dengan ${pembimbingKe === 1 ? 'Pembimbing 1' : 'Pembimbing 2'} dimulai oleh sistem.`,
 lastUpdate: new Date().toISOString().split('T')[0],
 proposalId: proposalId,
 createdAt: new Date().toISOString()
 };
+
 const newId = await DB.push('bimbingan', bimbinganData);
 if (newId) {
-console.log('✅ Bimbingan record created automatically:', newId);
-return true;
+console.log(`✅ Bimbingan record created automatically for ${dosenNama} (Pembimbing ${pembimbingKe}):`, newId);
+results.push(newId);
 }
-return false;
+};
+
+// Buat untuk Pembimbing 1
+await createForDosen(proposalData.pembimbing1, 1);
+// Buat untuk Pembimbing 2 jika ada
+if (proposalData.pembimbing2 && proposalData.pembimbing2 !== '-') {
+await createForDosen(proposalData.pembimbing2, 2);
+}
+
+return results.length > 0;
 };
 // ============================================
 // AUTH MODAL COMPONENT - DENGAN ROLE OPERATOR & LOGO BARU
@@ -755,7 +774,7 @@ pembimbing1: "Dr. Hj. Siti Aminah, M.Ag",
 pembimbing2: "Dr. Ahmad Rizal, M.Si",
 whatsapp: "081234567890",
 abstrak: "Penelitian ini bertujuan untuk menganalisis pengaruh literasi keuangan syariah terhadap minat menabung mahasiswa di bank syariah. Metode penelitian menggunakan pendekatan kuantitatif dengan sampel 100 responden.",
-status: "Menunggu",
+status: "Diterima",
 tahun: "2025",
 catatan: ""
 },
@@ -810,6 +829,27 @@ nama: "Dr. Abdul Malik, M.M",
 nip: "198003012007031003",
 keahlian: "Manajemen Bisnis",
 whatsapp: "081234567895"
+},
+{
+id: "dosen4",
+nama: "Dr. Ahmad Rizal, M.Si",
+nip: "197803012008041004",
+keahlian: "Ekonomi Syariah",
+whatsapp: "081234567898"
+},
+{
+id: "dosen5",
+nama: "Dr. Siti Khadijah, M.Si",
+nip: "197903012009051005",
+keahlian: "Perbankan Syariah",
+whatsapp: "081234567899"
+},
+{
+id: "dosen6",
+nama: "Dr. Nurul Huda, M.Si",
+nip: "198003012010061006",
+keahlian: "Manajemen Bisnis",
+whatsapp: "081234567900"
 }
 ];
 
@@ -862,16 +902,18 @@ status: "aktif"
 ];
 
 const dummyBimbingan = [
+// Bimbingan untuk proposal 1 (Ahmad Fauzi) dengan 2 dosen
 {
 id: "bimb1",
-nim: "210401002",
-mahasiswaNama: "Budi Santoso",
-dosenNama: "Dr. Muhammad Iqbal, M.Ec",
-judul: "Analisis Strategi Pemasaran Produk Perbankan Syariah di Era Digital",
-prodi: "Perbankan Syariah",
-whatsapp: "081234567891",
+nim: "210401001",
+mahasiswaNama: "Ahmad Fauzi",
+dosenNama: "Dr. Hj. Siti Aminah, M.Ag",
+judul: "Pengaruh Literasi Keuangan Syariah terhadap Minat Menabung di Bank Syariah",
+prodi: "Ekonomi Syariah",
+whatsapp: "081234567890",
 progress: 35,
 status: "berlangsung",
+pembimbingKe: 1,
 meetings: [
 { meeting: 1, date: "2026-02-01", progress: 10, catatan: "Pertemuan awal, membahas outline proposal" },
 { meeting: 2, date: "2026-02-05", progress: 20, catatan: "Revisi bab 1 latar belakang" },
@@ -881,33 +923,72 @@ meetings: [
 catatan: "Bab 1-2 sudah direvisi. Lanjut ke bab 3 metodologi.",
 lastUpdate: "2026-02-15",
 createdAt: "2026-02-01T08:00:00.000Z",
-proposalId: "proposal2"
+proposalId: "proposal1"
 },
 {
 id: "bimb2",
-nim: "1813181033",
-mahasiswaNama: "Dian Permata Sari",
-dosenNama: "Dr. Hj. Siti Aminah, M.Ag",
-judul: "Analisis Dampak Fintech Syariah terhadap Inklusi Keuangan Masyarakat",
+nim: "210401001",
+mahasiswaNama: "Ahmad Fauzi",
+dosenNama: "Dr. Ahmad Rizal, M.Si",
+judul: "Pengaruh Literasi Keuangan Syariah terhadap Minat Menabung di Bank Syariah",
 prodi: "Ekonomi Syariah",
-whatsapp: "081234567896",
-progress: 85,
+whatsapp: "081234567890",
+progress: 20,
 status: "berlangsung",
+pembimbingKe: 2,
 meetings: [
-{ meeting: 1, date: "2025-09-15", progress: 10, catatan: "Bimbingan awal, pembahasan tema" },
-{ meeting: 2, date: "2025-09-22", progress: 20, catatan: "Revisi outline proposal" },
-{ meeting: 3, date: "2025-10-01", progress: 30, catatan: "Pembahasan bab 1" },
-{ meeting: 4, date: "2025-10-10", progress: 40, catatan: "Revisi bab 1" },
-{ meeting: 5, date: "2025-10-20", progress: 50, catatan: "Pembahasan bab 2" },
-{ meeting: 6, date: "2025-11-01", progress: 60, catatan: "Revisi bab 2" },
-{ meeting: 7, date: "2025-11-15", progress: 70, catatan: "Pembahasan bab 3 metodologi" },
-{ meeting: 8, date: "2025-12-01", progress: 80, catatan: "Revisi bab 3" },
-{ meeting: 9, date: "2026-01-10", progress: 90, catatan: "Pembahasan bab 4 hasil penelitian" }
+{ meeting: 1, date: "2026-02-02", progress: 10, catatan: "Bimbingan awal dengan pembimbing 2" },
+{ meeting: 2, date: "2026-02-08", progress: 20, catatan: "Revisi metodologi" }
 ],
-catatan: "Bab 4 sudah selesai, lanjut bab 5 kesimpulan.",
-lastUpdate: "2026-02-10",
-createdAt: "2025-09-15T10:00:00.000Z",
-proposalId: "proposal4"
+catatan: "Fokus pada metodologi penelitian.",
+lastUpdate: "2026-02-08",
+createdAt: "2026-02-01T09:00:00.000Z",
+proposalId: "proposal1"
+},
+// Bimbingan untuk proposal 2 (Budi Santoso) dengan 2 dosen
+{
+id: "bimb3",
+nim: "210401002",
+mahasiswaNama: "Budi Santoso",
+dosenNama: "Dr. Muhammad Iqbal, M.Ec",
+judul: "Analisis Strategi Pemasaran Produk Perbankan Syariah di Era Digital",
+prodi: "Perbankan Syariah",
+whatsapp: "081234567891",
+progress: 45,
+status: "berlangsung",
+pembimbingKe: 1,
+meetings: [
+{ meeting: 1, date: "2026-01-15", progress: 10, catatan: "Pertemuan awal" },
+{ meeting: 2, date: "2026-01-22", progress: 20, catatan: "Revisi bab 1" },
+{ meeting: 3, date: "2026-02-01", progress: 30, catatan: "Pembahasan bab 2" },
+{ meeting: 4, date: "2026-02-10", progress: 40, catatan: "Revisi bab 2" },
+{ meeting: 5, date: "2026-02-18", progress: 50, catatan: "Pembahasan bab 3" }
+],
+catatan: "Bab 1-2 selesai, lanjut bab 3.",
+lastUpdate: "2026-02-18",
+createdAt: "2026-01-15T10:00:00.000Z",
+proposalId: "proposal2"
+},
+{
+id: "bimb4",
+nim: "210401002",
+mahasiswaNama: "Budi Santoso",
+dosenNama: "Dr. Siti Khadijah, M.Si",
+judul: "Analisis Strategi Pemasaran Produk Perbankan Syariah di Era Digital",
+prodi: "Perbankan Syariah",
+whatsapp: "081234567891",
+progress: 30,
+status: "berlangsung",
+pembimbingKe: 2,
+meetings: [
+{ meeting: 1, date: "2026-01-16", progress: 10, catatan: "Bimbingan awal P2" },
+{ meeting: 2, date: "2026-01-25", progress: 20, catatan: "Revisi bab 1" },
+{ meeting: 3, date: "2026-02-05", progress: 30, catatan: "Pembahasan bab 2" }
+],
+catatan: "Fokus pada analisis data.",
+lastUpdate: "2026-02-05",
+createdAt: "2026-01-16T11:00:00.000Z",
+proposalId: "proposal2"
 }
 ];
 
@@ -995,9 +1076,12 @@ Terdapat <strong>{pendingBimbingan.length}</strong> proposal yang sudah disetuju
 <div>
 <p className="font-medium text-sm">{p.judul?.substring(0, 35)}{p.judul?.length > 35 ? '...' : ''}</p>
 <p className="text-xs text-amber-800">{p.mahasiswaNama} • {p.prodi}</p>
-<p className="text-xs mt-1">Pembimbing: <strong>{p.pembimbing1}</strong></p>
+<p className="text-xs mt-1">Pembimbing 1: <strong>{p.pembimbing1}</strong></p>
+{p.pembimbing2 && p.pembimbing2 !== '-' && (
+<p className="text-xs mt-1">Pembimbing 2: <strong>{p.pembimbing2}</strong></p>
+)}
 </div>
-{userRole === 'dosen' && p.pembimbing1 === currentUser.nama && (
+{userRole === 'dosen' && (p.pembimbing1 === currentUser.nama || p.pembimbing2 === currentUser.nama) && (
 <button
 onClick={() => window.handleMulaiBimbingan && window.handleMulaiBimbingan(p)}
 className="px-3 py-1 bg-amber-600 text-white rounded text-xs hover:bg-amber-700"
@@ -1071,7 +1155,7 @@ p.status === 'Diperbaiki' ? 'bg-yellow-100 text-yellow-700' :
 );
 };
 // ============================================
-// PROPOSAL PAGE - ENHANCED VERSION DENGAN TABEL INFORMATIF
+// PROPOSAL PAGE - ENHANCED VERSION DENGAN DUKUNGAN 2 DOSEN
 // ============================================
 const ProposalPage = ({ proposals, userRole, currentUser, onAdd, onEdit, onDelete, dosenList, mahasiswaList, onCheckSimilarity, similarityResult, onMulaiBimbingan, bimbinganArr, onNavigate }) => {
   const [searchTerm, setSearchTerm] = React.useState('');
@@ -1117,6 +1201,11 @@ const ProposalPage = ({ proposals, userRole, currentUser, onAdd, onEdit, onDelet
   const handleViewDetail = (proposal) => {
     setSelectedProposal(proposal);
     setShowDetailModal(true);
+  };
+
+  // Cek status bimbingan untuk proposal dan dosen tertentu
+  const getBimbinganStatus = (proposal, dosenNama) => {
+    return bimbinganArr.find(b => b.nim === proposal.nim && b.judul === proposal.judul && b.dosenNama === dosenNama);
   };
 
   // Detail Modal Component
@@ -1173,10 +1262,20 @@ const ProposalPage = ({ proposals, userRole, currentUser, onAdd, onEdit, onDelet
                 <div>
                   <p className="text-xs text-gray-500">Pembimbing 1</p>
                   <p className="font-medium">{item.pembimbing1}</p>
+                  {getBimbinganStatus(item, item.pembimbing1) && (
+                    <p className="text-xs mt-1 text-emerald-600">
+                      Progress: {getBimbinganStatus(item, item.pembimbing1).progress}%
+                    </p>
+                  )}
                 </div>
                 <div>
                   <p className="text-xs text-gray-500">Pembimbing 2</p>
                   <p className="font-medium">{item.pembimbing2 || '-'}</p>
+                  {item.pembimbing2 && getBimbinganStatus(item, item.pembimbing2) && (
+                    <p className="text-xs mt-1 text-emerald-600">
+                      Progress: {getBimbinganStatus(item, item.pembimbing2).progress}%
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -1280,23 +1379,23 @@ const ProposalPage = ({ proposals, userRole, currentUser, onAdd, onEdit, onDelet
       {/* Table View - INFORMATIF, MENARIK, KOMPREHENSIF */}
       <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1200px]">
+          <table className="w-full min-w-[1400px]">
             <thead className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
               <tr>
                 <th className="px-4 py-3 text-left text-sm font-semibold w-12">No</th>
                 <th className="px-4 py-3 text-left text-sm font-semibold">Judul Proposal</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold w-48">Mahasiswa</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold w-40">Program Studi</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold w-40">Pembimbing 1</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold w-36">Pembimbing 2</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold w-40">Mahasiswa</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold w-32">Program Studi</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold w-48">Pembimbing 1</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold w-48">Pembimbing 2</th>
                 <th className="px-4 py-3 text-left text-sm font-semibold w-28">Status</th>
-                <th className="px-4 py-3 text-center text-sm font-semibold w-36">Aksi</th>
+                <th className="px-4 py-3 text-center text-sm font-semibold w-48">Aksi / Progress Bimbingan</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {filteredProposals.map((item, index) => {
-                // Cek apakah sudah ada bimbingan untuk proposal ini
-                const hasBimbingan = bimbinganArr.some(b => b.nim === item.nim && b.judul === item.judul);
+                const bimbinganP1 = getBimbinganStatus(item, item.pembimbing1);
+                const bimbinganP2 = item.pembimbing2 ? getBimbinganStatus(item, item.pembimbing2) : null;
                 
                 return (
                   <tr key={item.id} className="hover:bg-emerald-50/50 transition-colors group">
@@ -1311,8 +1410,30 @@ const ProposalPage = ({ proposals, userRole, currentUser, onAdd, onEdit, onDelet
                       <div className="text-xs text-gray-400">{item.nim}</div>
                     </td>
                     <td className="px-4 py-3 text-sm">{item.prodi}</td>
-                    <td className="px-4 py-3 text-sm">{item.pembimbing1}</td>
-                    <td className="px-4 py-3 text-sm">{item.pembimbing2 || '-'}</td>
+                    <td className="px-4 py-3">
+                      <div className="text-sm">{item.pembimbing1}</div>
+                      {bimbinganP1 && (
+                        <div className="text-xs mt-1">
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
+                            bimbinganP1.status === 'berlangsung' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
+                          }`}>
+                            {bimbinganP1.status === 'berlangsung' ? '🔄' : '✅'} {bimbinganP1.progress}%
+                          </span>
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="text-sm">{item.pembimbing2 || '-'}</div>
+                      {bimbinganP2 && (
+                        <div className="text-xs mt-1">
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
+                            bimbinganP2.status === 'berlangsung' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
+                          }`}>
+                            {bimbinganP2.status === 'berlangsung' ? '🔄' : '✅'} {bimbinganP2.progress}%
+                          </span>
+                        </div>
+                      )}
+                    </td>
                     <td className="px-4 py-3">
                       <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
                         item.status === 'Diterima' ? 'bg-green-100 text-green-700' :
@@ -1324,7 +1445,7 @@ const ProposalPage = ({ proposals, userRole, currentUser, onAdd, onEdit, onDelet
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex items-center justify-center gap-2">
+                      <div className="flex items-center justify-center gap-2 flex-wrap">
                         {/* Tombol Lihat Detail */}
                         <button
                           onClick={() => handleViewDetail(item)}
@@ -1356,12 +1477,34 @@ const ProposalPage = ({ proposals, userRole, currentUser, onAdd, onEdit, onDelet
                           </button>
                         )}
                         
-                        {/* Tombol Mulai Bimbingan untuk Dosen */}
-                        {userRole === 'dosen' && item.status === 'Diterima' && !hasBimbingan && item.pembimbing1 === currentUser?.nama && (
+                        {/* Tombol Mulai Bimbingan untuk Dosen (Pembimbing 1) */}
+                        {userRole === 'dosen' && item.status === 'Diterima' && !bimbinganP1 && item.pembimbing1 === currentUser?.nama && (
                           <button
-                            onClick={() => onMulaiBimbingan(item)}
+                            onClick={() => onMulaiBimbingan(item, 1)}
                             className="p-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-all transform hover:scale-110"
-                            title="Mulai Bimbingan"
+                            title="Mulai Bimbingan (Pembimbing 1)"
+                          >
+                            <span className="text-lg">📋1️⃣</span>
+                          </button>
+                        )}
+                        
+                        {/* Tombol Mulai Bimbingan untuk Dosen (Pembimbing 2) */}
+                        {userRole === 'dosen' && item.status === 'Diterima' && !bimbinganP2 && item.pembimbing2 === currentUser?.nama && (
+                          <button
+                            onClick={() => onMulaiBimbingan(item, 2)}
+                            className="p-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-all transform hover:scale-110"
+                            title="Mulai Bimbingan (Pembimbing 2)"
+                          >
+                            <span className="text-lg">📋2️⃣</span>
+                          </button>
+                        )}
+                        
+                        {/* Tombol Lihat Bimbingan untuk Mahasiswa */}
+                        {userRole === 'mahasiswa' && item.status === 'Diterima' && (
+                          <button
+                            onClick={() => onNavigate('bimbingan')}
+                            className="p-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition-all transform hover:scale-110"
+                            title="Lihat Bimbingan"
                           >
                             <span className="text-lg">📋</span>
                           </button>
@@ -1414,7 +1557,7 @@ const ProposalPage = ({ proposals, userRole, currentUser, onAdd, onEdit, onDelet
   );
 };
 // ============================================
-// BIMBINGAN PAGE - ENHANCED VERSION DENGAN TIMELINE 10 PERTEMUAN
+// BIMBINGAN PAGE - ENHANCED VERSION DENGAN DUKUNGAN 2 DOSEN
 // ============================================
 const BimbinganPage = ({ bimbingan, userRole, currentUser, onAdd, onEdit, onDelete, mahasiswaList, dosenList, onNavigate }) => {
 const [selectedBimbingan, setSelectedBimbingan] = React.useState(null);
@@ -1425,6 +1568,7 @@ const [showAddMeetingModal, setShowAddMeetingModal] = React.useState(false);
 const [searchTerm, setSearchTerm] = React.useState('');
 const [filterStatus, setFilterStatus] = React.useState('');
 const [filterProdi, setFilterProdi] = React.useState('');
+const [filterPembimbing, setFilterPembimbing] = React.useState('');
 const [showPrintPreview, setShowPrintPreview] = React.useState(false);
 const [printData, setPrintData] = React.useState(null);
 
@@ -1455,8 +1599,13 @@ if (filterProdi) {
 filtered = filtered.filter(b => b.prodi === filterProdi);
 }
 
+// Apply pembimbing filter
+if (filterPembimbing) {
+filtered = filtered.filter(b => b.pembimbingKe?.toString() === filterPembimbing);
+}
+
 return filtered;
-}, [bimbingan, userRole, currentUser, searchTerm, filterStatus, filterProdi]);
+}, [bimbingan, userRole, currentUser, searchTerm, filterStatus, filterProdi, filterPembimbing]);
 
 // Statistik bimbingan
 const stats = React.useMemo(() => {
@@ -1588,7 +1737,7 @@ ${index > 0 ? '<div class="page-break"></div>' : ''}
 <tr><th colspan="2" style="text-align: center;">INFORMASI BIMBINGAN</th></tr>
 <tr><td width="200"><strong>Mahasiswa</strong></td><td>${item.mahasiswaNama} (${item.nim})</td></tr>
 <tr><td><strong>Program Studi</strong></td><td>${item.prodi}</td></tr>
-<tr><td><strong>Dosen Pembimbing</strong></td><td>${item.dosenNama}</td></tr>
+<tr><td><strong>Dosen Pembimbing</strong></td><td>${item.dosenNama} ${item.pembimbingKe ? `(Pembimbing ${item.pembimbingKe})` : ''}</td></tr>
 <tr><td><strong>Status</strong></td><td>${item.status === 'berlangsung' ? 'Berlangsung' : 'Selesai'}</td></tr>
 <tr><td><strong>Progress</strong></td><td>
 <div class="progress-bar">
@@ -1667,20 +1816,6 @@ ${remainingMeetings > 0 ? `
 `;
 };
 
-const generateRiwayatHTML = (item) => {
-const meetings = item.meetings || [];
-if (meetings.length === 0) {
-return '<tr><td colspan="3" class="text-center">Belum ada riwayat bimbingan</td></tr>';
-}
-return meetings.map(m => `
-<tr>
-<td>${m.date}</td>
-<td>${m.progress}%</td>
-<td>${m.catatan || '-'}</td>
-</tr>
-`).join('');
-};
-
 // Detail Modal Component dengan Timeline Visual
 const DetailModal = ({ item, onClose, onPrint, onHistory, onEdit, onAddMeeting, onViewTimeline }) => {
 if (!item) return null;
@@ -1717,6 +1852,9 @@ return (
 <div>
 <p className="text-sm text-gray-600">Dosen Pembimbing</p>
 <p className="font-semibold">{item.dosenNama}</p>
+{item.pembimbingKe && (
+<p className="text-xs text-emerald-600">Pembimbing {item.pembimbingKe}</p>
+)}
 </div>
 <div>
 <p className="text-sm text-gray-600">Program Studi</p>
@@ -1881,6 +2019,9 @@ return (
 <div className="bg-gradient-to-r from-emerald-50 to-teal-50 p-6 rounded-xl">
 <h3 className="text-xl font-bold text-emerald-900 mb-2">{item.judul}</h3>
 <p className="text-sm text-gray-600">{item.mahasiswaNama} • {item.dosenNama}</p>
+{item.pembimbingKe && (
+<p className="text-xs text-emerald-600 mt-1">Pembimbing {item.pembimbingKe}</p>
+)}
 </div>
 
 {/* Timeline Visual */}
@@ -2078,6 +2219,9 @@ return (
 <div className="bg-emerald-50 p-4 rounded-lg">
 <p className="font-semibold">{item.judul}</p>
 <p className="text-sm text-gray-600">{item.mahasiswaNama} • {item.dosenNama}</p>
+{item.pembimbingKe && (
+<p className="text-xs text-emerald-600">Pembimbing {item.pembimbingKe}</p>
+)}
 </div>
 
 <div className="space-y-3">
@@ -2216,7 +2360,7 @@ Total {filteredBimbingan.length} bimbingan {filteredBimbingan.length !== bimbing
 
 {/* Filter Section */}
 <div className="bg-white rounded-xl shadow-sm border p-4">
-<div className="grid md:grid-cols-4 gap-4">
+<div className="grid md:grid-cols-5 gap-4">
 <div className="md:col-span-2">
 <label className="block text-xs font-semibold text-gray-600 mb-1">🔍 Cari</label>
 <input
@@ -2252,6 +2396,18 @@ className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-eme
 <option value="Manajemen Bisnis Syariah">Manajemen Bisnis Syariah</option>
 </select>
 </div>
+<div>
+<label className="block text-xs font-semibold text-gray-600 mb-1">👨‍🏫 Pembimbing</label>
+<select
+value={filterPembimbing}
+onChange={(e) => setFilterPembimbing(e.target.value)}
+className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 focus:outline-none"
+>
+<option value="">Semua</option>
+<option value="1">Pembimbing 1</option>
+<option value="2">Pembimbing 2</option>
+</select>
+</div>
 </div>
 </div>
 
@@ -2268,7 +2424,16 @@ return (
 {/* Main Info */}
 <div className="flex-1">
 <div className="flex items-start justify-between mb-3">
+<div>
 <h3 className="text-lg font-bold text-gray-900 flex-1">{b.judul}</h3>
+{b.pembimbingKe && (
+<span className={`inline-block ml-2 px-2 py-0.5 rounded text-xs font-semibold ${
+b.pembimbingKe === 1 ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'
+}`}>
+Pembimbing {b.pembimbingKe}
+</span>
+)}
+</div>
 <span className={`ml-4 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${
 isBerlangsung ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
 }`}>
@@ -3266,13 +3431,12 @@ return (
 <div className="bg-white rounded-xl shadow-sm border p-6">
 <h3 className="text-lg font-bold text-gray-900 mb-4">Informasi Sistem</h3>
 <div className="space-y-2 text-sm text-gray-600">
-<p>• Versi Dashboard: 6.0.0</p>
+<p>• Versi Dashboard: 6.1.0</p>
 <p>• Database: Firebase Realtime Database</p>
 <p>• Real-time Sync: Aktif</p>
 <p>• Last Updated: {new Date().toLocaleDateString('id-ID')}</p>
-<p>• Fitur: Advanced Similarity Checker (5 Algoritma), Auto-Create Bimbingan, Early Warning, WhatsApp Integration</p>
+<p>• Fitur: Advanced Similarity Checker (5 Algoritma), Auto-Create Bimbingan untuk 2 Dosen, Early Warning, WhatsApp Integration</p>
 <p>• Fitur Bimbingan: Timeline 10 pertemuan, progress 10% per pertemuan, riwayat detail, cetak laporan dengan tanda tangan otomatis</p>
-
 </div>
 </div>
 </div>
@@ -3341,6 +3505,7 @@ prodi: currentUser?.prodi || '',
 whatsapp: currentUser?.whatsapp || '',
 progress: 0,
 status: 'berlangsung',
+pembimbingKe: 1,
 meetings: [],
 catatan: '',
 lastUpdate: new Date().toISOString().split('T')[0]
@@ -3763,6 +3928,10 @@ return (
 <input type="text" placeholder="NIM Mahasiswa" value={formData.nim || currentUser?.nim || ''} onChange={(e) => setFormData({...formData, nim: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={isReadOnly} />
 <input type="text" placeholder="Nama Mahasiswa" value={formData.mahasiswaNama || currentUser?.nama || ''} onChange={(e) => setFormData({...formData, mahasiswaNama: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={isReadOnly} />
 <input type="text" placeholder="Nama Dosen" value={formData.dosenNama || ''} onChange={(e) => setFormData({...formData, dosenNama: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={isReadOnly} />
+<select value={formData.pembimbingKe || 1} onChange={(e) => setFormData({...formData, pembimbingKe: parseInt(e.target.value)})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3">
+<option value="1">Pembimbing 1</option>
+<option value="2">Pembimbing 2</option>
+</select>
 </div>
 
 <div className="form-section">
@@ -3866,7 +4035,7 @@ Batal
 );
 };
 // ============================================
-// MAIN APP COMPONENT - DENGAN WORKFLOW INTEGRATION
+// MAIN APP COMPONENT - DENGAN WORKFLOW INTEGRATION UNTUK 2 DOSEN
 // ============================================
 const App = () => {
 const [currentUser, setCurrentUser] = React.useState(null);
@@ -4034,11 +4203,13 @@ console.log('- Operator:', operatorArr.length);
 console.log('- User Role:', userRole);
 }, [mahasiswaArr, dosenArr, proposalsArr, bimbinganArr, operatorArr, userRole]);
 
-// Filter: Proposal approved tapi belum ada di bimbingan
+// Filter: Proposal approved tapi belum ada di bimbingan (untuk masing-masing dosen)
 const pendingBimbingan = React.useMemo(() =>
 proposalsArr.filter(p =>
-p.status === 'Diterima' &&
-!bimbinganArr.some(b => b.nim === p.nim && b.judul === p.judul)
+p.status === 'Diterima' && (
+!bimbinganArr.some(b => b.nim === p.nim && b.judul === p.judul && b.dosenNama === p.pembimbing1) ||
+(p.pembimbing2 && !bimbinganArr.some(b => b.nim === p.nim && b.judul === p.judul && b.dosenNama === p.pembimbing2))
+)
 ), [proposalsArr, bimbinganArr]
 );
 
@@ -4098,7 +4269,7 @@ showToast('Error: ' + err.message, 'error');
 }
 };
 
-// CRITICAL: Save dengan auto-create bimbingan
+// CRITICAL: Save dengan auto-create bimbingan untuk 2 dosen
 const handleSave = async (type, data) => {
 if (!data) {
 showToast('Data tidak valid!', 'error');
@@ -4144,9 +4315,9 @@ const success = await DB.set(`proposals/${editingItem.id}`, {
 ...data, updatedAt: new Date().toISOString()
 });
 if (success) {
-// Trigger auto-create bimbingan
+// Trigger auto-create bimbingan untuk kedua dosen
 await createBimbinganFromProposal(data, editingItem.id);
-alert('✅ Proposal disetujui!\n\nSistem otomatis membuat record bimbingan untuk:\n• Mahasiswa: ' + data.mahasiswaNama + '\n• Pembimbing: ' + data.pembimbing1 + '\n\nDosen pembimbing dapat langsung memulai proses bimbingan.');
+alert('✅ Proposal disetujui!\n\nSistem otomatis membuat record bimbingan untuk:\n• Pembimbing 1: ' + data.pembimbing1 + '\n' + (data.pembimbing2 ? '• Pembimbing 2: ' + data.pembimbing2 : '') + '\n\nMasing-masing dosen dapat memulai proses bimbingan.');
 setShowModal(false);
 return true;
 }
@@ -4209,20 +4380,28 @@ window.open(url, '_blank');
 showToast('Pesan WhatsApp terbuka di tab baru!', 'success');
 };
 
-// Mulai bimbingan manual (untuk dosen)
-const handleMulaiBimbingan = async (proposal) => {
+// Mulai bimbingan manual (untuk dosen) dengan parameter pembimbingKe
+const handleMulaiBimbingan = async (proposal, pembimbingKe = 1) => {
 if (!currentUser || userRole !== 'dosen') {
 showToast('Hanya dosen yang dapat memulai bimbingan', 'error');
 return;
 }
+
+const dosenNama = pembimbingKe === 1 ? proposal.pembimbing1 : proposal.pembimbing2;
+if (currentUser.nama !== dosenNama) {
+showToast('Anda tidak berhak memulai bimbingan ini', 'error');
+return;
+}
+
 // Cek duplikasi
-const exists = bimbinganArr.some(b => b.nim === proposal.nim && b.judul === proposal.judul);
+const exists = bimbinganArr.some(b => b.nim === proposal.nim && b.judul === proposal.judul && b.dosenNama === dosenNama);
 if (exists) {
-showToast('Bimbingan untuk proposal ini sudah aktif!', 'info');
+showToast('Bimbingan untuk dosen ini sudah aktif!', 'info');
 setActiveMenu('bimbingan');
 return;
 }
-if (confirm(`Mulai bimbingan untuk:\n${proposal.mahasiswaNama}\n${proposal.judul}`)) {
+
+if (confirm(`Mulai bimbingan sebagai Pembimbing ${pembimbingKe} untuk:\n${proposal.mahasiswaNama}\n${proposal.judul}`)) {
 const bimbinganData = {
 nim: proposal.nim,
 mahasiswaNama: proposal.mahasiswaNama,
@@ -4232,15 +4411,16 @@ prodi: proposal.prodi,
 whatsapp: proposal.whatsapp,
 progress: 0,
 status: 'berlangsung',
+pembimbingKe: pembimbingKe,
 meetings: [],
-catatan: `Dimulai oleh ${currentUser.nama} pada ${new Date().toLocaleDateString('id-ID')}`,
+catatan: `Dimulai oleh ${currentUser.nama} (Pembimbing ${pembimbingKe}) pada ${new Date().toLocaleDateString('id-ID')}`,
 lastUpdate: new Date().toISOString().split('T')[0],
 proposalId: proposal.id,
 createdAt: new Date().toISOString()
 };
 const newId = await DB.push('bimbingan', bimbinganData);
 if (newId) {
-showToast('✅ Bimbingan berhasil dimulai!\n\nAnda dapat memantau progress melalui menu "Proses Bimbingan".', 'success');
+showToast(`✅ Bimbingan (Pembimbing ${pembimbingKe}) berhasil dimulai!`, 'success');
 setActiveMenu('bimbingan');
 }
 }
@@ -4286,7 +4466,7 @@ style={{ width: `${loadingProgress}%` }}
 {initError ? 'Error' : 'Menginisialisasi Sistem Bimbingan Terintegrasi...'}
 </p>
 <p className="mt-2 text-gray-300">
-{initError ? initError : loadingProgress < 100 ? 'Menghubungkan proposal → bimbingan → repository' : 'Sistem siap...'}
+{initError ? initError : loadingProgress < 100 ? 'Menghubungkan proposal → bimbingan (2 dosen) → repository' : 'Sistem siap...'}
 </p>
 {initError && (
 <button 
@@ -4370,7 +4550,7 @@ const renderHeader = () => (
 <h1 className="text-lg font-bold text-emerald-900">
 {activeMenu === 'dashboard' ? 'Dashboard Utama' :
 activeMenu === 'proposal' ? 'Pengajuan Proposal Skripsi' :
-activeMenu === 'bimbingan' ? 'Manajemen Bimbingan' :
+activeMenu === 'bimbingan' ? 'Manajemen Bimbingan (2 Dosen)' :
 activeMenu === 'warning' ? 'Sistem Early Warning' :
 activeMenu === 'repository' ? 'Repository Skripsi' :
 activeMenu === 'kelola-mhs' ? 'Administrasi Mahasiswa' :
@@ -4545,16 +4725,16 @@ ReactDOM.render(
 </React.StrictMode>,
 document.getElementById('root')
 );
-console.log('✅ Dashboard FEBI v6.0.0 (DENGAN TIMELINE BIMBINGAN 10 PERTEMUAN) loaded successfully!');
+console.log('✅ Dashboard FEBI v6.1.0 (DENGAN DUKUNGAN 2 DOSEN PEMBIMBING) loaded successfully!');
 console.log('🔐 Authentication system active');
 console.log('🔍 ADVANCED SIMILARITY CHECKER (5 Algoritma Hybrid) - OPERATIONAL');
 console.log('📊 Cosine • Jaccard Bigram/Trigram • Levenshtein • Semantic Matching');
-console.log('🔄 WORKFLOW INTEGRATION: Auto-create bimbingan saat proposal disetujui');
+console.log('🔄 WORKFLOW INTEGRATION: Auto-create bimbingan untuk 2 dosen saat proposal disetujui');
 console.log('⚠️ Early Warning System dengan WhatsApp integration');
 console.log('✅ ROLE OPERATOR: Akses penuh seperti admin, namun tanpa hak hapus');
 console.log('✅ FITUR EDIT PROFIL: Semua user dapat mengedit profil dan password');
 console.log('✅ KELOLA OPERATOR: Admin dapat menambah/mengedit/menghapus operator');
-console.log('✅ FITUR BIMBINGAN: Timeline 10 pertemuan, progress 10% per pertemuan');
+console.log('✅ FITUR BIMBINGAN: Timeline 10 pertemuan, progress 10% per pertemuan, dukungan 2 dosen');
 console.log('✅ RIWAYAT PERTEMUAN: Setiap bimbingan tercatat detail dengan tanggal dan catatan');
 console.log('✅ LAPORAN CETAK: Nama mahasiswa dan dosen otomatis terisi di tanda tangan');
 console.log('✅ Login Demo: admin/admin123 • operator/operator123');
@@ -4563,9 +4743,10 @@ console.log('📊 BIMBINGAN PAGE: Tabel dinamis dengan statistik, filter, detail
 console.log('✅ Loading System: Progress bar, error handling, koneksi stabil');
 console.log('✅ Data Inisialisasi: Data dummy otomatis terisi jika database kosong');
 console.log('✅ Early Warning: Perhitungan semester dari 2 digit pertama NIM (contoh: 21 → 2021)');
-console.log('📝 PROPOSAL PAGE: Tampilan tabel yang informatif, rapi, dan komprehensif!');
+console.log('📝 PROPOSAL PAGE: Tampilan tabel yang informatif, rapi, dan komprehensif dengan dukungan 2 dosen!');
 console.log('🔧 FIX: Operator sekarang dapat menambah dan mengedit data Mahasiswa & Dosen!');
 console.log('🎓 LOGO: Ikon topi toga dengan bayangan oranye telah diterapkan!');
+console.log('👥 FITUR BARU: Dosen Pembimbing 2 sekarang memiliki akses penuh seperti Dosen Pembimbing 1!');
 </script>
 </body>
 </html>
