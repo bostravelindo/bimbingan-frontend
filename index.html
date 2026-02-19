@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FEBI UINSI - Bimbingan Proposal dan Repository</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23f97316'/><text x='50' y='55' text-anchor='middle' fill='%23ffffff' font-size='24' font-weight='bold'>🎓</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23047857'/><text x='50' y='55' text-anchor='middle' fill='%23fbbf24' font-size='24' font-weight='bold'>F</text></svg>">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
 tailwind.config = {
@@ -83,34 +83,352 @@ display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; 
 .bimbingan-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
 .bimbingan-card.berlangsung { border-left-color: #047857; }
 .bimbingan-card.selesai { border-left-color: #2563eb; }
-.timeline-item { position: relative; padding-left: 28px; margin-bottom: 16px; }
-.timeline-item:before { content: ''; position: absolute; left: 8px; top: 8px; width: 12px; height: 12px; border-radius: 50%; background: #047857; z-index: 2; }
-.timeline-item:after { content: ''; position: absolute; left: 13px; top: 24px; width: 2px; height: calc(100% + 8px); background: #e5e7eb; }
+.timeline-item { position: relative; padding-left: 28px; }
+.timeline-item:before { content: ''; position: absolute; left: 8px; top: 8px; width: 12px; height: 12px; border-radius: 50%; background: #047857; }
+.timeline-item:after { content: ''; position: absolute; left: 13px; top: 24px; width: 2px; height: calc(100% - 16px); background: #e5e7eb; }
 .timeline-item:last-child:after { display: none; }
-.timeline-item.completed:before { background: #10b981; box-shadow: 0 0 0 3px rgba(16,185,129,0.2); }
-.timeline-item.current:before { background: #f59e0b; box-shadow: 0 0 0 3px rgba(245,158,11,0.2); animation: pulse 2s infinite; }
-.timeline-item.future:before { background: #d1d5db; }
-@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(245,158,11,0.7); } 70% { box-shadow: 0 0 0 10px rgba(245,158,11,0); } 100% { box-shadow: 0 0 0 0 rgba(245,158,11,0); } }
-.timeline-progress { height: 8px; background: linear-gradient(90deg, #10b981 0%, #f59e0b 50%, #ef4444 100%); border-radius: 4px; transition: width 0.3s ease; }
 .print-laporan { font-family: 'Times New Roman', serif; }
 @media print {
 .no-print { display: none; }
 .print-only { display: block; }
-body { background: white; }
-.print-laporan-page { margin: 0.5in; }
 }
-.meeting-badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; }
-.meeting-1 { background: #fee2e2; color: #991b1b; }
-.meeting-2 { background: #ffedd5; color: #9a3412; }
-.meeting-3 { background: #fef9c3; color: #854d0e; }
-.meeting-4 { background: #dcfce7; color: #166534; }
-.meeting-5 { background: #dbeafe; color: #1e40af; }
-.meeting-6 { background: #f3e8ff; color: #6b21a8; }
-.meeting-7 { background: #fce7f3; color: #9d174d; }
-.meeting-8 { background: #cffafe; color: #155e75; }
-.meeting-9 { background: #e0f2fe; color: #075985; }
-.meeting-10 { background: #fef9c3; color: #854d0e; }
 .role-badge-operator { background: #fef3c7; color: #92400e; border: 2px solid #fbbf24; }
+/* Timeline Pertemuan */
+.meeting-timeline {
+position: relative;
+padding-left: 40px;
+}
+.meeting-timeline::before {
+content: '';
+position: absolute;
+left: 15px;
+top: 0;
+bottom: 0;
+width: 3px;
+background: linear-gradient(to bottom, #047857, #10b981);
+border-radius: 3px;
+}
+.meeting-item {
+position: relative;
+margin-bottom: 20px;
+padding: 15px;
+background: white;
+border-radius: 12px;
+box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+border: 1px solid #e2e8f0;
+transition: all 0.3s ease;
+}
+.meeting-item:hover {
+transform: translateX(5px);
+box-shadow: 0 4px 12px rgba(4,120,87,0.1);
+border-color: #047857;
+}
+.meeting-item::before {
+content: '';
+position: absolute;
+left: -30px;
+top: 20px;
+width: 16px;
+height: 16px;
+border-radius: 50%;
+background: #047857;
+border: 3px solid white;
+box-shadow: 0 0 0 2px #047857;
+z-index: 1;
+}
+.meeting-item.completed::before {
+background: #10b981;
+box-shadow: 0 0 0 2px #10b981;
+}
+.meeting-item .meeting-number {
+position: absolute;
+left: -60px;
+top: 16px;
+font-size: 12px;
+font-weight: 600;
+color: #047857;
+background: #f0fdf4;
+padding: 2px 8px;
+border-radius: 20px;
+}
+.progress-step {
+display: inline-block;
+width: 24px;
+height: 24px;
+border-radius: 50%;
+background: #e2e8f0;
+color: #64748b;
+text-align: center;
+line-height: 24px;
+font-size: 12px;
+font-weight: 600;
+margin-right: 8px;
+}
+.progress-step.active {
+background: #047857;
+color: white;
+}
+.progress-step.completed {
+background: #10b981;
+color: white;
+}
+.progress-connector {
+height: 2px;
+flex: 1;
+background: #e2e8f0;
+margin: 0 4px;
+}
+.progress-connector.active {
+background: #047857;
+}
+.progress-connector.completed {
+background: #10b981;
+}
+/* Profile Menu */
+.profile-menu {
+position: absolute;
+right: 0;
+top: 100%;
+width: 280px;
+background: white;
+border-radius: 12px;
+box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+border: 1px solid #e2e8f0;
+z-index: 50;
+margin-top: 8px;
+overflow: hidden;
+}
+.profile-menu-item {
+padding: 12px 16px;
+display: flex;
+align-items: center;
+gap: 12px;
+transition: all 0.2s;
+cursor: pointer;
+}
+.profile-menu-item:hover {
+background: #f0fdf4;
+}
+.profile-menu-item:not(:last-child) {
+border-bottom: 1px solid #f1f5f9;
+}
+/* Dual Bimbingan */
+.bimbingan-dual {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 16px;
+}
+.bimbingan-card-pembimbing1 {
+border-left: 4px solid #047857;
+}
+.bimbingan-card-pembimbing2 {
+border-left: 4px solid #f59e0b;
+}
+.pembimbing-badge {
+display: inline-block;
+padding: 2px 8px;
+border-radius: 12px;
+font-size: 10px;
+font-weight: 600;
+}
+.pembimbing-badge-1 {
+background: #d1fae5;
+color: #047857;
+}
+.pembimbing-badge-2 {
+background: #fef3c7;
+color: #b45309;
+}
+/* Proposal Table */
+.proposal-table {
+width: 100%;
+border-collapse: separate;
+border-spacing: 0 8px;
+}
+.proposal-table th {
+padding: 12px 16px;
+text-align: left;
+font-weight: 600;
+font-size: 12px;
+text-transform: uppercase;
+letter-spacing: 0.5px;
+color: #64748b;
+background: #f8fafc;
+border-bottom: 2px solid #e2e8f0;
+}
+.proposal-table td {
+padding: 16px;
+background: white;
+border-radius: 12px;
+box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+transition: all 0.2s;
+}
+.proposal-table tr:hover td {
+box-shadow: 0 8px 16px rgba(4,120,87,0.08);
+transform: translateY(-2px);
+}
+.status-badge {
+display: inline-flex;
+align-items: center;
+padding: 4px 12px;
+border-radius: 20px;
+font-size: 12px;
+font-weight: 600;
+gap: 4px;
+}
+.status-badge.menunggu {
+background: #fef3c7;
+color: #92400e;
+}
+.status-badge.diterima {
+background: #d1fae5;
+color: #065f46;
+}
+.status-badge.diperbaiki {
+background: #fed7aa;
+color: #9a3412;
+}
+.status-badge.ditolak {
+background: #fee2e2;
+color: #991b1b;
+}
+.proposal-card {
+background: white;
+border-radius: 16px;
+padding: 20px;
+box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+border: 1px solid #e2e8f0;
+transition: all 0.3s;
+}
+.proposal-card:hover {
+box-shadow: 0 12px 24px rgba(4,120,87,0.12);
+border-color: #047857;
+}
+.proposal-header {
+display: flex;
+justify-content: space-between;
+align-items: flex-start;
+margin-bottom: 16px;
+}
+.proposal-title {
+font-size: 18px;
+font-weight: 700;
+color: #0f172a;
+line-height: 1.4;
+}
+.proposal-meta {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+gap: 12px;
+margin: 16px 0;
+padding: 16px;
+background: #f8fafc;
+border-radius: 12px;
+}
+.meta-item {
+display: flex;
+align-items: center;
+gap: 8px;
+}
+.meta-icon {
+width: 32px;
+height: 32px;
+background: white;
+border-radius: 8px;
+display: flex;
+align-items: center;
+justify-content: center;
+color: #047857;
+}
+.meta-label {
+font-size: 11px;
+color: #64748b;
+text-transform: uppercase;
+letter-spacing: 0.3px;
+}
+.meta-value {
+font-size: 14px;
+font-weight: 600;
+color: #0f172a;
+}
+.abstrak-preview {
+background: #f1f5f9;
+padding: 12px 16px;
+border-radius: 8px;
+font-size: 13px;
+color: #334155;
+line-height: 1.6;
+margin: 16px 0;
+border-left: 3px solid #047857;
+}
+.catatan-validasi {
+background: #eff6ff;
+padding: 12px 16px;
+border-radius: 8px;
+font-size: 13px;
+color: #1e40af;
+margin: 16px 0;
+border-left: 3px solid #3b82f6;
+}
+.pembimbing-info {
+display: flex;
+gap: 16px;
+margin: 12px 0;
+}
+.pembimbing-item {
+flex: 1;
+padding: 12px;
+background: #f8fafc;
+border-radius: 8px;
+}
+.pembimbing-label {
+font-size: 11px;
+color: #64748b;
+margin-bottom: 4px;
+}
+.pembimbing-nama {
+font-weight: 600;
+color: #0f172a;
+}
+.pembimbing-ke {
+display: inline-block;
+padding: 2px 8px;
+border-radius: 12px;
+font-size: 10px;
+font-weight: 600;
+margin-left: 8px;
+}
+.pembimbing-ke-1 {
+background: #d1fae5;
+color: #047857;
+}
+.pembimbing-ke-2 {
+background: #fef3c7;
+color: #b45309;
+}
+.progress-indicator {
+display: inline-flex;
+align-items: center;
+gap: 6px;
+padding: 4px 12px;
+background: #f1f5f9;
+border-radius: 20px;
+font-size: 12px;
+font-weight: 500;
+}
+.progress-dot {
+width: 8px;
+height: 8px;
+border-radius: 50%;
+}
+.progress-dot.aktif {
+background: #047857;
+animation: pulse 2s infinite;
+}
+@keyframes pulse {
+0%, 100% { opacity: 1; }
+50% { opacity: 0.5; }
+}
 </style>
 </head>
 <body>
@@ -239,7 +557,7 @@ return () => ref.off('value');
 }
 };
 // ============================================
-// LOGO COMPONENT - UPDATED WITH GRADUATION CAP (TOPI TOGA)
+// LOGO COMPONENT
 // ============================================
 const Logo = ({ size = 'md', showText = true }) => {
 const sizes = {
@@ -249,8 +567,7 @@ lg: 'w-32 h-32 text-3xl'
 };
 return (
 <div className="flex flex-col items-center">
-{/* Kotak dengan gradasi oranye dan ikon topi toga */}
-<div className={`${sizes[size]} bg-gradient-to-br from-orange-500 to-amber-600 rounded-2xl flex items-center justify-center text-white font-black shadow-lg mb-3 shadow-orange-200`}>
+<div className={`${sizes[size]} bg-gradient-to-br from-emerald-600 to-teal-700 rounded-2xl flex items-center justify-center text-white font-black shadow-lg mb-3`}>
 <span className="text-4xl">🎓</span>
 </div>
 {showText && (
@@ -486,60 +803,74 @@ const checkProposalSimilarityAdvanced = (newTitle, existingProposals, existingRe
 return similarityChecker.checkAgainstDatabase(newTitle, existingProposals, existingRepository);
 };
 // ============================================
-// CRITICAL FIX: AUTO-CREATE BIMBINGAN ON APPROVAL (UNTUK 2 DOSEN)
+// CRITICAL FIX: AUTO-CREATE BIMBINGAN ON APPROVAL (UNTUK PEMBIMBING 1 DAN 2)
 // ============================================
 const createBimbinganFromProposal = async (proposalData, proposalId) => {
-const bimbinganSnapshot = await DB.get('bimbingan') || {};
+const bimbinganSnapshot = await DB.get('bimbingan');
 const results = [];
 
-// Fungsi untuk membuat record bimbingan untuk dosen tertentu
-const createForDosen = async (dosenNama, pembimbingKe) => {
-if (!dosenNama || dosenNama === '-') return null;
-  
-// Cek apakah sudah ada
-const exists = Object.values(bimbinganSnapshot).find(b =>
-b.nim === proposalData.nim && b.judul === proposalData.judul && b.dosenNama === dosenNama
+// Buat bimbingan untuk pembimbing 1
+const existing1 = Object.values(bimbinganSnapshot || {}).find(b =>
+b.nim === proposalData.nim && b.judul === proposalData.judul && b.dosenNama === proposalData.pembimbing1
 );
-if (exists) {
-console.log(`ℹ️ Bimbingan already exists for ${dosenNama}`);
-return null;
-}
 
-const bimbinganData = {
+if (!existing1 && proposalData.pembimbing1) {
+const bimbinganData1 = {
 nim: proposalData.nim,
 mahasiswaNama: proposalData.mahasiswaNama,
-dosenNama: dosenNama,
+dosenNama: proposalData.pembimbing1,
+pembimbingKe: 1,
 judul: proposalData.judul,
 prodi: proposalData.prodi,
 whatsapp: proposalData.whatsapp,
 progress: 0,
 status: 'berlangsung',
-pembimbingKe: pembimbingKe, // 1 atau 2
-meetings: [],
-catatan: `✅ Proposal disetujui pada ${new Date().toLocaleDateString('id-ID')}. Bimbingan dengan ${pembimbingKe === 1 ? 'Pembimbing 1' : 'Pembimbing 2'} dimulai oleh sistem.`,
+catatan: `✅ Proposal disetujui pada ${new Date().toLocaleDateString('id-ID')}. Bimbingan dengan Pembimbing 1 dimulai oleh sistem.`,
 lastUpdate: new Date().toISOString().split('T')[0],
 proposalId: proposalId,
-createdAt: new Date().toISOString()
+createdAt: new Date().toISOString(),
+meetings: []
 };
-
-const newId = await DB.push('bimbingan', bimbinganData);
-if (newId) {
-console.log(`✅ Bimbingan record created automatically for ${dosenNama} (Pembimbing ${pembimbingKe}):`, newId);
-results.push(newId);
-}
-};
-
-// Buat untuk Pembimbing 1
-await createForDosen(proposalData.pembimbing1, 1);
-// Buat untuk Pembimbing 2 jika ada
-if (proposalData.pembimbing2 && proposalData.pembimbing2 !== '-') {
-await createForDosen(proposalData.pembimbing2, 2);
+const newId1 = await DB.push('bimbingan', bimbinganData1);
+if (newId1) results.push(newId1);
 }
 
-return results.length > 0;
+// Buat bimbingan untuk pembimbing 2 (jika ada)
+if (proposalData.pembimbing2 && proposalData.pembimbing2 !== '-' && proposalData.pembimbing2 !== '') {
+const existing2 = Object.values(bimbinganSnapshot || {}).find(b =>
+b.nim === proposalData.nim && b.judul === proposalData.judul && b.dosenNama === proposalData.pembimbing2
+);
+
+if (!existing2) {
+const bimbinganData2 = {
+nim: proposalData.nim,
+mahasiswaNama: proposalData.mahasiswaNama,
+dosenNama: proposalData.pembimbing2,
+pembimbingKe: 2,
+judul: proposalData.judul,
+prodi: proposalData.prodi,
+whatsapp: proposalData.whatsapp,
+progress: 0,
+status: 'berlangsung',
+catatan: `✅ Proposal disetujui pada ${new Date().toLocaleDateString('id-ID')}. Bimbingan dengan Pembimbing 2 dimulai oleh sistem.`,
+lastUpdate: new Date().toISOString().split('T')[0],
+proposalId: proposalId,
+createdAt: new Date().toISOString(),
+meetings: []
+};
+const newId2 = await DB.push('bimbingan', bimbinganData2);
+if (newId2) results.push(newId2);
+}
+}
+
+if (results.length > 0) {
+console.log('✅ Bimbingan records created automatically:', results);
+return true;
+}
+return false;
 };
 // ============================================
-// AUTH MODAL COMPONENT - DENGAN ROLE OPERATOR & LOGO BARU
+// AUTH MODAL COMPONENT - DENGAN ROLE OPERATOR (TIDAK MUNCUL DI REGISTRASI)
 // ============================================
 const AuthModal = ({ onLogin, onClose, showRegister }) => {
 const [isRegister, setIsRegister] = React.useState(showRegister || false);
@@ -555,6 +886,12 @@ const handleLogin = async (e) => {
 e.preventDefault(); setIsLoading(true); setError('');
 const { username, password } = loginData;
 try {
+// Cek login admin default
+if (username === 'admin' && password === 'admin123') {
+onLogin({ id: 'admin', nama: 'Administrator FEBI', role: 'admin' }, 'admin');
+return;
+}
+
 // Cek login operator default
 if (username === 'operator' && password === 'operator123') {
 onLogin({ 
@@ -566,10 +903,14 @@ username: 'operator'
 return;
 }
 
-// Cek login admin default
-if (username === 'admin' && password === 'admin123') {
-onLogin({ id: 'admin', nama: 'Administrator FEBI', role: 'admin' }, 'admin');
+// Cek data operator yang tersimpan di database (selain default)
+const operatorData = await DB.get('operator');
+if (operatorData) {
+const op = Object.entries(operatorData).find(([_, o]) => o.username === username && o.password === password);
+if (op) {
+onLogin({ id: op[0], ...op[1] }, 'operator');
 return;
+}
 }
 
 // Cek data mahasiswa
@@ -588,16 +929,6 @@ if (dosenData) {
 const dsn = Object.entries(dosenData).find(([_, d]) => d.nip === username && d.password === password);
 if (dsn) {
 onLogin({ id: dsn[0], ...dsn[1] }, 'dosen');
-return;
-}
-}
-
-// Cek data operator yang tersimpan di database
-const operatorData = await DB.get('operator');
-if (operatorData) {
-const op = Object.entries(operatorData).find(([_, o]) => o.username === username && o.password === password);
-if (op) {
-onLogin({ id: op[0], ...op[1] }, 'operator');
 return;
 }
 }
@@ -626,6 +957,7 @@ nip: formData.nip, nama: formData.nama, keahlian: formData.keahlian,
 whatsapp: formData.whatsapp, password: formData.password, status: 'aktif'
 });
 }
+// Operator tidak bisa registrasi mandiri, hanya bisa ditambah oleh admin
 if (success) {
 alert('Registrasi berhasil! Silakan login.');
 setIsRegister(false);
@@ -664,7 +996,7 @@ className="w-full px-6 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-w
 onClick={() => setIsRegister(true)}
 className="w-full px-6 py-4 bg-white text-emerald-700 border-2 border-emerald-200 rounded-xl font-semibold hover:bg-emerald-50 transition-all transform hover:scale-105"
 >
-<span className="text-xl">📝</span> Daftar Akun Baru
+<span className="text-xl">📝</span> Daftar Akun Baru (Mahasiswa/Dosen)
 </button>
 </div>
 <div className="mt-8 text-center">
@@ -683,8 +1015,7 @@ return (
 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto" onClick={onClose}>
 <div className="bg-white rounded-2xl p-6 max-w-md w-full my-8" onClick={(e) => e.stopPropagation()}>
 <div className="flex items-center gap-3 mb-6">
-{/* Ikon topi toga di modal registrasi */}
-<div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-orange-200">
+<div className="w-12 h-12 bg-gradient-to-br from-emerald-600 to-teal-700 rounded-xl flex items-center justify-center text-white font-bold text-xl">
 🎓
 </div>
 <h2 className="text-2xl font-bold text-emerald-900">Registrasi Akun</h2>
@@ -733,8 +1064,7 @@ return (
 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
 <div className="bg-white rounded-2xl p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
 <div className="flex items-center gap-3 mb-6">
-{/* Ikon topi toga di modal login */}
-<div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-orange-200">
+<div className="w-12 h-12 bg-gradient-to-br from-emerald-600 to-teal-700 rounded-xl flex items-center justify-center text-white font-bold text-xl">
 🎓
 </div>
 <h3 className="text-2xl font-bold text-emerald-900">Masuk ke Dashboard</h3>
@@ -760,6 +1090,230 @@ return (
 );
 };
 // ============================================
+// PROFILE MODAL COMPONENT - UNTUK EDIT PROFIL
+// ============================================
+const ProfileModal = ({ user, userRole, onClose, onSave }) => {
+const [formData, setFormData] = React.useState(user || {});
+const [isSaving, setIsSaving] = React.useState(false);
+const [showPassword, setShowPassword] = React.useState(false);
+
+const handleSubmit = async (e) => {
+e.preventDefault();
+setIsSaving(true);
+try {
+await onSave(formData);
+} finally {
+setIsSaving(false);
+}
+};
+
+return (
+<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+<div className="bg-white rounded-2xl p-6 max-w-lg w-full" onClick={(e) => e.stopPropagation()}>
+<h2 className="text-2xl font-bold text-emerald-900 mb-4 flex items-center gap-2">
+<span className="text-3xl">👤</span> Edit Profil
+</h2>
+<form onSubmit={handleSubmit}>
+<div className="space-y-4">
+{/* Informasi Dasar */}
+<div className="bg-emerald-50 p-4 rounded-lg">
+<p className="text-sm font-semibold text-emerald-800 mb-2">Informasi Akun</p>
+<div className="grid grid-cols-2 gap-3">
+<div>
+<label className="block text-xs text-gray-600 mb-1">Role</label>
+<input type="text" value={userRole} disabled className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm" />
+</div>
+<div>
+<label className="block text-xs text-gray-600 mb-1">ID</label>
+<input type="text" value={user.id} disabled className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm" />
+</div>
+</div>
+</div>
+
+{/* Field berdasarkan role */}
+{userRole === 'mahasiswa' && (
+<>
+<div>
+<label className="block text-sm font-semibold text-gray-700 mb-1">NIM</label>
+<input
+type="text"
+value={formData.nim || ''}
+onChange={(e) => setFormData({...formData, nim: e.target.value})}
+className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500"
+required
+/>
+</div>
+<div>
+<label className="block text-sm font-semibold text-gray-700 mb-1">Nama Lengkap</label>
+<input
+type="text"
+value={formData.nama || ''}
+onChange={(e) => setFormData({...formData, nama: e.target.value})}
+className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500"
+required
+/>
+</div>
+<div>
+<label className="block text-sm font-semibold text-gray-700 mb-1">Program Studi</label>
+<select
+value={formData.prodi || ''}
+onChange={(e) => setFormData({...formData, prodi: e.target.value})}
+className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500"
+required
+>
+<option value="">Pilih Program Studi</option>
+<option value="Ekonomi Syariah">Ekonomi Syariah</option>
+<option value="Perbankan Syariah">Perbankan Syariah</option>
+<option value="Manajemen Bisnis Syariah">Manajemen Bisnis Syariah</option>
+</select>
+</div>
+<div>
+<label className="block text-sm font-semibold text-gray-700 mb-1">WhatsApp</label>
+<input
+type="tel"
+value={formData.whatsapp || ''}
+onChange={(e) => setFormData({...formData, whatsapp: e.target.value})}
+className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500"
+required
+/>
+</div>
+</>
+)}
+
+{userRole === 'dosen' && (
+<>
+<div>
+<label className="block text-sm font-semibold text-gray-700 mb-1">NIP</label>
+<input
+type="text"
+value={formData.nip || ''}
+onChange={(e) => setFormData({...formData, nip: e.target.value})}
+className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500"
+required
+/>
+</div>
+<div>
+<label className="block text-sm font-semibold text-gray-700 mb-1">Nama Lengkap</label>
+<input
+type="text"
+value={formData.nama || ''}
+onChange={(e) => setFormData({...formData, nama: e.target.value})}
+className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500"
+required
+/>
+</div>
+<div>
+<label className="block text-sm font-semibold text-gray-700 mb-1">Bidang Keahlian</label>
+<input
+type="text"
+value={formData.keahlian || ''}
+onChange={(e) => setFormData({...formData, keahlian: e.target.value})}
+className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500"
+required
+/>
+</div>
+<div>
+<label className="block text-sm font-semibold text-gray-700 mb-1">WhatsApp</label>
+<input
+type="tel"
+value={formData.whatsapp || ''}
+onChange={(e) => setFormData({...formData, whatsapp: e.target.value})}
+className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500"
+required
+/>
+</div>
+</>
+)}
+
+{userRole === 'operator' && (
+<>
+<div>
+<label className="block text-sm font-semibold text-gray-700 mb-1">Username</label>
+<input
+type="text"
+value={formData.username || ''}
+onChange={(e) => setFormData({...formData, username: e.target.value})}
+className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500"
+required
+/>
+</div>
+<div>
+<label className="block text-sm font-semibold text-gray-700 mb-1">Nama Lengkap</label>
+<input
+type="text"
+value={formData.nama || ''}
+onChange={(e) => setFormData({...formData, nama: e.target.value})}
+className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500"
+required
+/>
+</div>
+<div>
+<label className="block text-sm font-semibold text-gray-700 mb-1">WhatsApp</label>
+<input
+type="tel"
+value={formData.whatsapp || ''}
+onChange={(e) => setFormData({...formData, whatsapp: e.target.value})}
+className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500"
+/>
+</div>
+</>
+)}
+
+{/* Password Field - Selalu tampil untuk semua role */}
+<div className="border-t pt-4 mt-2">
+<label className="block text-sm font-semibold text-gray-700 mb-1">Password</label>
+<div className="relative">
+<input
+type={showPassword ? 'text' : 'password'}
+value={formData.password || ''}
+onChange={(e) => setFormData({...formData, password: e.target.value})}
+className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 pr-10"
+placeholder="Kosongkan jika tidak ingin mengubah"
+/>
+<button
+type="button"
+onClick={() => setShowPassword(!showPassword)}
+className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-emerald-600"
+>
+{showPassword ? '👁️' : '👁️‍🗨️'}
+</button>
+</div>
+<p className="text-xs text-gray-500 mt-1">Kosongkan jika tidak ingin mengubah password</p>
+</div>
+
+{/* Info untuk admin */}
+{userRole === 'admin' && (
+<div className="bg-yellow-50 p-3 rounded-lg">
+<p className="text-xs text-yellow-700 flex items-start gap-2">
+<span>ℹ️</span>
+<span>Anda adalah administrator. Password dapat diubah melalui form ini.</span>
+</p>
+</div>
+)}
+</div>
+
+<div className="flex gap-3 mt-6">
+<button
+type="submit"
+disabled={isSaving}
+className="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700 disabled:opacity-50"
+>
+{isSaving ? 'Menyimpan...' : '💾 Simpan Perubahan'}
+</button>
+<button
+type="button"
+onClick={onClose}
+className="px-6 py-3 bg-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-300"
+>
+Batal
+</button>
+</div>
+</form>
+</div>
+</div>
+);
+};
+// ============================================
 // PAGE COMPONENTS - DIPERBAIKI DENGAN DATA DUMMY UNTUK TESTING
 // ============================================
 // Data dummy untuk testing - akan ditimpa oleh data real dari Firebase
@@ -773,10 +1327,11 @@ prodi: "Ekonomi Syariah",
 pembimbing1: "Dr. Hj. Siti Aminah, M.Ag",
 pembimbing2: "Dr. Ahmad Rizal, M.Si",
 whatsapp: "081234567890",
-abstrak: "Penelitian ini bertujuan untuk menganalisis pengaruh literasi keuangan syariah terhadap minat menabung mahasiswa di bank syariah. Metode penelitian menggunakan pendekatan kuantitatif dengan sampel 100 responden.",
-status: "Diterima",
+abstrak: "Penelitian ini bertujuan untuk menganalisis pengaruh literasi keuangan syariah terhadap minat menabung mahasiswa di bank syariah. Metode penelitian menggunakan pendekatan kuantitatif dengan sampel 100 responden. Hasil penelitian diharapkan dapat memberikan kontribusi bagi pengembangan literasi keuangan syariah di kalangan mahasiswa.",
+status: "Menunggu",
 tahun: "2025",
-catatan: ""
+catatan: "",
+tanggalPengajuan: "2026-02-15"
 },
 {
 id: "proposal2",
@@ -787,10 +1342,11 @@ prodi: "Perbankan Syariah",
 pembimbing1: "Dr. Muhammad Iqbal, M.Ec",
 pembimbing2: "Dr. Siti Khadijah, M.Si",
 whatsapp: "081234567891",
-abstrak: "Penelitian ini menganalisis strategi pemasaran produk perbankan syariah dalam menghadapi era digitalisasi. Studi kasus dilakukan pada Bank Syariah Indonesia KC Samarinda.",
+abstrak: "Penelitian ini menganalisis strategi pemasaran produk perbankan syariah dalam menghadapi era digitalisasi. Studi kasus dilakukan pada Bank Syariah Indonesia KC Samarinda. Penelitian menggunakan metode kualitatif dengan wawancara mendalam terhadap manajer pemasaran.",
 status: "Diterima",
 tahun: "2025",
-catatan: "Proposal diterima, silakan lanjut ke tahap bimbingan"
+catatan: "Proposal diterima, silakan lanjut ke tahap bimbingan. Perhatikan saran perbaikan pada bab 1 dan 2.",
+tanggalPengajuan: "2026-02-10"
 },
 {
 id: "proposal3",
@@ -801,10 +1357,41 @@ prodi: "Manajemen Bisnis Syariah",
 pembimbing1: "Dr. Abdul Malik, M.M",
 pembimbing2: "Dr. Nurul Huda, M.Si",
 whatsapp: "081234567892",
-abstrak: "Penelitian ini mengkaji peran manajemen bisnis syariah dalam meningkatkan kinerja UMKM di Kota Samarinda. Pendekatan kualitatif digunakan untuk memahami fenomena secara mendalam.",
+abstrak: "Penelitian ini mengkaji peran manajemen bisnis syariah dalam meningkatkan kinerja UMKM di Kota Samarinda. Pendekatan kualitatif digunakan untuk memahami fenomena secara mendalam. Data dikumpulkan melalui observasi dan wawancara dengan 10 pelaku UMKM.",
 status: "Menunggu",
 tahun: "2025",
-catatan: ""
+catatan: "",
+tanggalPengajuan: "2026-02-18"
+},
+{
+id: "proposal4",
+judul: "Analisis Dampak Fintech Syariah terhadap Inklusi Keuangan Masyarakat",
+mahasiswaNama: "Dian Permata Sari",
+nim: "1813181033",
+prodi: "Ekonomi Syariah",
+pembimbing1: "Dr. Hj. Siti Aminah, M.Ag",
+pembimbing2: "Dr. Ahmad Rizal, M.Si",
+whatsapp: "081234567896",
+abstrak: "Penelitian ini menganalisis dampak fintech syariah terhadap inklusi keuangan masyarakat di Kalimantan Timur. Menggunakan pendekatan kuantitatif dengan sampel 200 responden pengguna fintech syariah. Hasil menunjukkan fintech syariah berkontribusi positif terhadap inklusi keuangan.",
+status: "Diperbaiki",
+tahun: "2025",
+catatan: "Perlu perbaikan pada metodologi penelitian dan penambahan tinjauan pustaka terkait fintech syariah.",
+tanggalPengajuan: "2026-02-05"
+},
+{
+id: "proposal5",
+judul: "Strategi Pengembangan Produk Perbankan Syariah untuk Generasi Milenial",
+mahasiswaNama: "Eko Prasetyo",
+nim: "191401004",
+prodi: "Perbankan Syariah",
+pembimbing1: "Dr. Muhammad Iqbal, M.Ec",
+pembimbing2: "-",
+whatsapp: "081234567897",
+abstrak: "Penelitian ini bertujuan mengembangkan strategi produk perbankan syariah yang sesuai dengan kebutuhan generasi milenial. Menggunakan metode survey dengan 150 responden dan analisis SWOT. Diharapkan dapat memberikan rekomendasi bagi bank syariah.",
+status: "Ditolak",
+tahun: "2025",
+catatan: "Judul dan topik terlalu umum. Perlu fokus pada aspek spesifik dan data yang lebih mendalam. Silakan ajukan ulang dengan proposal yang lebih terarah.",
+tanggalPengajuan: "2026-02-01"
 }
 ];
 
@@ -814,42 +1401,48 @@ id: "dosen1",
 nama: "Dr. Hj. Siti Aminah, M.Ag",
 nip: "197001012005012001",
 keahlian: "Ekonomi Syariah",
-whatsapp: "081234567893"
+whatsapp: "081234567893",
+password: "dosen123"
 },
 {
 id: "dosen2",
 nama: "Dr. Muhammad Iqbal, M.Ec",
 nip: "197502012006021002",
 keahlian: "Perbankan Syariah",
-whatsapp: "081234567894"
+whatsapp: "081234567894",
+password: "dosen123"
 },
 {
 id: "dosen3",
 nama: "Dr. Abdul Malik, M.M",
 nip: "198003012007031003",
 keahlian: "Manajemen Bisnis",
-whatsapp: "081234567895"
+whatsapp: "081234567895",
+password: "dosen123"
 },
 {
 id: "dosen4",
 nama: "Dr. Ahmad Rizal, M.Si",
-nip: "197803012008041004",
+nip: "197503012008041004",
 keahlian: "Ekonomi Syariah",
-whatsapp: "081234567898"
+whatsapp: "081234567896",
+password: "dosen123"
 },
 {
 id: "dosen5",
 nama: "Dr. Siti Khadijah, M.Si",
-nip: "197903012009051005",
+nip: "197604012009051005",
 keahlian: "Perbankan Syariah",
-whatsapp: "081234567899"
+whatsapp: "081234567897",
+password: "dosen123"
 },
 {
 id: "dosen6",
 nama: "Dr. Nurul Huda, M.Si",
-nip: "198003012010061006",
+nip: "197705012010061006",
 keahlian: "Manajemen Bisnis",
-whatsapp: "081234567900"
+whatsapp: "081234567898",
+password: "dosen123"
 }
 ];
 
@@ -861,7 +1454,8 @@ nama: "Ahmad Fauzi",
 prodi: "Ekonomi Syariah",
 whatsapp: "081234567890",
 semester: 9,
-status: "aktif"
+status: "aktif",
+password: "mhs123"
 },
 {
 id: "mhs2",
@@ -870,7 +1464,8 @@ nama: "Budi Santoso",
 prodi: "Perbankan Syariah",
 whatsapp: "081234567891",
 semester: 9,
-status: "aktif"
+status: "aktif",
+password: "mhs123"
 },
 {
 id: "mhs3",
@@ -879,7 +1474,8 @@ nama: "Citra Dewi",
 prodi: "Manajemen Bisnis Syariah",
 whatsapp: "081234567892",
 semester: 9,
-status: "aktif"
+status: "aktif",
+password: "mhs123"
 },
 {
 id: "mhs4",
@@ -888,7 +1484,8 @@ nama: "Dian Permata Sari",
 prodi: "Ekonomi Syariah",
 whatsapp: "081234567896",
 semester: 13,
-status: "aktif"
+status: "aktif",
+password: "mhs123"
 },
 {
 id: "mhs5",
@@ -897,98 +1494,224 @@ nama: "Eko Prasetyo",
 prodi: "Perbankan Syariah",
 whatsapp: "081234567897",
 semester: 11,
-status: "aktif"
+status: "aktif",
+password: "mhs123"
 }
 ];
 
+// Data dummy bimbingan dengan meetings dan pembimbingKe
 const dummyBimbingan = [
-// Bimbingan untuk proposal 1 (Ahmad Fauzi) dengan 2 dosen
 {
 id: "bimb1",
-nim: "210401001",
-mahasiswaNama: "Ahmad Fauzi",
-dosenNama: "Dr. Hj. Siti Aminah, M.Ag",
-judul: "Pengaruh Literasi Keuangan Syariah terhadap Minat Menabung di Bank Syariah",
-prodi: "Ekonomi Syariah",
-whatsapp: "081234567890",
-progress: 35,
-status: "berlangsung",
-pembimbingKe: 1,
-meetings: [
-{ meeting: 1, date: "2026-02-01", progress: 10, catatan: "Pertemuan awal, membahas outline proposal" },
-{ meeting: 2, date: "2026-02-05", progress: 20, catatan: "Revisi bab 1 latar belakang" },
-{ meeting: 3, date: "2026-02-10", progress: 30, catatan: "Pembahasan bab 2 tinjauan pustaka" },
-{ meeting: 4, date: "2026-02-15", progress: 40, catatan: "Revisi bab 2 dan mulai bab 3 metodologi" }
-],
-catatan: "Bab 1-2 sudah direvisi. Lanjut ke bab 3 metodologi.",
-lastUpdate: "2026-02-15",
-createdAt: "2026-02-01T08:00:00.000Z",
-proposalId: "proposal1"
-},
-{
-id: "bimb2",
-nim: "210401001",
-mahasiswaNama: "Ahmad Fauzi",
-dosenNama: "Dr. Ahmad Rizal, M.Si",
-judul: "Pengaruh Literasi Keuangan Syariah terhadap Minat Menabung di Bank Syariah",
-prodi: "Ekonomi Syariah",
-whatsapp: "081234567890",
-progress: 20,
-status: "berlangsung",
-pembimbingKe: 2,
-meetings: [
-{ meeting: 1, date: "2026-02-02", progress: 10, catatan: "Bimbingan awal dengan pembimbing 2" },
-{ meeting: 2, date: "2026-02-08", progress: 20, catatan: "Revisi metodologi" }
-],
-catatan: "Fokus pada metodologi penelitian.",
-lastUpdate: "2026-02-08",
-createdAt: "2026-02-01T09:00:00.000Z",
-proposalId: "proposal1"
-},
-// Bimbingan untuk proposal 2 (Budi Santoso) dengan 2 dosen
-{
-id: "bimb3",
 nim: "210401002",
 mahasiswaNama: "Budi Santoso",
 dosenNama: "Dr. Muhammad Iqbal, M.Ec",
-judul: "Analisis Strategi Pemasaran Produk Perbankan Syariah di Era Digital",
-prodi: "Perbankan Syariah",
-whatsapp: "081234567891",
-progress: 45,
-status: "berlangsung",
 pembimbingKe: 1,
-meetings: [
-{ meeting: 1, date: "2026-01-15", progress: 10, catatan: "Pertemuan awal" },
-{ meeting: 2, date: "2026-01-22", progress: 20, catatan: "Revisi bab 1" },
-{ meeting: 3, date: "2026-02-01", progress: 30, catatan: "Pembahasan bab 2" },
-{ meeting: 4, date: "2026-02-10", progress: 40, catatan: "Revisi bab 2" },
-{ meeting: 5, date: "2026-02-18", progress: 50, catatan: "Pembahasan bab 3" }
-],
-catatan: "Bab 1-2 selesai, lanjut bab 3.",
-lastUpdate: "2026-02-18",
-createdAt: "2026-01-15T10:00:00.000Z",
-proposalId: "proposal2"
-},
-{
-id: "bimb4",
-nim: "210401002",
-mahasiswaNama: "Budi Santoso",
-dosenNama: "Dr. Siti Khadijah, M.Si",
 judul: "Analisis Strategi Pemasaran Produk Perbankan Syariah di Era Digital",
 prodi: "Perbankan Syariah",
 whatsapp: "081234567891",
 progress: 30,
 status: "berlangsung",
-pembimbingKe: 2,
+catatan: "Bab 1-2 sudah direvisi. Lanjut ke bab 3 metodologi.",
+lastUpdate: "2026-02-15",
+createdAt: "2026-02-01T08:00:00.000Z",
+proposalId: "proposal2",
 meetings: [
-{ meeting: 1, date: "2026-01-16", progress: 10, catatan: "Bimbingan awal P2" },
-{ meeting: 2, date: "2026-01-25", progress: 20, catatan: "Revisi bab 1" },
-{ meeting: 3, date: "2026-02-05", progress: 30, catatan: "Pembahasan bab 2" }
-],
-catatan: "Fokus pada analisis data.",
+{
+id: "m1",
+tanggal: "2026-02-01",
+progress: 10,
+catatan: "Pertemuan 1: Pengajuan judul dan outline bab 1",
+dosenNama: "Dr. Muhammad Iqbal, M.Ec"
+},
+{
+id: "m2",
+tanggal: "2026-02-08",
+progress: 20,
+catatan: "Pertemuan 2: Revisi bab 1 dan pembahasan bab 2",
+dosenNama: "Dr. Muhammad Iqbal, M.Ec"
+},
+{
+id: "m3",
+tanggal: "2026-02-15",
+progress: 30,
+catatan: "Pertemuan 3: Revisi bab 2 dan mulai bab 3 metodologi",
+dosenNama: "Dr. Muhammad Iqbal, M.Ec"
+}
+]
+},
+{
+id: "bimb2",
+nim: "210401002",
+mahasiswaNama: "Budi Santoso",
+dosenNama: "Dr. Siti Khadijah, M.Si",
+pembimbingKe: 2,
+judul: "Analisis Strategi Pemasaran Produk Perbankan Syariah di Era Digital",
+prodi: "Perbankan Syariah",
+whatsapp: "081234567891",
+progress: 20,
+status: "berlangsung",
+catatan: "Review bab 1 dan saran perbaikan metodologi.",
+lastUpdate: "2026-02-10",
+createdAt: "2026-02-02T09:00:00.000Z",
+proposalId: "proposal2",
+meetings: [
+{
+id: "m1",
+tanggal: "2026-02-02",
+progress: 10,
+catatan: "Pertemuan 1: Review judul dan outline",
+dosenNama: "Dr. Siti Khadijah, M.Si"
+},
+{
+id: "m2",
+tanggal: "2026-02-10",
+progress: 20,
+catatan: "Pertemuan 2: Revisi bab 1",
+dosenNama: "Dr. Siti Khadijah, M.Si"
+}
+]
+},
+{
+id: "bimb3",
+nim: "1813181033",
+mahasiswaNama: "Dian Permata Sari",
+dosenNama: "Dr. Hj. Siti Aminah, M.Ag",
+pembimbingKe: 1,
+judul: "Analisis Dampak Fintech Syariah terhadap Inklusi Keuangan Masyarakat",
+prodi: "Ekonomi Syariah",
+whatsapp: "081234567896",
+progress: 80,
+status: "berlangsung",
+catatan: "Bab 4 sudah selesai, lanjut bab 5 kesimpulan.",
+lastUpdate: "2026-02-10",
+createdAt: "2025-09-15T10:00:00.000Z",
+proposalId: "proposal4",
+meetings: [
+{
+id: "m1",
+tanggal: "2025-09-15",
+progress: 10,
+catatan: "Pertemuan 1: Pengajuan judul dan outline",
+dosenNama: "Dr. Hj. Siti Aminah, M.Ag"
+},
+{
+id: "m2",
+tanggal: "2025-09-22",
+progress: 20,
+catatan: "Pertemuan 2: Revisi bab 1",
+dosenNama: "Dr. Hj. Siti Aminah, M.Ag"
+},
+{
+id: "m3",
+tanggal: "2025-10-06",
+progress: 30,
+catatan: "Pertemuan 3: Pembahasan bab 2",
+dosenNama: "Dr. Hj. Siti Aminah, M.Ag"
+},
+{
+id: "m4",
+tanggal: "2025-10-20",
+progress: 40,
+catatan: "Pertemuan 4: Revisi bab 2",
+dosenNama: "Dr. Hj. Siti Aminah, M.Ag"
+},
+{
+id: "m5",
+tanggal: "2025-11-03",
+progress: 50,
+catatan: "Pertemuan 5: Pembahasan bab 3",
+dosenNama: "Dr. Hj. Siti Aminah, M.Ag"
+},
+{
+id: "m6",
+tanggal: "2025-11-17",
+progress: 60,
+catatan: "Pertemuan 6: Revisi bab 3",
+dosenNama: "Dr. Hj. Siti Aminah, M.Ag"
+},
+{
+id: "m7",
+tanggal: "2025-12-01",
+progress: 70,
+catatan: "Pertemuan 7: Pembahasan bab 4",
+dosenNama: "Dr. Hj. Siti Aminah, M.Ag"
+},
+{
+id: "m8",
+tanggal: "2025-12-15",
+progress: 80,
+catatan: "Pertemuan 8: Revisi bab 4",
+dosenNama: "Dr. Hj. Siti Aminah, M.Ag"
+}
+]
+},
+{
+id: "bimb4",
+nim: "1813181033",
+mahasiswaNama: "Dian Permata Sari",
+dosenNama: "Dr. Ahmad Rizal, M.Si",
+pembimbingKe: 2,
+judul: "Analisis Dampak Fintech Syariah terhadap Inklusi Keuangan Masyarakat",
+prodi: "Ekonomi Syariah",
+whatsapp: "081234567896",
+progress: 70,
+status: "berlangsung",
+catatan: "Review bab 3 dan 4, saran perbaikan analisis data.",
 lastUpdate: "2026-02-05",
-createdAt: "2026-01-16T11:00:00.000Z",
-proposalId: "proposal2"
+createdAt: "2025-09-20T11:00:00.000Z",
+proposalId: "proposal4",
+meetings: [
+{
+id: "m1",
+tanggal: "2025-09-20",
+progress: 10,
+catatan: "Pertemuan 1: Review judul",
+dosenNama: "Dr. Ahmad Rizal, M.Si"
+},
+{
+id: "m2",
+tanggal: "2025-10-05",
+progress: 20,
+catatan: "Pertemuan 2: Review bab 1",
+dosenNama: "Dr. Ahmad Rizal, M.Si"
+},
+{
+id: "m3",
+tanggal: "2025-10-25",
+progress: 30,
+catatan: "Pertemuan 3: Review bab 2",
+dosenNama: "Dr. Ahmad Rizal, M.Si"
+},
+{
+id: "m4",
+tanggal: "2025-11-10",
+progress: 40,
+catatan: "Pertemuan 4: Pembahasan metodologi",
+dosenNama: "Dr. Ahmad Rizal, M.Si"
+},
+{
+id: "m5",
+tanggal: "2025-11-25",
+progress: 50,
+catatan: "Pertemuan 5: Review bab 3",
+dosenNama: "Dr. Ahmad Rizal, M.Si"
+},
+{
+id: "m6",
+tanggal: "2025-12-10",
+progress: 60,
+catatan: "Pertemuan 6: Review analisis data",
+dosenNama: "Dr. Ahmad Rizal, M.Si"
+},
+{
+id: "m7",
+tanggal: "2026-01-15",
+progress: 70,
+catatan: "Pertemuan 7: Review bab 4",
+dosenNama: "Dr. Ahmad Rizal, M.Si"
+}
+]
 }
 ];
 
@@ -1000,31 +1723,70 @@ nama: "Operator FEBI",
 password: "operator123",
 role: "operator",
 status: "aktif"
+},
+{
+id: "op2",
+username: "operator2",
+nama: "Operator Dua",
+password: "operator123",
+role: "operator",
+status: "aktif"
 }
 ];
 
 const DashboardPage = ({ mahasiswaArr, dosenArr, proposalsArr, repositoryArr, bimbinganArr, pendingBimbingan, userRole, currentUser, onNavigate }) => {
+// Hitung statistik berdasarkan role
+const getMahasiswaCount = () => {
+if (userRole === 'mahasiswa') return 1;
+return mahasiswaArr.length;
+};
+
+const getDosenCount = () => {
+if (userRole === 'dosen') return 1;
+return dosenArr.length;
+};
+
+const getProposalCount = () => {
+if (userRole === 'mahasiswa') {
+return proposalsArr.filter(p => p.nim === currentUser?.nim).length;
+}
+if (userRole === 'dosen') {
+return proposalsArr.filter(p => p.pembimbing1 === currentUser?.nama || p.pembimbing2 === currentUser?.nama).length;
+}
+return proposalsArr.length;
+};
+
+const getBimbinganCount = () => {
+if (userRole === 'mahasiswa') {
+return bimbinganArr.filter(b => b.nim === currentUser?.nim).length;
+}
+if (userRole === 'dosen') {
+return bimbinganArr.filter(b => b.dosenNama === currentUser?.nama).length;
+}
+return bimbinganArr.length;
+};
+
 return (
 <div className="space-y-6">
 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-lg p-6 text-white">
 <div className="flex items-center justify-between mb-3">
 <span className="text-4xl">👥</span>
-<span className="text-3xl font-black">{mahasiswaArr.length}</span>
+<span className="text-3xl font-black">{getMahasiswaCount()}</span>
 </div>
 <h3 className="text-sm font-semibold">Total Mahasiswa</h3>
 </div>
 <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-lg p-6 text-white">
 <div className="flex items-center justify-between mb-3">
 <span className="text-4xl">👨‍🏫</span>
-<span className="text-3xl font-black">{dosenArr.length}</span>
+<span className="text-3xl font-black">{getDosenCount()}</span>
 </div>
 <h3 className="text-sm font-semibold">Total Dosen</h3>
 </div>
 <div className="bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl shadow-lg p-6 text-white">
 <div className="flex items-center justify-between mb-3">
 <span className="text-4xl">📝</span>
-<span className="text-3xl font-black">{proposalsArr.length}</span>
+<span className="text-3xl font-black">{getProposalCount()}</span>
 </div>
 <h3 className="text-sm font-semibold">Total Proposal</h3>
 </div>
@@ -1083,7 +1845,7 @@ Terdapat <strong>{pendingBimbingan.length}</strong> proposal yang sudah disetuju
 </div>
 {userRole === 'dosen' && (p.pembimbing1 === currentUser.nama || p.pembimbing2 === currentUser.nama) && (
 <button
-onClick={() => window.handleMulaiBimbingan && window.handleMulaiBimbingan(p)}
+onClick={() => window.handleMulaiBimbingan && window.handleMulaiBimbingan(p, p.pembimbing1 === currentUser.nama ? 1 : 2)}
 className="px-3 py-1 bg-amber-600 text-white rounded text-xs hover:bg-amber-700"
 >
 Mulai Bimbingan
@@ -1102,8 +1864,8 @@ Mulai Bimbingan
 </div>
 )}
 <div className="bg-white rounded-2xl shadow-sm p-6">
-<h3 className="text-xl font-bold text-emerald-900 mb-4">🎉 Selamat Datang...!</h3>
-<p className="text-gray-600 mb-4">Sistem Dashboard Bimbingan Skripsi & Repository FEBI UINSI Samarinda terkoneksi secara digital. Membantu monitoring dan evaluasi proses penyelesaian Karya Akhir mahasiswa hingga repository.</p>
+<h3 className="text-xl font-bold text-emerald-900 mb-4">👨‍🏫 Selamat Datang di Dashboard Bimbingan Skripsi & Repository</h3>
+<p className="text-gray-600 mb-4">Asisten Pendamping Monitoring dan Evaluasi Percepatan Penyelesaian Karya Akhir Mahasiswa.</p>
 <div className="grid sm:grid-cols-3 gap-4">
 <div className="p-4 bg-emerald-50 rounded-xl">
 <p className="text-2xl font-bold text-emerald-600">{mahasiswaArr.length}</p>
@@ -1155,416 +1917,514 @@ p.status === 'Diperbaiki' ? 'bg-yellow-100 text-yellow-700' :
 );
 };
 // ============================================
-// PROPOSAL PAGE - ENHANCED VERSION DENGAN DUKUNGAN 2 DOSEN
+// PROPOSAL PAGE - ENHANCED VERSION DENGAN TABEL INFORMATIF
 // ============================================
 const ProposalPage = ({ proposals, userRole, currentUser, onAdd, onEdit, onDelete, dosenList, mahasiswaList, onCheckSimilarity, similarityResult, onMulaiBimbingan, bimbinganArr, onNavigate }) => {
-  const [searchTerm, setSearchTerm] = React.useState('');
-  const [filterStatus, setFilterStatus] = React.useState('');
-  const [filterProdi, setFilterProdi] = React.useState('');
-  const [selectedProposal, setSelectedProposal] = React.useState(null);
-  const [showDetailModal, setShowDetailModal] = React.useState(false);
+const [searchTerm, setSearchTerm] = React.useState('');
+const [filterStatus, setFilterStatus] = React.useState('');
+const [filterProdi, setFilterProdi] = React.useState('');
+const [sortBy, setSortBy] = React.useState('tanggal');
+const [sortOrder, setSortOrder] = React.useState('desc');
+const [selectedProposal, setSelectedProposal] = React.useState(null);
+const [showDetailModal, setShowDetailModal] = React.useState(false);
 
-  // Filter proposals based on role and filters
-  const filteredProposals = React.useMemo(() => {
-    let filtered = userRole === 'mahasiswa'
-      ? proposals.filter(p => p.nim === currentUser?.nim)
-      : userRole === 'dosen'
-      ? proposals.filter(p => p.pembimbing1 === currentUser?.nama || p.pembimbing2 === currentUser?.nama)
-      : proposals;
+// Filter proposals berdasarkan role dan filter
+const filteredProposals = React.useMemo(() => {
+let filtered = userRole === 'mahasiswa'
+? proposals.filter(p => p.nim === currentUser?.nim)
+: userRole === 'dosen'
+? proposals.filter(p => p.pembimbing1 === currentUser?.nama || p.pembimbing2 === currentUser?.nama)
+: proposals;
 
-    // Apply search
-    if (searchTerm) {
-      filtered = filtered.filter(p => 
-        p.judul?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.mahasiswaNama?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.nim?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
+// Apply search
+if (searchTerm) {
+filtered = filtered.filter(p => 
+p.judul?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+p.mahasiswaNama?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+p.nim?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+p.pembimbing1?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+(p.pembimbing2 && p.pembimbing2 !== '-' && p.pembimbing2.toLowerCase().includes(searchTerm.toLowerCase()))
+);
+}
 
-    // Apply status filter
-    if (filterStatus) {
-      filtered = filtered.filter(p => p.status === filterStatus);
-    }
+// Apply status filter
+if (filterStatus) {
+filtered = filtered.filter(p => p.status === filterStatus);
+}
 
-    // Apply prodi filter
-    if (filterProdi) {
-      filtered = filtered.filter(p => p.prodi === filterProdi);
-    }
+// Apply prodi filter
+if (filterProdi) {
+filtered = filtered.filter(p => p.prodi === filterProdi);
+}
 
-    return filtered;
-  }, [proposals, userRole, currentUser, searchTerm, filterStatus, filterProdi]);
+// Apply sorting
+filtered.sort((a, b) => {
+let aVal, bVal;
+switch(sortBy) {
+case 'judul':
+aVal = a.judul || '';
+bVal = b.judul || '';
+break;
+case 'mahasiswa':
+aVal = a.mahasiswaNama || '';
+bVal = b.mahasiswaNama || '';
+break;
+case 'status':
+aVal = a.status || '';
+bVal = b.status || '';
+break;
+case 'tanggal':
+default:
+aVal = a.tanggalPengajuan || a.createdAt || '';
+bVal = b.tanggalPengajuan || b.createdAt || '';
+}
 
-  const canAdd = userRole === 'mahasiswa' || userRole === 'admin' || userRole === 'operator';
-  const canEdit = userRole === 'admin' || userRole === 'operator';
-  const canDelete = userRole === 'admin'; // Only admin can delete
+if (sortOrder === 'asc') {
+return aVal > bVal ? 1 : -1;
+} else {
+return aVal < bVal ? 1 : -1;
+}
+});
 
-  const handleViewDetail = (proposal) => {
-    setSelectedProposal(proposal);
-    setShowDetailModal(true);
-  };
+return filtered;
+}, [proposals, userRole, currentUser, searchTerm, filterStatus, filterProdi, sortBy, sortOrder]);
 
-  // Cek status bimbingan untuk proposal dan dosen tertentu
-  const getBimbinganStatus = (proposal, dosenNama) => {
-    return bimbinganArr.find(b => b.nim === proposal.nim && b.judul === proposal.judul && b.dosenNama === dosenNama);
-  };
+const canAdd = userRole === 'mahasiswa' || userRole === 'admin' || userRole === 'operator';
+const canEdit = userRole === 'admin' || userRole === 'operator';
+const canDelete = userRole === 'admin'; // Only admin can delete
 
-  // Detail Modal Component
-  const DetailModal = ({ item, onClose }) => {
-    if (!item) return null;
-    
-    return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-        <div className="bg-white rounded-2xl p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-          <div className="flex justify-between items-start mb-6">
-            <h2 className="text-2xl font-bold text-emerald-900 flex items-center gap-2">
-              <span className="text-3xl">📝</span> Detail Proposal
-            </h2>
-            <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg text-xl">✕</button>
-          </div>
-          
-          <div className="space-y-4">
-            {/* Judul */}
-            <div className="bg-gradient-to-r from-emerald-50 to-teal-50 p-5 rounded-xl">
-              <h3 className="text-xl font-bold text-emerald-900 mb-2">{item.judul}</h3>
-            </div>
+// Cek apakah bimbingan sudah ada untuk dosen tertentu
+const getBimbinganForDosen = (proposal, dosenNama) => {
+return bimbinganArr.find(b => b.nim === proposal.nim && b.judul === proposal.judul && b.dosenNama === dosenNama);
+};
 
-            {/* Informasi Mahasiswa */}
-            <div className="border rounded-xl p-5">
-              <h4 className="font-bold text-emerald-800 mb-3 flex items-center gap-2">
-                <span>👤</span> Data Mahasiswa
-              </h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-xs text-gray-500">NIM</p>
-                  <p className="font-medium">{item.nim}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500">Nama</p>
-                  <p className="font-medium">{item.mahasiswaNama}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500">Program Studi</p>
-                  <p className="font-medium">{item.prodi}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500">WhatsApp</p>
-                  <p className="font-medium">{item.whatsapp}</p>
-                </div>
-              </div>
-            </div>
+// Format tanggal
+const formatDate = (dateStr) => {
+if (!dateStr) return '-';
+const date = new Date(dateStr);
+return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+};
 
-            {/* Informasi Pembimbing */}
-            <div className="border rounded-xl p-5">
-              <h4 className="font-bold text-emerald-800 mb-3 flex items-center gap-2">
-                <span>👨‍🏫</span> Pembimbing
-              </h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-xs text-gray-500">Pembimbing 1</p>
-                  <p className="font-medium">{item.pembimbing1}</p>
-                  {getBimbinganStatus(item, item.pembimbing1) && (
-                    <p className="text-xs mt-1 text-emerald-600">
-                      Progress: {getBimbinganStatus(item, item.pembimbing1).progress}%
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500">Pembimbing 2</p>
-                  <p className="font-medium">{item.pembimbing2 || '-'}</p>
-                  {item.pembimbing2 && getBimbinganStatus(item, item.pembimbing2) && (
-                    <p className="text-xs mt-1 text-emerald-600">
-                      Progress: {getBimbinganStatus(item, item.pembimbing2).progress}%
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
+// Get status color and icon
+const getStatusInfo = (status) => {
+switch(status) {
+case 'Diterima':
+return { color: 'bg-green-100 text-green-700 border-green-300', icon: '✅' };
+case 'Ditolak':
+return { color: 'bg-red-100 text-red-700 border-red-300', icon: '❌' };
+case 'Diperbaiki':
+return { color: 'bg-yellow-100 text-yellow-700 border-yellow-300', icon: '⚠️' };
+default:
+return { color: 'bg-blue-100 text-blue-700 border-blue-300', icon: '⏳' };
+}
+};
 
-            {/* Abstrak */}
-            <div className="border rounded-xl p-5">
-              <h4 className="font-bold text-emerald-800 mb-3 flex items-center gap-2">
-                <span>📄</span> Abstrak
-              </h4>
-              <p className="text-gray-700 leading-relaxed whitespace-pre-line">{item.abstrak}</p>
-            </div>
+const handleViewDetail = (proposal) => {
+setSelectedProposal(proposal);
+setShowDetailModal(true);
+};
 
-            {/* Status dan Catatan Validasi */}
-            <div className="border rounded-xl p-5">
-              <div className="flex justify-between items-start mb-4">
-                <h4 className="font-bold text-emerald-800">Status Proposal</h4>
-                <span className={`px-4 py-2 rounded-full text-sm font-semibold ${
-                  item.status === 'Diterima' ? 'bg-green-100 text-green-700' :
-                  item.status === 'Ditolak' ? 'bg-red-100 text-red-700' :
-                  item.status === 'Diperbaiki' ? 'bg-yellow-100 text-yellow-700' :
-                  'bg-blue-100 text-blue-700'
-                }`}>
-                  {item.status || 'Menunggu'}
-                </span>
-              </div>
-              {item.catatan && (
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <p className="text-sm font-semibold text-blue-700 mb-1">Catatan Validasi:</p>
-                  <p className="text-sm text-blue-600">{item.catatan}</p>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
+// Detail Modal Component
+const DetailModal = ({ proposal, onClose }) => {
+if (!proposal) return null;
+const statusInfo = getStatusInfo(proposal.status);
 
-  return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center flex-wrap gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-emerald-900 flex items-center gap-2">
-            <span>📝</span> Pengajuan Proposal Skripsi
-          </h2>
-          <p className="text-sm text-gray-600 mt-1">
-            Total {filteredProposals.length} proposal {filteredProposals.length !== proposals.length && `(dari ${proposals.length} total)`}
-          </p>
-        </div>
-        {canAdd && (
-          <button onClick={onAdd} className="px-4 py-2 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700 transition-all flex items-center gap-2">
-            <span>➕</span> Ajukan Proposal
-          </button>
-        )}
-      </div>
+return (
+<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+<div className="bg-white rounded-2xl p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+<div className="flex justify-between items-start mb-6">
+<h2 className="text-2xl font-bold text-emerald-900 flex items-center gap-2">
+<span className="text-3xl">📄</span> Detail Proposal
+</h2>
+<button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg text-xl">✕</button>
+</div>
 
-      {/* Filter Section */}
-      <div className="bg-white rounded-xl shadow-sm border p-4">
-        <div className="grid md:grid-cols-4 gap-4">
-          <div className="md:col-span-2">
-            <label className="block text-xs font-semibold text-gray-600 mb-1">🔍 Cari</label>
-            <input
-              type="text"
-              placeholder="Cari judul, mahasiswa, atau NIM..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 focus:outline-none"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1">📊 Status</label>
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 focus:outline-none"
-            >
-              <option value="">Semua Status</option>
-              <option value="Menunggu">Menunggu</option>
-              <option value="Diterima">Diterima</option>
-              <option value="Diperbaiki">Diperbaiki</option>
-              <option value="Ditolak">Ditolak</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1">📋 Program Studi</label>
-            <select
-              value={filterProdi}
-              onChange={(e) => setFilterProdi(e.target.value)}
-              className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 focus:outline-none"
-            >
-              <option value="">Semua Prodi</option>
-              <option value="Ekonomi Syariah">Ekonomi Syariah</option>
-              <option value="Perbankan Syariah">Perbankan Syariah</option>
-              <option value="Manajemen Bisnis Syariah">Manajemen Bisnis Syariah</option>
-            </select>
-          </div>
-        </div>
-      </div>
+<div className="space-y-6">
+{/* Header Status */}
+<div className="flex items-center justify-between bg-gray-50 p-4 rounded-xl">
+<div>
+<p className="text-sm text-gray-600">Status Proposal</p>
+<div className="flex items-center gap-2 mt-1">
+<span className={`px-4 py-2 rounded-full text-sm font-semibold ${statusInfo.color}`}>
+{statusInfo.icon} {proposal.status}
+</span>
+</div>
+</div>
+<div className="text-right">
+<p className="text-sm text-gray-600">Tanggal Pengajuan</p>
+<p className="font-semibold">{formatDate(proposal.tanggalPengajuan || proposal.createdAt)}</p>
+</div>
+</div>
 
-      {/* Table View - INFORMATIF, MENARIK, KOMPREHENSIF */}
-      <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[1400px]">
-            <thead className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
-              <tr>
-                <th className="px-4 py-3 text-left text-sm font-semibold w-12">No</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold">Judul Proposal</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold w-40">Mahasiswa</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold w-32">Program Studi</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold w-48">Pembimbing 1</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold w-48">Pembimbing 2</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold w-28">Status</th>
-                <th className="px-4 py-3 text-center text-sm font-semibold w-48">Aksi / Progress Bimbingan</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {filteredProposals.map((item, index) => {
-                const bimbinganP1 = getBimbinganStatus(item, item.pembimbing1);
-                const bimbinganP2 = item.pembimbing2 ? getBimbinganStatus(item, item.pembimbing2) : null;
-                
-                return (
-                  <tr key={item.id} className="hover:bg-emerald-50/50 transition-colors group">
-                    <td className="px-4 py-3 text-sm text-gray-500">{index + 1}</td>
-                    <td className="px-4 py-3">
-                      <div className="font-medium text-gray-900 group-hover:text-emerald-700 transition-colors line-clamp-2">
-                        {item.judul}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="text-sm font-medium">{item.mahasiswaNama}</div>
-                      <div className="text-xs text-gray-400">{item.nim}</div>
-                    </td>
-                    <td className="px-4 py-3 text-sm">{item.prodi}</td>
-                    <td className="px-4 py-3">
-                      <div className="text-sm">{item.pembimbing1}</div>
-                      {bimbinganP1 && (
-                        <div className="text-xs mt-1">
-                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
-                            bimbinganP1.status === 'berlangsung' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
-                          }`}>
-                            {bimbinganP1.status === 'berlangsung' ? '🔄' : '✅'} {bimbinganP1.progress}%
-                          </span>
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="text-sm">{item.pembimbing2 || '-'}</div>
-                      {bimbinganP2 && (
-                        <div className="text-xs mt-1">
-                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
-                            bimbinganP2.status === 'berlangsung' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
-                          }`}>
-                            {bimbinganP2.status === 'berlangsung' ? '🔄' : '✅'} {bimbinganP2.progress}%
-                          </span>
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
-                        item.status === 'Diterima' ? 'bg-green-100 text-green-700' :
-                        item.status === 'Ditolak' ? 'bg-red-100 text-red-700' :
-                        item.status === 'Diperbaiki' ? 'bg-yellow-100 text-yellow-700' :
-                        'bg-blue-100 text-blue-700'
-                      }`}>
-                        {item.status || 'Menunggu'}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center justify-center gap-2 flex-wrap">
-                        {/* Tombol Lihat Detail */}
-                        <button
-                          onClick={() => handleViewDetail(item)}
-                          className="p-2 bg-emerald-100 text-emerald-700 rounded-lg hover:bg-emerald-200 transition-all transform hover:scale-110"
-                          title="Lihat Detail"
-                        >
-                          <span className="text-lg">👁️</span>
-                        </button>
-                        
-                        {/* Tombol Edit untuk Admin/Operator */}
-                        {canEdit && (
-                          <button
-                            onClick={() => onEdit(item)}
-                            className="p-2 bg-amber-100 text-amber-700 rounded-lg hover:bg-amber-200 transition-all transform hover:scale-110"
-                            title="Edit"
-                          >
-                            <span className="text-lg">✏️</span>
-                          </button>
-                        )}
-                        
-                        {/* Tombol Hapus untuk Admin */}
-                        {canDelete && (
-                          <button
-                            onClick={() => onDelete('proposals', item.id, item.judul)}
-                            className="p-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-all transform hover:scale-110"
-                            title="Hapus"
-                          >
-                            <span className="text-lg">🗑️</span>
-                          </button>
-                        )}
-                        
-                        {/* Tombol Mulai Bimbingan untuk Dosen (Pembimbing 1) */}
-                        {userRole === 'dosen' && item.status === 'Diterima' && !bimbinganP1 && item.pembimbing1 === currentUser?.nama && (
-                          <button
-                            onClick={() => onMulaiBimbingan(item, 1)}
-                            className="p-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-all transform hover:scale-110"
-                            title="Mulai Bimbingan (Pembimbing 1)"
-                          >
-                            <span className="text-lg">📋1️⃣</span>
-                          </button>
-                        )}
-                        
-                        {/* Tombol Mulai Bimbingan untuk Dosen (Pembimbing 2) */}
-                        {userRole === 'dosen' && item.status === 'Diterima' && !bimbinganP2 && item.pembimbing2 === currentUser?.nama && (
-                          <button
-                            onClick={() => onMulaiBimbingan(item, 2)}
-                            className="p-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-all transform hover:scale-110"
-                            title="Mulai Bimbingan (Pembimbing 2)"
-                          >
-                            <span className="text-lg">📋2️⃣</span>
-                          </button>
-                        )}
-                        
-                        {/* Tombol Lihat Bimbingan untuk Mahasiswa */}
-                        {userRole === 'mahasiswa' && item.status === 'Diterima' && (
-                          <button
-                            onClick={() => onNavigate('bimbingan')}
-                            className="p-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition-all transform hover:scale-110"
-                            title="Lihat Bimbingan"
-                          >
-                            <span className="text-lg">📋</span>
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-              
-              {filteredProposals.length === 0 && (
-                <tr>
-                  <td colSpan="8" className="px-4 py-12 text-center text-gray-400">
-                    <div className="flex flex-col items-center">
-                      <span className="text-6xl mb-4">📝</span>
-                      <p className="text-lg font-medium">Tidak ada proposal ditemukan</p>
-                      <p className="text-sm mt-1">Coba ubah filter pencarian Anda</p>
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-        
-        {/* Table Footer with Stats */}
-        {filteredProposals.length > 0 && (
-          <div className="bg-gray-50 px-4 py-3 border-t text-sm text-gray-600 flex justify-between items-center">
-            <span>
-              Menampilkan <strong>{filteredProposals.length}</strong> dari <strong>{proposals.length}</strong> proposal
-            </span>
-            <span className="text-emerald-600">
-              📊 Terakhir diperbarui: {new Date().toLocaleDateString('id-ID')}
-            </span>
-          </div>
-        )}
-      </div>
+{/* Judul */}
+<div className="border-b pb-4">
+<h3 className="text-xl font-bold text-gray-900">{proposal.judul}</h3>
+</div>
 
-      {/* Detail Modal */}
-      {showDetailModal && (
-        <DetailModal 
-          item={selectedProposal} 
-          onClose={() => {
-            setShowDetailModal(false);
-            setSelectedProposal(null);
-          }}
-        />
-      )}
-    </div>
-  );
+{/* Informasi Mahasiswa */}
+<div className="grid md:grid-cols-2 gap-4">
+<div className="bg-emerald-50 p-4 rounded-xl">
+<h4 className="font-semibold text-emerald-800 mb-3 flex items-center gap-2">
+<span>👤</span> Data Mahasiswa
+</h4>
+<div className="space-y-2">
+<div className="flex justify-between">
+<span className="text-sm text-gray-600">Nama</span>
+<span className="text-sm font-medium">{proposal.mahasiswaNama}</span>
+</div>
+<div className="flex justify-between">
+<span className="text-sm text-gray-600">NIM</span>
+<span className="text-sm font-medium">{proposal.nim}</span>
+</div>
+<div className="flex justify-between">
+<span className="text-sm text-gray-600">Program Studi</span>
+<span className="text-sm font-medium">{proposal.prodi}</span>
+</div>
+<div className="flex justify-between">
+<span className="text-sm text-gray-600">WhatsApp</span>
+<span className="text-sm font-medium">{proposal.whatsapp}</span>
+</div>
+</div>
+</div>
+
+<div className="bg-blue-50 p-4 rounded-xl">
+<h4 className="font-semibold text-blue-800 mb-3 flex items-center gap-2">
+<span>👨‍🏫</span> Data Pembimbing
+</h4>
+<div className="space-y-3">
+<div className="p-2 bg-white rounded-lg">
+<div className="flex items-center gap-2 mb-1">
+<span className="pembimbing-badge pembimbing-badge-1">Pembimbing 1</span>
+</div>
+<p className="font-medium">{proposal.pembimbing1}</p>
+</div>
+{proposal.pembimbing2 && proposal.pembimbing2 !== '-' && (
+<div className="p-2 bg-white rounded-lg">
+<div className="flex items-center gap-2 mb-1">
+<span className="pembimbing-badge pembimbing-badge-2">Pembimbing 2</span>
+</div>
+<p className="font-medium">{proposal.pembimbing2}</p>
+</div>
+)}
+</div>
+</div>
+</div>
+
+{/* Abstrak */}
+<div className="border rounded-xl p-4">
+<h4 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
+<span>📝</span> Abstrak
+</h4>
+<p className="text-gray-700 leading-relaxed whitespace-pre-line">{proposal.abstrak}</p>
+</div>
+
+{/* Catatan Validasi */}
+{proposal.catatan && (
+<div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-xl">
+<h4 className="font-semibold text-yellow-800 mb-1 flex items-center gap-2">
+<span>📌</span> Catatan Validasi
+</h4>
+<p className="text-yellow-700">{proposal.catatan}</p>
+</div>
+)}
+
+{/* Metadata */}
+<div className="text-xs text-gray-400 border-t pt-4">
+<p>ID Proposal: {proposal.id}</p>
+<p>Tahun Akademik: {proposal.tahun}</p>
+</div>
+</div>
+</div>
+</div>
+);
+};
+
+return (
+<div className="space-y-6">
+{/* Header */}
+<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+<div>
+<h2 className="text-2xl font-bold text-emerald-900 flex items-center gap-2">
+<span>📝</span> Pengajuan Proposal Skripsi
+</h2>
+<p className="text-sm text-gray-600 mt-1">
+Total {filteredProposals.length} proposal {filteredProposals.length !== proposals.length && `(dari ${proposals.length} total)`}
+</p>
+</div>
+{canAdd && (
+<button onClick={onAdd} className="px-4 py-2 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700 transition-all flex items-center gap-2 shadow-lg hover:shadow-xl">
+<span>➕</span> Ajukan Proposal Baru
+</button>
+)}
+</div>
+
+{/* Filter Section */}
+<div className="bg-white rounded-xl shadow-sm border p-4">
+<div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+<div className="md:col-span-2">
+<label className="block text-xs font-semibold text-gray-600 mb-1">🔍 Pencarian</label>
+<input
+type="text"
+placeholder="Cari judul, mahasiswa, NIM, pembimbing..."
+value={searchTerm}
+onChange={(e) => setSearchTerm(e.target.value)}
+className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 focus:outline-none"
+/>
+</div>
+<div>
+<label className="block text-xs font-semibold text-gray-600 mb-1">📊 Status</label>
+<select
+value={filterStatus}
+onChange={(e) => setFilterStatus(e.target.value)}
+className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 focus:outline-none"
+>
+<option value="">Semua Status</option>
+<option value="Menunggu">Menunggu</option>
+<option value="Diterima">Diterima</option>
+<option value="Diperbaiki">Diperbaiki</option>
+<option value="Ditolak">Ditolak</option>
+</select>
+</div>
+<div>
+<label className="block text-xs font-semibold text-gray-600 mb-1">📋 Program Studi</label>
+<select
+value={filterProdi}
+onChange={(e) => setFilterProdi(e.target.value)}
+className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 focus:outline-none"
+>
+<option value="">Semua Prodi</option>
+<option value="Ekonomi Syariah">Ekonomi Syariah</option>
+<option value="Perbankan Syariah">Perbankan Syariah</option>
+<option value="Manajemen Bisnis Syariah">Manajemen Bisnis Syariah</option>
+</select>
+</div>
+<div>
+<label className="block text-xs font-semibold text-gray-600 mb-1">📅 Urutkan</label>
+<select
+value={sortBy}
+onChange={(e) => setSortBy(e.target.value)}
+className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 focus:outline-none"
+>
+<option value="tanggal">Tanggal</option>
+<option value="judul">Judul</option>
+<option value="mahasiswa">Mahasiswa</option>
+<option value="status">Status</option>
+</select>
+</div>
+</div>
+<div className="flex justify-end mt-2">
+<button
+onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+className="text-sm text-emerald-600 hover:text-emerald-800 flex items-center gap-1"
+>
+{sortOrder === 'asc' ? '⬆️ Ascending' : '⬇️ Descending'}
+</button>
+</div>
+</div>
+
+{/* Tabel Proposal */}
+<div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+<div className="overflow-x-auto">
+<table className="w-full min-w-[1200px]">
+<thead className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
+<tr>
+<th className="px-4 py-3 text-left text-sm font-semibold w-16">No</th>
+<th className="px-4 py-3 text-left text-sm font-semibold">Judul Proposal</th>
+<th className="px-4 py-3 text-left text-sm font-semibold w-40">Mahasiswa</th>
+<th className="px-4 py-3 text-left text-sm font-semibold w-32">Program Studi</th>
+<th className="px-4 py-3 text-left text-sm font-semibold w-48">Pembimbing</th>
+<th className="px-4 py-3 text-left text-sm font-semibold w-28">Status</th>
+<th className="px-4 py-3 text-left text-sm font-semibold w-28">Tanggal</th>
+<th className="px-4 py-3 text-center text-sm font-semibold w-40">Aksi</th>
+</tr>
+</thead>
+<tbody className="divide-y divide-gray-100">
+{filteredProposals.map((proposal, index) => {
+const statusInfo = getStatusInfo(proposal.status);
+const hasBimbingan1 = getBimbinganForDosen(proposal, proposal.pembimbing1);
+const hasBimbingan2 = proposal.pembimbing2 && proposal.pembimbing2 !== '-' && getBimbinganForDosen(proposal, proposal.pembimbing2);
+const isDosenPembimbing = userRole === 'dosen' && (proposal.pembimbing1 === currentUser?.nama || proposal.pembimbing2 === currentUser?.nama);
+const pembimbingKe = isDosenPembimbing ? (proposal.pembimbing1 === currentUser?.nama ? 1 : 2) : null;
+
+return (
+<tr key={proposal.id} className="hover:bg-emerald-50/50 transition-colors group">
+<td className="px-4 py-4 text-sm text-gray-500 align-top">
+{index + 1}
+</td>
+<td className="px-4 py-4">
+<div className="space-y-2">
+<div className="font-medium text-gray-900 group-hover:text-emerald-700 transition-colors">
+{proposal.judul}
+</div>
+<div className="text-xs text-gray-400 line-clamp-2">
+{proposal.abstrak.substring(0, 100)}...
+</div>
+{proposal.catatan && (
+<div className="flex items-start gap-1 mt-1 text-xs text-amber-600 bg-amber-50 p-1 rounded">
+<span>📌</span>
+<span className="line-clamp-1">{proposal.catatan}</span>
+</div>
+)}
+</div>
+</td>
+<td className="px-4 py-4">
+<div className="text-sm font-medium">{proposal.mahasiswaNama}</div>
+<div className="text-xs text-gray-400">{proposal.nim}</div>
+<div className="text-xs text-gray-400 mt-1">📱 {proposal.whatsapp}</div>
+</td>
+<td className="px-4 py-4">
+<span className="text-sm">{proposal.prodi}</span>
+</td>
+<td className="px-4 py-4">
+<div className="space-y-2">
+<div className="flex items-center gap-1">
+<span className="pembimbing-badge pembimbing-badge-1 text-[10px]">P1</span>
+<span className="text-sm">{proposal.pembimbing1}</span>
+{hasBimbingan1 && (
+<span className="progress-indicator ml-1" title="Bimbingan aktif">
+<span className="progress-dot aktif"></span>
+<span className="text-[10px]">{hasBimbingan1.progress}%</span>
+</span>
+)}
+</div>
+{proposal.pembimbing2 && proposal.pembimbing2 !== '-' && (
+<div className="flex items-center gap-1 mt-1">
+<span className="pembimbing-badge pembimbing-badge-2 text-[10px]">P2</span>
+<span className="text-sm">{proposal.pembimbing2}</span>
+{hasBimbingan2 && (
+<span className="progress-indicator ml-1" title="Bimbingan aktif">
+<span className="progress-dot aktif"></span>
+<span className="text-[10px]">{hasBimbingan2.progress}%</span>
+</span>
+)}
+</div>
+)}
+</div>
+</td>
+<td className="px-4 py-4">
+<div className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${statusInfo.color}`}>
+<span className="mr-1">{statusInfo.icon}</span>
+{proposal.status}
+</div>
+</td>
+<td className="px-4 py-4 text-sm text-gray-600">
+{formatDate(proposal.tanggalPengajuan || proposal.createdAt)}
+</td>
+<td className="px-4 py-4">
+<div className="flex items-center justify-center gap-2 flex-wrap">
+{/* Tombol Lihat Detail */}
+<button
+onClick={() => handleViewDetail(proposal)}
+className="p-2 bg-emerald-100 text-emerald-700 rounded-lg hover:bg-emerald-200 transition-all transform hover:scale-110"
+title="Lihat Detail"
+>
+<span className="text-lg">👁️</span>
+</button>
+
+{/* Tombol untuk Dosen - Mulai Bimbingan */}
+{isDosenPembimbing && proposal.status === 'Diterima' && !getBimbinganForDosen(proposal, currentUser.nama) && (
+<button
+onClick={() => onMulaiBimbingan(proposal, pembimbingKe)}
+className="p-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-all transform hover:scale-110"
+title={`Mulai Bimbingan sebagai Pembimbing ${pembimbingKe}`}
+>
+<span className="text-lg">📋</span>
+</button>
+)}
+
+{/* Tombol untuk Dosen - Lihat Bimbingan */}
+{isDosenPembimbing && proposal.status === 'Diterima' && getBimbinganForDosen(proposal, currentUser.nama) && (
+<button
+onClick={() => onNavigate('bimbingan')}
+className="p-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-all transform hover:scale-110"
+title="Lihat Bimbingan"
+>
+<span className="text-lg">📊</span>
+</button>
+)}
+
+{/* Admin/Operator Actions */}
+{canEdit && (
+<button
+onClick={() => onEdit(proposal)}
+className="p-2 bg-amber-100 text-amber-700 rounded-lg hover:bg-amber-200 transition-all transform hover:scale-110"
+title="Edit Proposal"
+>
+<span className="text-lg">✏️</span>
+</button>
+)}
+{canDelete && (
+<button
+onClick={() => onDelete(proposal.id, proposal.judul)}
+className="p-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-all transform hover:scale-110"
+title="Hapus Proposal"
+>
+<span className="text-lg">🗑️</span>
+</button>
+)}
+</div>
+</td>
+</tr>
+);
+})}
+
+{filteredProposals.length === 0 && (
+<tr>
+<td colSpan="8" className="px-4 py-12 text-center text-gray-400">
+<div className="flex flex-col items-center">
+<span className="text-6xl mb-4">📝</span>
+<p className="text-lg font-medium">Tidak ada proposal ditemukan</p>
+<p className="text-sm mt-1">Coba ubah filter pencarian Anda</p>
+</div>
+</td>
+</tr>
+)}
+</tbody>
+</table>
+</div>
+
+{/* Table Footer with Stats */}
+{filteredProposals.length > 0 && (
+<div className="bg-gray-50 px-4 py-3 border-t text-sm text-gray-600 flex justify-between items-center">
+<div className="flex items-center gap-4">
+<span>
+Menampilkan <strong>{filteredProposals.length}</strong> dari <strong>{proposals.length}</strong> proposal
+</span>
+<div className="flex items-center gap-2">
+<span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full">Menunggu: {proposals.filter(p => p.status === 'Menunggu').length}</span>
+<span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full">Diterima: {proposals.filter(p => p.status === 'Diterima').length}</span>
+<span className="text-xs px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full">Diperbaiki: {proposals.filter(p => p.status === 'Diperbaiki').length}</span>
+<span className="text-xs px-2 py-1 bg-red-100 text-red-700 rounded-full">Ditolak: {proposals.filter(p => p.status === 'Ditolak').length}</span>
+</div>
+</div>
+<span className="text-emerald-600">
+📊 Terakhir diperbarui: {new Date().toLocaleDateString('id-ID')}
+</span>
+</div>
+)}
+</div>
+
+{/* Detail Modal */}
+{showDetailModal && (
+<DetailModal
+proposal={selectedProposal}
+onClose={() => {
+setShowDetailModal(false);
+setSelectedProposal(null);
+}}
+/>
+)}
+</div>
+);
 };
 // ============================================
-// BIMBINGAN PAGE - ENHANCED VERSION DENGAN DUKUNGAN 2 DOSEN
+// BIMBINGAN PAGE - ENHANCED VERSION DENGAN DUAL PEMBIMBING
 // ============================================
-const BimbinganPage = ({ bimbingan, userRole, currentUser, onAdd, onEdit, onDelete, mahasiswaList, dosenList, onNavigate }) => {
+const BimbinganPage = ({ bimbingan, userRole, currentUser, onAdd, onEdit, onDelete, mahasiswaList, dosenList, onNavigate, onEditMeeting, onDeleteMeeting, onAddMeeting }) => {
 const [selectedBimbingan, setSelectedBimbingan] = React.useState(null);
 const [showDetailModal, setShowDetailModal] = React.useState(false);
-const [showHistoryModal, setShowHistoryModal] = React.useState(false);
-const [showTimelineModal, setShowTimelineModal] = React.useState(false);
-const [showAddMeetingModal, setShowAddMeetingModal] = React.useState(false);
+const [showMeetingModal, setShowMeetingModal] = React.useState(false);
+const [editingMeeting, setEditingMeeting] = React.useState(null);
 const [searchTerm, setSearchTerm] = React.useState('');
 const [filterStatus, setFilterStatus] = React.useState('');
 const [filterProdi, setFilterProdi] = React.useState('');
@@ -1601,7 +2461,36 @@ filtered = filtered.filter(b => b.prodi === filterProdi);
 
 // Apply pembimbing filter
 if (filterPembimbing) {
-filtered = filtered.filter(b => b.pembimbingKe?.toString() === filterPembimbing);
+filtered = filtered.filter(b => b.pembimbingKe === parseInt(filterPembimbing));
+}
+
+// Group by mahasiswa dan judul untuk tampilan dual
+if (userRole === 'mahasiswa') {
+// Kelompokkan berdasarkan nim dan judul
+const grouped = {};
+filtered.forEach(b => {
+const key = `${b.nim}-${b.judul}`;
+if (!grouped[key]) {
+grouped[key] = {
+nim: b.nim,
+mahasiswaNama: b.mahasiswaNama,
+judul: b.judul,
+prodi: b.prodi,
+pembimbing1: null,
+pembimbing2: null,
+bimbingan1: null,
+bimbingan2: null
+};
+}
+if (b.pembimbingKe === 1) {
+grouped[key].pembimbing1 = b.dosenNama;
+grouped[key].bimbingan1 = b;
+} else if (b.pembimbingKe === 2) {
+grouped[key].pembimbing2 = b.dosenNama;
+grouped[key].bimbingan2 = b;
+}
+});
+return Object.values(grouped);
 }
 
 return filtered;
@@ -1609,17 +2498,21 @@ return filtered;
 
 // Statistik bimbingan
 const stats = React.useMemo(() => {
-const totalMeetings = filteredBimbingan.reduce((sum, b) => sum + (b.meetings?.length || 0), 0);
+const filtered = userRole === 'mahasiswa' 
+? bimbingan.filter(b => b.nim === currentUser?.nim)
+: userRole === 'dosen'
+? bimbingan.filter(b => b.dosenNama === currentUser?.nama)
+: bimbingan;
+
 return {
-total: filteredBimbingan.length,
-berlangsung: filteredBimbingan.filter(b => b.status === 'berlangsung').length,
-selesai: filteredBimbingan.filter(b => b.status === 'selesai').length,
-progressRata: filteredBimbingan.length > 0 
-? Math.round(filteredBimbingan.reduce((sum, b) => sum + (b.progress || 0), 0) / filteredBimbingan.length) 
-: 0,
-totalMeetings: totalMeetings
+total: filtered.length,
+berlangsung: filtered.filter(b => b.status === 'berlangsung').length,
+selesai: filtered.filter(b => b.status === 'selesai').length,
+progressRata: filtered.length > 0 
+? Math.round(filtered.reduce((sum, b) => sum + (b.progress || 0), 0) / filtered.length) 
+: 0
 };
-}, [filteredBimbingan]);
+}, [bimbingan, userRole, currentUser]);
 
 const canAdd = userRole === 'admin' || userRole === 'operator';
 const canEdit = userRole === 'admin' || userRole === 'operator' || userRole === 'dosen';
@@ -1630,19 +2523,96 @@ setSelectedBimbingan(item);
 setShowDetailModal(true);
 };
 
-const handleViewHistory = (item) => {
-setSelectedBimbingan(item);
-setShowHistoryModal(true);
-};
-
-const handleViewTimeline = (item) => {
-setSelectedBimbingan(item);
-setShowTimelineModal(true);
-};
-
 const handleAddMeeting = (item) => {
+if (item.meetings && item.meetings.length >= 10) {
+alert('Maksimal 10 kali pertemuan bimbingan (progress 100%)');
+return;
+}
 setSelectedBimbingan(item);
-setShowAddMeetingModal(true);
+setEditingMeeting(null);
+setShowMeetingModal(true);
+};
+
+const handleEditMeeting = (item, meeting) => {
+setSelectedBimbingan(item);
+setEditingMeeting(meeting);
+setShowMeetingModal(true);
+};
+
+const handleDeleteMeeting = async (bimbinganId, meetingId, meetingCatatan) => {
+if (userRole !== 'admin') {
+alert('Hanya admin yang dapat menghapus pertemuan bimbingan');
+return;
+}
+if (!confirm(`Hapus pertemuan "${meetingCatatan}"?`)) return;
+
+try {
+const bimbinganItem = bimbingan.find(b => b.id === bimbinganId);
+if (!bimbinganItem) return;
+
+const updatedMeetings = (bimbinganItem.meetings || []).filter(m => m.id !== meetingId);
+// Hitung ulang progress berdasarkan jumlah pertemuan
+const newProgress = updatedMeetings.length * 10;
+
+await DB.set(`bimbingan/${bimbinganId}`, {
+...bimbinganItem,
+meetings: updatedMeetings,
+progress: newProgress,
+lastUpdate: new Date().toISOString().split('T')[0]
+});
+
+alert('Pertemuan berhasil dihapus');
+} catch (error) {
+console.error('Error deleting meeting:', error);
+alert('Gagal menghapus pertemuan');
+}
+};
+
+const handleSaveMeeting = async (bimbinganId, meetingData) => {
+try {
+const bimbinganItem = bimbingan.find(b => b.id === bimbinganId);
+if (!bimbinganItem) return false;
+
+let updatedMeetings = bimbinganItem.meetings || [];
+
+if (editingMeeting) {
+// Edit existing meeting
+updatedMeetings = updatedMeetings.map(m => 
+m.id === editingMeeting.id ? { ...meetingData, id: m.id } : m
+);
+} else {
+// Add new meeting
+const newMeeting = {
+...meetingData,
+id: 'm' + Date.now() + Math.random().toString(36).substr(2, 5)
+};
+updatedMeetings = [...updatedMeetings, newMeeting];
+}
+
+// Urutkan berdasarkan tanggal
+updatedMeetings.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal));
+
+// Hitung ulang progress berdasarkan jumlah pertemuan
+const newProgress = updatedMeetings.length * 10;
+const isCompleted = newProgress >= 100;
+
+await DB.set(`bimbingan/${bimbinganId}`, {
+...bimbinganItem,
+meetings: updatedMeetings,
+progress: newProgress,
+status: isCompleted ? 'selesai' : 'berlangsung',
+lastUpdate: new Date().toISOString().split('T')[0]
+});
+
+setShowMeetingModal(false);
+setEditingMeeting(null);
+alert(editingMeeting ? 'Pertemuan berhasil diperbarui' : 'Pertemuan berhasil ditambahkan');
+return true;
+} catch (error) {
+console.error('Error saving meeting:', error);
+alert('Gagal menyimpan pertemuan');
+return false;
+}
 };
 
 const handlePrintLaporan = (item) => {
@@ -1662,16 +2632,24 @@ const now = new Date();
 const tglCetak = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 const jamCetak = now.toLocaleTimeString('id-ID');
 
+// Cari data dosen dan mahasiswa untuk NIP/NIM
+const getDosenByNama = (nama) => {
+return dosenList.find(d => d.nama === nama) || { nip: '-' };
+};
+
+const getMahasiswaByNim = (nim) => {
+return mahasiswaList.find(m => m.nim === nim) || { nama: '-', nim: '-' };
+};
+
 return `
 <!DOCTYPE html>
 <html>
 <head>
 <title>Laporan Bimbingan Skripsi - FEBI UINSI</title>
 <style>
-body { font-family: 'Times New Roman', serif; margin: 0.5in; line-height: 1.6; }
+body { font-family: 'Times New Roman', serif; margin: 40px; line-height: 1.6; }
 h1 { color: #047857; text-align: center; border-bottom: 3px double #047857; padding-bottom: 10px; }
 h2 { color: #065f46; margin-top: 30px; }
-h3 { color: #047857; margin-top: 20px; }
 table { width: 100%; border-collapse: collapse; margin: 20px 0; }
 th { background: #047857; color: white; padding: 12px; text-align: left; }
 td { padding: 10px; border-bottom: 1px solid #ddd; }
@@ -1685,17 +2663,12 @@ tr:hover { background: #f0fdf4; }
 .signature .line { margin-top: 60px; border-top: 1px solid #000; padding-top: 5px; }
 .page-break { page-break-after: always; }
 .stat-card { background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); padding: 15px; border-radius: 8px; margin: 10px; }
-.progress-bar { width: 100%; height: 20px; background: #e5e7eb; border-radius: 10px; overflow: hidden; margin: 5px 0; }
+.progress-bar { width: 100%; height: 20px; background: #e5e7eb; border-radius: 10px; overflow: hidden; }
 .progress-fill { height: 100%; background: #047857; transition: width 0.3s; }
-.meeting-table { margin-top: 20px; }
-.meeting-number { font-weight: bold; color: #047857; }
-.meeting-date { font-style: italic; }
-.meeting-progress { font-weight: bold; }
-.meeting-note { color: #4b5563; }
-.meeting-badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; }
-.meeting-completed { background: #dcfce7; color: #166534; }
-.meeting-current { background: #fef3c7; color: #92400e; animation: pulse 2s infinite; }
-@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+.meeting-table th { background: #065f46; }
+.pembimbing-badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 600; margin-left: 8px; }
+.pembimbing-badge-1 { background: #d1fae5; color: #047857; }
+.pembimbing-badge-2 { background: #fef3c7; color: #b45309; }
 @media print {
 .no-print { display: none; }
 }
@@ -1723,27 +2696,26 @@ tr:hover { background: #f0fdf4; }
 ${items.map((item, index) => {
 const progress = item.progress || 0;
 const meetings = item.meetings || [];
-const meetingCount = meetings.length;
-const maxMeetings = 10;
-const remainingMeetings = maxMeetings - meetingCount;
-const progressPerMeeting = 10;
-
+const mahasiswa = getMahasiswaByNim(item.nim);
+const dosen = getDosenByNama(item.dosenNama);
+const pembimbingLabel = item.pembimbingKe === 1 ? 'Pembimbing 1' : (item.pembimbingKe === 2 ? 'Pembimbing 2' : 'Pembimbing');
+const badgeClass = item.pembimbingKe === 1 ? 'pembimbing-badge-1' : (item.pembimbingKe === 2 ? 'pembimbing-badge-2' : '');
 return `
 ${index > 0 ? '<div class="page-break"></div>' : ''}
 <div style="margin-bottom: 40px;">
-<h2 style="border-bottom: 2px solid #047857; padding-bottom: 5px;">${index + 1}. ${item.judul}</h2>
+<h2 style="border-bottom: 2px solid #047857; padding-bottom: 5px;">${index + 1}. ${item.judul} <span class="pembimbing-badge ${badgeClass}">${pembimbingLabel}</span></h2>
   
 <table>
 <tr><th colspan="2" style="text-align: center;">INFORMASI BIMBINGAN</th></tr>
-<tr><td width="200"><strong>Mahasiswa</strong></td><td>${item.mahasiswaNama} (${item.nim})</td></tr>
+<tr><td width="200"><strong>Mahasiswa</strong></td><td>${item.mahasiswaNama} (NIM: ${item.nim})</td></tr>
 <tr><td><strong>Program Studi</strong></td><td>${item.prodi}</td></tr>
-<tr><td><strong>Dosen Pembimbing</strong></td><td>${item.dosenNama} ${item.pembimbingKe ? `(Pembimbing ${item.pembimbingKe})` : ''}</td></tr>
+<tr><td><strong>Dosen Pembimbing</strong></td><td>${item.dosenNama} (NIP: ${dosen.nip}) - ${pembimbingLabel}</td></tr>
 <tr><td><strong>Status</strong></td><td>${item.status === 'berlangsung' ? 'Berlangsung' : 'Selesai'}</td></tr>
 <tr><td><strong>Progress</strong></td><td>
 <div class="progress-bar">
 <div class="progress-fill" style="width: ${progress}%;"></div>
 </div>
-${progress}% (${meetingCount} dari ${maxMeetings} pertemuan)
+${progress}% (${meetings.length} dari 10 pertemuan)
 </td></tr>
 <tr><td><strong>Terakhir Update</strong></td><td>${item.lastUpdate || 'Belum ada update'}</td></tr>
 <tr><td><strong>Mulai Bimbingan</strong></td><td>${item.createdAt ? new Date(item.createdAt).toLocaleDateString('id-ID') : '-'}</td></tr>
@@ -1755,36 +2727,20 @@ ${progress}% (${meetingCount} dari ${maxMeetings} pertemuan)
 </div>
 
 <div style="margin-top: 30px;">
-<h3 style="color: #047857;">Riwayat Bimbingan (${meetingCount} Pertemuan)</h3>
-${meetingCount > 0 ? `
+<h3 style="color: #047857;">Rincian Pertemuan Bimbingan (${meetings.length} dari 10):</h3>
 <table class="meeting-table">
-<thead>
-<tr>
-<th>No</th>
-<th>Tanggal</th>
-<th>Progress</th>
-<th>Catatan</th>
-</tr>
-</thead>
-<tbody>
+<tr><th>No</th><th>Tanggal</th><th>Progress</th><th>Catatan</th></tr>
 ${meetings.map((m, idx) => `
 <tr>
-<td class="meeting-number">${m.meeting}</td>
-<td class="meeting-date">${m.date}</td>
-<td class="meeting-progress">${m.progress}%</td>
-<td class="meeting-note">${m.catatan || '-'}</td>
+<td>${idx + 1}</td>
+<td>${m.tanggal}</td>
+<td>${m.progress}%</td>
+<td>${m.catatan}</td>
 </tr>
 `).join('')}
-</tbody>
+${meetings.length === 0 ? '<tr><td colspan="4" style="text-align: center;">Belum ada pertemuan bimbingan</td></tr>' : ''}
 </table>
-` : '<p>Belum ada riwayat bimbingan</p>'}
 </div>
-
-${remainingMeetings > 0 ? `
-<div style="margin-top: 20px; padding: 10px; background: #f3f4f6; border-radius: 5px;">
-<p><strong>Rencana Bimbingan:</strong> ${remainingMeetings} pertemuan tersisa untuk mencapai progress 100% (${progressPerMeeting}% per pertemuan)</p>
-</div>
-` : ''}
 </div>
 `;
 }).join('')}
@@ -1793,12 +2749,12 @@ ${remainingMeetings > 0 ? `
 <div>
 <p>Dosen Pembimbing</p>
 <div class="line">( ${singleItem ? singleItem.dosenNama : '___________________' } )</div>
-<p>NIP. _________________</p>
+<p>NIP. ${singleItem ? (getDosenByNama(singleItem.dosenNama).nip || '_________________') : '_________________' }</p>
 </div>
 <div>
 <p>Mahasiswa</p>
 <div class="line">( ${singleItem ? singleItem.mahasiswaNama : '___________________' } )</div>
-<p>NIM. ${singleItem ? singleItem.nim : '_________________'}</p>
+<p>NIM. ${singleItem ? singleItem.nim : '_________________' }</p>
 </div>
 <div>
 <p>Ketua Program Studi</p>
@@ -1816,18 +2772,11 @@ ${remainingMeetings > 0 ? `
 `;
 };
 
-// Detail Modal Component dengan Timeline Visual
-const DetailModal = ({ item, onClose, onPrint, onHistory, onEdit, onAddMeeting, onViewTimeline }) => {
+// Detail Modal Component dengan Timeline Pertemuan
+const DetailModal = ({ item, onClose, onPrint, onAddMeeting, onEditMeeting, onDeleteMeeting, userRole }) => {
 if (!item) return null;
 const progress = item.progress || 0;
 const meetings = item.meetings || [];
-const meetingCount = meetings.length;
-const maxMeetings = 10;
-const progressPerMeeting = 10;
-
-// Hitung pertemuan berikutnya
-const nextMeeting = meetingCount + 1;
-const nextProgress = Math.min(nextMeeting * progressPerMeeting, 100);
 
 return (
 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
@@ -1835,6 +2784,8 @@ return (
 <div className="flex justify-between items-start mb-6">
 <h2 className="text-2xl font-bold text-emerald-900 flex items-center gap-2">
 <span className="text-3xl">📋</span> Detail Bimbingan
+{item.pembimbingKe === 1 && <span className="pembimbing-badge pembimbing-badge-1 text-xs">Pembimbing 1</span>}
+{item.pembimbingKe === 2 && <span className="pembimbing-badge pembimbing-badge-2 text-xs">Pembimbing 2</span>}
 </h2>
 <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg text-xl">✕</button>
 </div>
@@ -1852,9 +2803,7 @@ return (
 <div>
 <p className="text-sm text-gray-600">Dosen Pembimbing</p>
 <p className="font-semibold">{item.dosenNama}</p>
-{item.pembimbingKe && (
-<p className="text-xs text-emerald-600">Pembimbing {item.pembimbingKe}</p>
-)}
+<p className="text-sm text-gray-500">Pembimbing {item.pembimbingKe}</p>
 </div>
 <div>
 <p className="text-sm text-gray-600">Program Studi</p>
@@ -1871,94 +2820,113 @@ item.status === 'berlangsung' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text
 </div>
 </div>
 
-{/* Progress Overview */}
+{/* Progress Bar */}
 <div className="border rounded-xl p-6">
-<h4 className="font-bold text-emerald-800 mb-3 flex items-center gap-2">
+<div className="flex justify-between items-center mb-4">
+<h4 className="font-bold text-emerald-800 flex items-center gap-2">
 <span>📊</span> Progress Bimbingan
 </h4>
+{(userRole === 'dosen' || userRole === 'admin' || userRole === 'operator') && meetings.length < 10 && (
+<button
+onClick={() => onAddMeeting(item)}
+className="px-3 py-1 bg-emerald-600 text-white rounded-lg text-sm hover:bg-emerald-700 flex items-center gap-1"
+>
+<span>➕</span> Tambah Pertemuan
+</button>
+)}
+</div>
 <div className="mb-2 flex justify-between text-sm">
 <span>Progress Keseluruhan</span>
-<span className="font-bold text-emerald-600">{progress}%</span>
+<span className="font-bold text-emerald-600">{progress}% ({meetings.length}/10 pertemuan)</span>
 </div>
-<div className="w-full bg-gray-200 rounded-full h-4 mb-2">
+<div className="w-full bg-gray-200 rounded-full h-4 mb-4">
 <div className="bg-emerald-600 h-4 rounded-full transition-all duration-300" style={{width: `${progress}%`}}></div>
 </div>
-<div className="flex justify-between text-xs text-gray-500">
-<span>0%</span>
-<span>{meetingCount} dari {maxMeetings} pertemuan</span>
-<span>100%</span>
+
+{/* Visual Progress Steps */}
+<div className="flex items-center justify-between mt-6 mb-2">
+{[...Array(10)].map((_, i) => {
+const stepProgress = (i + 1) * 10;
+const isCompleted = meetings.length > i;
+const isActive = meetings.length === i;
+return (
+<React.Fragment key={i}>
+<div className="flex flex-col items-center">
+<div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
+isCompleted ? 'bg-green-500 text-white' : 
+isActive ? 'bg-emerald-500 text-white animate-pulse' : 
+'bg-gray-200 text-gray-500'
+}`}>
+{i + 1}
 </div>
-<div className="grid grid-cols-2 gap-4 mt-4">
-<div className="bg-emerald-50 p-3 rounded-lg text-center">
-<p className="text-xs text-emerald-700">Terakhir Update</p>
-<p className="font-semibold">{item.lastUpdate || '-'}</p>
+<span className="text-[10px] mt-1 text-gray-500">{stepProgress}%</span>
 </div>
-<div className="bg-emerald-50 p-3 rounded-lg text-center">
-<p className="text-xs text-emerald-700">Mulai Bimbingan</p>
-<p className="font-semibold">{item.createdAt ? new Date(item.createdAt).toLocaleDateString('id-ID') : '-'}</p>
-</div>
+{i < 9 && (
+<div className={`flex-1 h-1 ${meetings.length > i ? 'bg-green-500' : 'bg-gray-200'}`}></div>
+)}
+</React.Fragment>
+);
+})}
 </div>
 </div>
 
-{/* Timeline Visual */}
+{/* Timeline Pertemuan */}
 <div className="border rounded-xl p-6">
-<h4 className="font-bold text-emerald-800 mb-3 flex items-center gap-2">
-<span>📅</span> Timeline Bimbingan (Maksimal 10 Pertemuan)
+<h4 className="font-bold text-emerald-800 mb-4 flex items-center gap-2">
+<span>📅</span> Timeline Pertemuan Bimbingan ({meetings.length}/10)
 </h4>
-<div className="space-y-4">
-<div className="flex items-center justify-between mb-2">
-<span className="text-sm font-medium">Progress per pertemuan: 10%</span>
-<span className="text-sm text-emerald-600">Total {meetingCount} dari {maxMeetings} pertemuan</span>
-</div>
-<div className="grid grid-cols-10 gap-1 h-2 mb-4">
-{[...Array(maxMeetings)].map((_, i) => {
-const meetingNumber = i + 1;
-const isCompleted = meetingNumber <= meetingCount;
-const isCurrent = meetingNumber === meetingCount + 1 && item.status === 'berlangsung';
-return (
-<div key={i} className={`h-full rounded ${isCompleted ? 'bg-emerald-500' : isCurrent ? 'bg-amber-500 animate-pulse' : 'bg-gray-200'}`}></div>
-);
-})}
-</div>
-<div className="space-y-3 max-h-60 overflow-y-auto pr-2">
-{meetings.map((meeting, idx) => {
-const meetingClass = `meeting-${meeting.meeting}`;
-return (
-<div key={idx} className={`p-3 rounded-lg border-l-4 border-emerald-500 bg-gray-50 hover:bg-emerald-50 transition-colors`}>
+<div className="meeting-timeline space-y-3">
+{meetings.map((meeting, idx) => (
+<div key={meeting.id} className="meeting-item relative group">
 <div className="flex justify-between items-start">
+<div className="flex-1">
+<div className="flex items-center gap-2 mb-1">
+<span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+Pertemuan {idx + 1}
+</span>
+<span className="text-xs text-gray-500">{meeting.tanggal}</span>
+</div>
+<p className="text-sm font-medium text-gray-800 mb-1">{meeting.catatan}</p>
 <div className="flex items-center gap-2">
-<span className={`meeting-badge ${meetingClass}`}>Pertemuan {meeting.meeting}</span>
-<span className="text-xs text-gray-500">{meeting.date}</span>
+<span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+Progress: {meeting.progress}%
+</span>
+<span className="text-xs text-gray-500">Oleh: {meeting.dosenNama}</span>
 </div>
-<span className="text-xs font-bold text-emerald-600">Progress: {meeting.progress}%</span>
 </div>
-<p className="text-sm mt-1">{meeting.catatan || 'Tidak ada catatan'}</p>
-</div>
-);
-})}
-{meetingCount < maxMeetings && (
-<div className="p-3 rounded-lg border-2 border-dashed border-amber-300 bg-amber-50">
-<div className="flex justify-between items-center">
-<div>
-<p className="font-medium text-amber-800">Pertemuan {meetingCount + 1}</p>
-<p className="text-xs text-amber-600">Progress: {nextProgress}%</p>
-</div>
+<div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
 {(userRole === 'dosen' || userRole === 'admin' || userRole === 'operator') && (
 <button
-onClick={() => onAddMeeting(item)}
-className="px-3 py-1 bg-amber-600 text-white rounded text-xs hover:bg-amber-700"
+onClick={() => onEditMeeting(item, meeting)}
+className="p-1 bg-amber-100 text-amber-700 rounded hover:bg-amber-200"
+title="Edit Pertemuan"
 >
-Tambah Pertemuan
+<span className="text-sm">✏️</span>
+</button>
+)}
+{userRole === 'admin' && (
+<button
+onClick={() => onDeleteMeeting(item.id, meeting.id, meeting.catatan)}
+className="p-1 bg-red-100 text-red-700 rounded hover:bg-red-200"
+title="Hapus Pertemuan"
+>
+<span className="text-sm">🗑️</span>
 </button>
 )}
 </div>
 </div>
+</div>
+))}
+{meetings.length === 0 && (
+<div className="text-center py-8 text-gray-400">
+<p className="text-4xl mb-2">📭</p>
+<p className="text-sm">Belum ada pertemuan bimbingan</p>
+</div>
 )}
 </div>
 </div>
-</div>
 
-{/* Catatan */}
+{/* Catatan Umum */}
 <div className="border rounded-xl p-6">
 <h4 className="font-bold text-emerald-800 mb-3 flex items-center gap-2">
 <span>📝</span> Catatan Bimbingan
@@ -1976,20 +2944,6 @@ className="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-xl font-semibold h
 >
 <span>🖨️</span> Cetak Laporan
 </button>
-<button
-onClick={() => onViewTimeline(item)}
-className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-all flex items-center justify-center gap-2"
->
-<span>📅</span> Lihat Timeline
-</button>
-{(userRole === 'dosen' || userRole === 'admin' || userRole === 'operator') && (
-<button
-onClick={() => onEdit(item)}
-className="flex-1 px-6 py-3 bg-amber-600 text-white rounded-xl font-semibold hover:bg-amber-700 transition-all flex items-center justify-center gap-2"
->
-<span>✏️</span> Update Progress
-</button>
-)}
 </div>
 </div>
 </div>
@@ -1997,256 +2951,97 @@ className="flex-1 px-6 py-3 bg-amber-600 text-white rounded-xl font-semibold hov
 );
 };
 
-// Timeline Modal untuk tampilan lebih detail
-const TimelineModal = ({ item, onClose, onAddMeeting }) => {
-if (!item) return null;
-const meetings = item.meetings || [];
-const meetingCount = meetings.length;
-const maxMeetings = 10;
-const progressPerMeeting = 10;
-
-return (
-<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-<div className="bg-white rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-<div className="flex justify-between items-start mb-6">
-<h2 className="text-2xl font-bold text-emerald-900 flex items-center gap-2">
-<span className="text-3xl">📅</span> Timeline Bimbingan Lengkap
-</h2>
-<button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg text-xl">✕</button>
-</div>
-
-<div className="space-y-6">
-<div className="bg-gradient-to-r from-emerald-50 to-teal-50 p-6 rounded-xl">
-<h3 className="text-xl font-bold text-emerald-900 mb-2">{item.judul}</h3>
-<p className="text-sm text-gray-600">{item.mahasiswaNama} • {item.dosenNama}</p>
-{item.pembimbingKe && (
-<p className="text-xs text-emerald-600 mt-1">Pembimbing {item.pembimbingKe}</p>
-)}
-</div>
-
-{/* Timeline Visual */}
-<div className="border rounded-xl p-6">
-<h4 className="font-bold text-emerald-800 mb-4">Progress Timeline</h4>
-<div className="space-y-4">
-<div className="flex items-center justify-between">
-<span className="text-sm font-medium">Total Progress: {item.progress || 0}%</span>
-<span className="text-sm text-emerald-600">{meetingCount} dari {maxMeetings} pertemuan</span>
-</div>
-<div className="w-full bg-gray-200 rounded-full h-4">
-<div className="bg-emerald-600 h-4 rounded-full transition-all duration-300" style={{width: `${item.progress || 0}%`}}></div>
-</div>
-<div className="grid grid-cols-10 gap-1 h-2 mt-2">
-{[...Array(maxMeetings)].map((_, i) => {
-const meetingNumber = i + 1;
-const isCompleted = meetingNumber <= meetingCount;
-const isCurrent = meetingNumber === meetingCount + 1 && item.status === 'berlangsung';
-return (
-<div key={i} className={`h-full rounded ${isCompleted ? 'bg-emerald-500' : isCurrent ? 'bg-amber-500 animate-pulse' : 'bg-gray-200'}`} title={`Pertemuan ${meetingNumber}`}></div>
-);
-})}
-</div>
-</div>
-</div>
-
-{/* Daftar Pertemuan */}
-<div className="border rounded-xl p-6">
-<h4 className="font-bold text-emerald-800 mb-4 flex items-center justify-between">
-<span>📋 Riwayat Pertemuan</span>
-<span className="text-sm font-normal text-gray-500">Total {meetingCount} pertemuan</span>
-</h4>
-<div className="space-y-3">
-{meetings.map((meeting, idx) => {
-const meetingClass = `meeting-${meeting.meeting}`;
-return (
-<div key={idx} className="p-4 bg-gray-50 rounded-lg border-l-4 border-emerald-500">
-<div className="flex justify-between items-start mb-2">
-<div>
-<span className={`meeting-badge ${meetingClass} mr-2`}>Pertemuan {meeting.meeting}</span>
-<span className="text-sm text-gray-600">{meeting.date}</span>
-</div>
-<span className="text-sm font-bold text-emerald-600">Progress: {meeting.progress}%</span>
-</div>
-<p className="text-gray-700">{meeting.catatan || 'Tidak ada catatan'}</p>
-</div>
-);
-})}
-{meetingCount === 0 && (
-<div className="text-center py-8 text-gray-400">
-<p className="text-4xl mb-2">📭</p>
-<p className="text-sm">Belum ada pertemuan bimbingan</p>
-</div>
-)}
-</div>
-</div>
-
-{/* Tombol Tambah Pertemuan */}
-{(userRole === 'dosen' || userRole === 'admin' || userRole === 'operator') && meetingCount < maxMeetings && (
-<div className="flex justify-center">
-<button
-onClick={() => {
-onClose();
-onAddMeeting(item);
-}}
-className="px-6 py-3 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700 transition-all flex items-center gap-2"
->
-<span>➕</span> Tambah Pertemuan {meetingCount + 1}
-</button>
-</div>
-)}
-</div>
-</div>
-</div>
-);
-};
-
-// Add Meeting Modal
-const AddMeetingModal = ({ item, onClose, onSave }) => {
-const [meetingData, setMeetingData] = React.useState({
-date: new Date().toISOString().split('T')[0],
+// Meeting Modal Component
+const MeetingModal = ({ item, meeting, onClose, onSave }) => {
+const [formData, setFormData] = React.useState(meeting || {
+tanggal: new Date().toISOString().split('T')[0],
+progress: (item.meetings?.length || 0) * 10 + 10,
 catatan: '',
-progress: 0
+dosenNama: item.dosenNama
 });
-const meetings = item?.meetings || [];
-const meetingCount = meetings.length;
-const maxMeetings = 10;
-const nextMeeting = meetingCount + 1;
-const nextProgress = Math.min(nextMeeting * 10, 100);
+const [isSaving, setIsSaving] = React.useState(false);
 
-React.useEffect(() => {
-setMeetingData(prev => ({
-...prev,
-progress: nextProgress
-}));
-}, [nextProgress]);
-
-const handleSubmit = (e) => {
+const handleSubmit = async (e) => {
 e.preventDefault();
-if (!meetingData.date || !meetingData.catatan) {
-alert('Harap lengkapi tanggal dan catatan bimbingan!');
+if (!formData.tanggal || !formData.catatan) {
+alert('Harap lengkapi semua field');
 return;
 }
-
-const newMeeting = {
-meeting: nextMeeting,
-date: meetingData.date,
-progress: nextProgress,
-catatan: meetingData.catatan
-};
-
-const updatedMeetings = [...meetings, newMeeting];
-const updatedItem = {
-...item,
-meetings: updatedMeetings,
-progress: nextProgress,
-lastUpdate: meetingData.date,
-status: nextProgress >= 100 ? 'selesai' : 'berlangsung',
-catatan: meetingData.catatan // Update catatan utama
-};
-
-onSave(updatedItem);
-onClose();
+setIsSaving(true);
+try {
+await onSave(item.id, formData);
+} finally {
+setIsSaving(false);
+}
 };
 
 return (
 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-<div className="bg-white rounded-2xl p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
-<h2 className="text-2xl font-bold text-emerald-900 mb-4 flex items-center gap-2">
-<span>➕</span> Tambah Pertemuan {nextMeeting}
+<div className="bg-white rounded-2xl p-6 max-w-lg w-full" onClick={(e) => e.stopPropagation()}>
+<h2 className="text-2xl font-bold text-emerald-900 mb-4">
+{meeting ? '✏️ Edit Pertemuan Bimbingan' : '➕ Tambah Pertemuan Bimbingan'}
+{item.pembimbingKe === 1 && <span className="ml-2 pembimbing-badge pembimbing-badge-1 text-xs">Pembimbing 1</span>}
+{item.pembimbingKe === 2 && <span className="ml-2 pembimbing-badge pembimbing-badge-2 text-xs">Pembimbing 2</span>}
 </h2>
-<p className="text-sm text-gray-600 mb-4">
-Progress akan menjadi {nextProgress}% (10% per pertemuan)
-</p>
 <form onSubmit={handleSubmit}>
 <div className="space-y-4">
 <div>
-<label className="block text-sm font-semibold text-gray-700 mb-1">Tanggal Bimbingan</label>
+<label className="block text-sm font-semibold text-gray-700 mb-1">Tanggal Pertemuan</label>
 <input
 type="date"
-value={meetingData.date}
-onChange={(e) => setMeetingData({...meetingData, date: e.target.value})}
+value={formData.tanggal}
+onChange={(e) => setFormData({...formData, tanggal: e.target.value})}
 className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500"
 required
 />
 </div>
 <div>
+<label className="block text-sm font-semibold text-gray-700 mb-1">Progress (%)</label>
+<input
+type="number"
+value={formData.progress}
+onChange={(e) => setFormData({...formData, progress: parseInt(e.target.value)})}
+className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500"
+min="10"
+max="100"
+step="10"
+required
+/>
+<p className="text-xs text-gray-500 mt-1">Progress otomatis: {((item.meetings?.length || 0) + 1) * 10}% (pertemuan ke-{(item.meetings?.length || 0) + 1})</p>
+</div>
+<div>
 <label className="block text-sm font-semibold text-gray-700 mb-1">Catatan Bimbingan</label>
 <textarea
-value={meetingData.catatan}
-onChange={(e) => setMeetingData({...meetingData, catatan: e.target.value})}
-className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 h-32"
-placeholder="Tuliskan hasil bimbingan, revisi, dan catatan penting lainnya..."
+value={formData.catatan}
+onChange={(e) => setFormData({...formData, catatan: e.target.value})}
+className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 h-24"
+placeholder="Masukkan catatan bimbingan..."
 required
 ></textarea>
 </div>
-<div className="bg-emerald-50 p-3 rounded-lg">
-<p className="text-sm text-emerald-700">
-<span className="font-bold">Progress:</span> {nextProgress}% (Pertemuan {nextMeeting} dari 10)
+<div className="bg-blue-50 p-3 rounded-lg">
+<p className="text-xs text-blue-700">
+<span className="font-bold">Informasi:</span> Setiap pertemuan akan menambah progress 10%. Maksimal 10 pertemuan untuk mencapai 100%.
 </p>
-<div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-<div className="bg-emerald-600 h-2 rounded-full" style={{width: `${nextProgress}%`}}></div>
-</div>
 </div>
 </div>
 <div className="flex gap-3 mt-6">
-<button type="submit" className="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700">
-Simpan Pertemuan
+<button
+type="submit"
+disabled={isSaving}
+className="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700 disabled:opacity-50"
+>
+{isSaving ? 'Menyimpan...' : (meeting ? 'Update Pertemuan' : 'Simpan Pertemuan')}
 </button>
-<button type="button" onClick={onClose} className="px-6 py-3 bg-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-300">
+<button
+type="button"
+onClick={onClose}
+className="px-6 py-3 bg-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-300"
+>
 Batal
 </button>
 </div>
 </form>
-</div>
-</div>
-);
-};
-
-// History Modal Component
-const HistoryModal = ({ item, onClose }) => {
-if (!item) return null;
-
-return (
-<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-<div className="bg-white rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-<div className="flex justify-between items-start mb-6">
-<h2 className="text-2xl font-bold text-emerald-900 flex items-center gap-2">
-<span className="text-3xl">📅</span> Riwayat Bimbingan
-</h2>
-<button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg text-xl">✕</button>
-</div>
-
-<div className="space-y-4">
-<div className="bg-emerald-50 p-4 rounded-lg">
-<p className="font-semibold">{item.judul}</p>
-<p className="text-sm text-gray-600">{item.mahasiswaNama} • {item.dosenNama}</p>
-{item.pembimbingKe && (
-<p className="text-xs text-emerald-600">Pembimbing {item.pembimbingKe}</p>
-)}
-</div>
-
-<div className="space-y-3">
-{/* Timeline Riwayat */}
-{(item.meetings || []).map((meeting, idx) => (
-<div key={idx} className="timeline-item pl-8">
-<p className="text-sm font-medium text-emerald-700">{meeting.date}</p>
-<p className="text-sm">Progress: <span className="font-bold">{meeting.progress}%</span> (Pertemuan {meeting.meeting})</p>
-<p className="text-sm text-gray-600 bg-gray-50 p-2 rounded mt-1">{meeting.catatan || 'Tidak ada catatan'}</p>
-</div>
-))}
-{item.meetings?.length === 0 && (
-<div className="text-center py-8 text-gray-400">
-<p className="text-4xl mb-2">📭</p>
-<p className="text-sm">Belum ada riwayat bimbingan</p>
-</div>
-)}
-</div>
-
-<div className="mt-6 p-4 bg-blue-50 rounded-lg">
-<p className="text-sm text-blue-700">
-<span className="font-bold">Informasi:</span> Riwayat lengkap bimbingan tersimpan dan dapat dicetak dalam laporan resmi.
-</p>
-</div>
-</div>
 </div>
 </div>
 );
@@ -2300,20 +3095,6 @@ Batal
 );
 };
 
-// Fungsi untuk menyimpan pertemuan baru
-const handleSaveMeeting = async (updatedItem) => {
-try {
-await DB.set(`bimbingan/${updatedItem.id}`, updatedItem);
-showToast('Pertemuan bimbingan berhasil ditambahkan!', 'success');
-setShowAddMeetingModal(false);
-setSelectedBimbingan(null);
-// Refresh data
-} catch (err) {
-console.error('Error saving meeting:', err);
-showToast('Gagal menambahkan pertemuan!', 'error');
-}
-};
-
 return (
 <div className="space-y-6">
 {/* Header with Stats */}
@@ -2323,7 +3104,8 @@ return (
 <span>📋</span> Manajemen Bimbingan Skripsi
 </h2>
 <p className="text-sm text-gray-600 mt-1">
-Total {filteredBimbingan.length} bimbingan {filteredBimbingan.length !== bimbingan.length && `(dari ${bimbingan.length} total)`} • {stats.totalMeetings} pertemuan
+Total {userRole === 'mahasiswa' ? filteredBimbingan.length : bimbingan.length} bimbingan
+{userRole === 'mahasiswa' && filteredBimbingan.length !== bimbingan.length && ` (${bimbingan.length} total)`}
 </p>
 </div>
 <div className="flex gap-2">
@@ -2353,8 +3135,8 @@ Total {filteredBimbingan.length} bimbingan {filteredBimbingan.length !== bimbing
 <p className="text-3xl font-bold">{stats.selesai}</p>
 </div>
 <div className="bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-lg p-4 text-white">
-<p className="text-sm opacity-90">Total Pertemuan</p>
-<p className="text-3xl font-bold">{stats.totalMeetings}</p>
+<p className="text-sm opacity-90">Rata-rata Progress</p>
+<p className="text-3xl font-bold">{stats.progressRata}%</p>
 </div>
 </div>
 
@@ -2397,7 +3179,7 @@ className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-eme
 </select>
 </div>
 <div>
-<label className="block text-xs font-semibold text-gray-600 mb-1">👨‍🏫 Pembimbing</label>
+<label className="block text-xs font-semibold text-gray-600 mb-1">👥 Pembimbing</label>
 <select
 value={filterPembimbing}
 onChange={(e) => setFilterPembimbing(e.target.value)}
@@ -2411,34 +3193,159 @@ className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-eme
 </div>
 </div>
 
-{/* Bimbingan List */}
+{/* Bimbingan List - Dual View untuk Mahasiswa */}
+{userRole === 'mahasiswa' ? (
+// Tampilan dual untuk mahasiswa
+<div className="space-y-6">
+{filteredBimbingan.map((group, idx) => (
+<div key={idx} className="bg-white rounded-xl shadow-sm border p-6">
+<h3 className="text-lg font-bold text-gray-900 mb-3">{group.judul}</h3>
+<p className="text-sm text-gray-600 mb-4">Mahasiswa: {group.mahasiswaNama} ({group.nim}) • {group.prodi}</p>
+  
+<div className="bimbingan-dual">
+{/* Pembimbing 1 */}
+<div className={`border rounded-xl p-4 ${group.bimbingan1 ? 'bimbingan-card-pembimbing1' : 'bg-gray-50'}`}>
+<div className="flex items-center justify-between mb-3">
+<h4 className="font-semibold text-emerald-700 flex items-center gap-2">
+<span className="pembimbing-badge pembimbing-badge-1">Pembimbing 1</span>
+{group.pembimbing1}
+</h4>
+{group.bimbingan1 && (
+<span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+group.bimbingan1.status === 'berlangsung' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
+}`}>
+{group.bimbingan1.status === 'berlangsung' ? 'Berlangsung' : 'Selesai'}
+</span>
+)}
+</div>
+  
+{group.bimbingan1 ? (
+<>
+<div className="mb-3">
+<div className="flex justify-between text-sm mb-1">
+<span>Progress</span>
+<span className="font-bold text-emerald-600">{group.bimbingan1.progress || 0}%</span>
+</div>
+<div className="w-full bg-gray-200 rounded-full h-2">
+<div className="bg-emerald-600 h-2 rounded-full" style={{width: `${group.bimbingan1.progress || 0}%`}}></div>
+</div>
+</div>
+<p className="text-xs text-gray-600 mb-2 line-clamp-2">
+<span className="font-medium">Catatan:</span> {group.bimbingan1.catatan || '-'}
+</p>
+<p className="text-xs text-gray-500">Terakhir: {group.bimbingan1.lastUpdate || '-'}</p>
+<div className="flex gap-2 mt-3">
+<button
+onClick={() => handleViewDetail(group.bimbingan1)}
+className="flex-1 px-3 py-1.5 bg-emerald-100 text-emerald-700 rounded-lg text-xs hover:bg-emerald-200"
+>
+Detail
+</button>
+<button
+onClick={() => handlePrintLaporan(group.bimbingan1)}
+className="flex-1 px-3 py-1.5 bg-purple-100 text-purple-700 rounded-lg text-xs hover:bg-purple-200"
+>
+Cetak
+</button>
+</div>
+</>
+) : (
+<div className="text-center py-6 text-gray-400">
+<p className="text-sm">Belum ada bimbingan</p>
+</div>
+)}
+</div>
+
+{/* Pembimbing 2 */}
+<div className={`border rounded-xl p-4 ${group.bimbingan2 ? 'bimbingan-card-pembimbing2' : 'bg-gray-50'}`}>
+<div className="flex items-center justify-between mb-3">
+<h4 className="font-semibold text-amber-700 flex items-center gap-2">
+<span className="pembimbing-badge pembimbing-badge-2">Pembimbing 2</span>
+{group.pembimbing2 || 'Tidak ada'}
+</h4>
+{group.bimbingan2 && (
+<span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+group.bimbingan2.status === 'berlangsung' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
+}`}>
+{group.bimbingan2.status === 'berlangsung' ? 'Berlangsung' : 'Selesai'}
+</span>
+)}
+</div>
+  
+{group.bimbingan2 ? (
+<>
+<div className="mb-3">
+<div className="flex justify-between text-sm mb-1">
+<span>Progress</span>
+<span className="font-bold text-amber-600">{group.bimbingan2.progress || 0}%</span>
+</div>
+<div className="w-full bg-gray-200 rounded-full h-2">
+<div className="bg-amber-600 h-2 rounded-full" style={{width: `${group.bimbingan2.progress || 0}%`}}></div>
+</div>
+</div>
+<p className="text-xs text-gray-600 mb-2 line-clamp-2">
+<span className="font-medium">Catatan:</span> {group.bimbingan2.catatan || '-'}
+</p>
+<p className="text-xs text-gray-500">Terakhir: {group.bimbingan2.lastUpdate || '-'}</p>
+<div className="flex gap-2 mt-3">
+<button
+onClick={() => handleViewDetail(group.bimbingan2)}
+className="flex-1 px-3 py-1.5 bg-emerald-100 text-emerald-700 rounded-lg text-xs hover:bg-emerald-200"
+>
+Detail
+</button>
+<button
+onClick={() => handlePrintLaporan(group.bimbingan2)}
+className="flex-1 px-3 py-1.5 bg-purple-100 text-purple-700 rounded-lg text-xs hover:bg-purple-200"
+>
+Cetak
+</button>
+</div>
+</>
+) : (
+<div className="text-center py-6 text-gray-400">
+<p className="text-sm">Belum ada bimbingan</p>
+</div>
+)}
+</div>
+</div>
+</div>
+))}
+{filteredBimbingan.length === 0 && (
+<div className="text-center py-12 text-gray-400 bg-white rounded-xl border">
+<div className="flex flex-col items-center">
+<span className="text-6xl mb-4">📋</span>
+<p className="text-lg font-medium">Tidak ada bimbingan ditemukan</p>
+<p className="text-sm mt-1">Coba ubah filter pencarian Anda</p>
+</div>
+</div>
+)}
+</div>
+) : (
+// Tampilan regular untuk dosen/admin/operator
 <div className="space-y-4">
 {filteredBimbingan.map((b) => {
 const progress = b.progress || 0;
 const isBerlangsung = b.status === 'berlangsung';
 const meetings = b.meetings || [];
-const meetingCount = meetings.length;
+const isPembimbing1 = b.pembimbingKe === 1;
 return (
-<div key={b.id} className={`bimbingan-card ${isBerlangsung ? 'berlangsung' : 'selesai'} bg-white rounded-xl shadow-sm border p-6 hover:shadow-lg transition-all`}>
+<div key={b.id} className={`bimbingan-card ${isBerlangsung ? 'berlangsung' : 'selesai'} bg-white rounded-xl shadow-sm border p-6 hover:shadow-lg transition-all ${isPembimbing1 ? 'border-l-4 border-l-emerald-600' : 'border-l-4 border-l-amber-500'}`}>
 <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
 {/* Main Info */}
 <div className="flex-1">
 <div className="flex items-start justify-between mb-3">
-<div>
 <h3 className="text-lg font-bold text-gray-900 flex-1">{b.judul}</h3>
-{b.pembimbingKe && (
-<span className={`inline-block ml-2 px-2 py-0.5 rounded text-xs font-semibold ${
-b.pembimbingKe === 1 ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'
-}`}>
+<div className="flex items-center gap-2">
+<span className={`pembimbing-badge ${isPembimbing1 ? 'pembimbing-badge-1' : 'pembimbing-badge-2'} text-xs`}>
 Pembimbing {b.pembimbingKe}
 </span>
-)}
-</div>
-<span className={`ml-4 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${
+<span className={`ml-2 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${
 isBerlangsung ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
 }`}>
 {isBerlangsung ? 'Berlangsung' : 'Selesai'}
 </span>
+</div>
 </div>
 <div className="grid md:grid-cols-2 gap-4">
 <div>
@@ -2455,54 +3362,40 @@ isBerlangsung ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
 <p className="text-sm">{b.prodi}</p>
 </div>
 <div>
-<p className="text-sm text-gray-600">Pertemuan</p>
-<p className="text-sm">{meetingCount} dari 10</p>
+<p className="text-sm text-gray-600">Terakhir Update</p>
+<p className="text-sm">{b.lastUpdate || '-'}</p>
 </div>
 </div>
 </div>
 
 {/* Progress & Actions */}
-<div className="lg:w-72">
+<div className="lg:w-80">
 <div className="mb-3">
 <div className="flex justify-between text-sm mb-1">
 <span>Progress</span>
-<span className="font-bold text-emerald-600">{progress}%</span>
+<span className="font-bold text-emerald-600">{progress}% ({meetings.length}/10)</span>
 </div>
-<div className="w-full bg-gray-200 rounded-full h-2.5 mb-1">
-<div className="bg-emerald-600 h-2.5 rounded-full" style={{width: `${progress}%`}}></div>
-</div>
-<div className="grid grid-cols-10 gap-0.5 h-1.5">
-{[...Array(10)].map((_, i) => {
-const meetingNumber = i + 1;
-const isCompleted = meetingNumber <= meetingCount;
-return (
-<div key={i} className={`h-full ${isCompleted ? 'bg-emerald-500' : 'bg-gray-200'}`}></div>
-);
-})}
+<div className="w-full bg-gray-200 rounded-full h-2.5">
+<div className={`h-2.5 rounded-full ${isPembimbing1 ? 'bg-emerald-600' : 'bg-amber-600'}`} style={{width: `${progress}%`}}></div>
 </div>
 </div>
 <div className="flex gap-2 justify-end flex-wrap">
 <button
 onClick={() => handleViewDetail(b)}
 className="p-2 bg-emerald-100 text-emerald-700 rounded-lg hover:bg-emerald-200 transition-all transform hover:scale-110"
-title="Lihat Detail"
+title="Lihat Detail & Timeline"
 >
 <span className="text-lg">👁️</span>
 </button>
+{(userRole === 'dosen' || userRole === 'admin' || userRole === 'operator') && meetings.length < 10 && (
 <button
-onClick={() => handleViewTimeline(b)}
-className="p-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-all transform hover:scale-110"
-title="Timeline"
+onClick={() => handleAddMeeting(b)}
+className="p-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-all transform hover:scale-110"
+title="Tambah Pertemuan"
 >
-<span className="text-lg">📅</span>
+<span className="text-lg">➕</span>
 </button>
-<button
-onClick={() => handleViewHistory(b)}
-className="p-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition-all transform hover:scale-110"
-title="Riwayat"
->
-<span className="text-lg">📋</span>
-</button>
+)}
 <button
 onClick={() => handlePrintLaporan(b)}
 className="p-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-all transform hover:scale-110"
@@ -2510,15 +3403,6 @@ title="Cetak Laporan"
 >
 <span className="text-lg">🖨️</span>
 </button>
-{(userRole === 'dosen' || userRole === 'admin' || userRole === 'operator') && meetingCount < 10 && (
-<button
-onClick={() => handleAddMeeting(b)}
-className="p-2 bg-amber-100 text-amber-700 rounded-lg hover:bg-amber-200 transition-all transform hover:scale-110"
-title="Tambah Pertemuan"
->
-<span className="text-lg">➕</span>
-</button>
-)}
 {(userRole === 'dosen' || userRole === 'admin' || userRole === 'operator') && (
 <button
 onClick={() => onEdit(b)}
@@ -2549,6 +3433,13 @@ title="Hapus"
 </p>
 </div>
 )}
+
+{/* Preview Pertemuan Terakhir */}
+{meetings.length > 0 && (
+<div className="mt-3 pt-3 border-t border-gray-100">
+<p className="text-xs text-gray-500 mb-2">Pertemuan terakhir: {meetings[meetings.length - 1].tanggal} - {meetings[meetings.length - 1].catatan.substring(0, 50)}...</p>
+</div>
+)}
 </div>
 );
 })}
@@ -2563,6 +3454,7 @@ title="Hapus"
 </div>
 )}
 </div>
+)}
 
 {/* Detail Modal */}
 {showDetailModal && (
@@ -2570,35 +3462,19 @@ title="Hapus"
 item={selectedBimbingan}
 onClose={() => { setShowDetailModal(false); setSelectedBimbingan(null); }}
 onPrint={handlePrintLaporan}
-onHistory={handleViewHistory}
-onEdit={onEdit}
 onAddMeeting={handleAddMeeting}
-onViewTimeline={handleViewTimeline}
+onEditMeeting={handleEditMeeting}
+onDeleteMeeting={handleDeleteMeeting}
+userRole={userRole}
 />
 )}
 
-{/* History Modal */}
-{showHistoryModal && (
-<HistoryModal
+{/* Meeting Modal */}
+{showMeetingModal && (
+<MeetingModal
 item={selectedBimbingan}
-onClose={() => { setShowHistoryModal(false); setSelectedBimbingan(null); }}
-/>
-)}
-
-{/* Timeline Modal */}
-{showTimelineModal && (
-<TimelineModal
-item={selectedBimbingan}
-onClose={() => { setShowTimelineModal(false); setSelectedBimbingan(null); }}
-onAddMeeting={handleAddMeeting}
-/>
-)}
-
-{/* Add Meeting Modal */}
-{showAddMeetingModal && (
-<AddMeetingModal
-item={selectedBimbingan}
-onClose={() => { setShowAddMeetingModal(false); setSelectedBimbingan(null); }}
+meeting={editingMeeting}
+onClose={() => { setShowMeetingModal(false); setEditingMeeting(null); }}
 onSave={handleSaveMeeting}
 />
 )}
@@ -2713,14 +3589,18 @@ return (
 <div>
 <h4 className="font-bold text-sm">
 {w.type === 'semester' ? `Semester ${w.semester} (Akhir Studi)` : w.judul?.substring(0, 30) || 'Bimbingan'}
+{w.type === 'bimbingan' && w.pembimbingKe && (
+<span className={`ml-2 inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold ${w.pembimbingKe === 1 ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+Pembimbing {w.pembimbingKe}
+</span>
+)}
 </h4>
 <p className="text-xs mt-1">Mahasiswa: {w.nama || w.mahasiswaNama} ({w.nim})</p>
 <p className="text-xs">Program Studi: {w.prodi}</p>
 {w.type === 'bimbingan' && (
 <>
 <p className="text-xs">Dosen: {w.dosenNama}</p>
-<p className="text-xs">Progress: {w.progress || 0}%</p>
-<p className="text-xs">Pertemuan: {(w.meetings || []).length} dari 10</p>
+<p className="text-xs">Progress: {w.progress || 0}% ({w.meetings?.length || 0}/10 pertemuan)</p>
 </>
 )}
 {w.type === 'semester' && (
@@ -3142,7 +4022,7 @@ title="Edit"
 )}
 {canDelete && (
 <button
-onClick={() => onDelete('repository', item.id, item.judul)}
+onClick={() => onDelete(item.id, item.judul)}
 className="p-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-all transform hover:scale-110"
 title="Hapus"
 >
@@ -3210,7 +4090,6 @@ const tahunPenuh = 2000 + angkatan; // Misal: 21 -> 2021
 return Math.max(1, Math.min(16, (currentYear - tahunPenuh) * 2 + 1));
 };
 
-// Operator sekarang memiliki hak tambah dan edit
 const canAdd = userRole === 'admin' || userRole === 'operator';
 const canEdit = userRole === 'admin' || userRole === 'operator';
 const canDelete = userRole === 'admin'; // Only admin can delete
@@ -3257,7 +4136,7 @@ return (
 <button onClick={() => onEdit(m)} className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 mr-2">Edit</button>
 )}
 {canDelete && (
-<button onClick={() => onDelete('mahasiswa', m.id, m.nama)} className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">Hapus</button>
+<button onClick={() => onDelete(m.id, m.nama)} className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">Hapus</button>
 )}
 </td>
 </tr>
@@ -3281,7 +4160,6 @@ return (
 // KELOLA DOSEN PAGE - FIXED: userRole didefinisikan sebagai parameter
 // ============================================
 const KelolaDosenPage = ({ dosen, userRole, onAdd, onEdit, onDelete }) => {
-// Operator sekarang memiliki hak tambah dan edit
 const canAdd = userRole === 'admin' || userRole === 'operator';
 const canEdit = userRole === 'admin' || userRole === 'operator';
 const canDelete = userRole === 'admin'; // Only admin can delete
@@ -3319,7 +4197,7 @@ return (
 <button onClick={() => onEdit(d)} className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 mr-2">Edit</button>
 )}
 {canDelete && (
-<button onClick={() => onDelete('dosen', d.id, d.nama)} className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">Hapus</button>
+<button onClick={() => onDelete(d.id, d.nama)} className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">Hapus</button>
 )}
 </td>
 </tr>
@@ -3339,19 +4217,19 @@ return (
 );
 };
 // ============================================
-// KELOLA OPERATOR PAGE - UNTUK ADMIN MENGELOLA OPERATOR
+// KELOLA OPERATOR PAGE - NEW (UNTUK ADMIN)
 // ============================================
 const KelolaOperatorPage = ({ operator, userRole, onAdd, onEdit, onDelete }) => {
-const canAdd = userRole === 'admin';
+const canAdd = userRole === 'admin'; // Only admin can add/edit/delete operator
 const canEdit = userRole === 'admin';
-const canDelete = userRole === 'admin'; // Only admin can delete operator
+const canDelete = userRole === 'admin'; // Only admin can delete
 
 return (
 <div className="space-y-6">
 <div className="flex justify-between items-center">
 <h2 className="text-2xl font-bold text-emerald-900">👤 Kelola Operator</h2>
 {canAdd && (
-<button onClick={() => onAdd('operator')} className="px-4 py-2 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700">
+<button onClick={onAdd} className="px-4 py-2 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700">
 ➕ Tambah Operator
 </button>
 )}
@@ -3363,7 +4241,6 @@ return (
 <th className="px-6 py-3 text-left">Username</th>
 <th className="px-6 py-3 text-left">Nama</th>
 <th className="px-6 py-3 text-left">WhatsApp</th>
-<th className="px-6 py-3 text-left">Role</th>
 <th className="px-6 py-3 text-left">Status</th>
 <th className="px-6 py-3 text-left">Aksi</th>
 </tr>
@@ -3375,12 +4252,7 @@ return (
 <td className="px-6 py-4">{op.nama}</td>
 <td className="px-6 py-4">{op.whatsapp || '-'}</td>
 <td className="px-6 py-4">
-<span className="inline-block px-2 py-1 rounded text-xs font-semibold bg-yellow-100 text-yellow-700">
-Operator
-</span>
-</td>
-<td className="px-6 py-4">
-<span className={`inline-block px-2 py-1 rounded text-xs font-semibold ${op.status === 'aktif' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+<span className="inline-block px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-semibold">
 {op.status || 'aktif'}
 </span>
 </td>
@@ -3389,14 +4261,14 @@ Operator
 <button onClick={() => onEdit(op)} className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 mr-2">Edit</button>
 )}
 {canDelete && (
-<button onClick={() => onDelete('operator', op.id, op.nama)} className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">Hapus</button>
+<button onClick={() => onDelete(op.id, op.nama)} className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">Hapus</button>
 )}
 </td>
 </tr>
 ))}
 {operator.length === 0 && (
 <tr>
-<td colSpan="6" className="px-6 py-12 text-center text-gray-400">
+<td colSpan="5" className="px-6 py-12 text-center text-gray-400">
 <p className="text-6xl mb-4">👤</p>
 <p className="text-lg">Belum ada data operator</p>
 </td>
@@ -3431,115 +4303,37 @@ return (
 <div className="bg-white rounded-xl shadow-sm border p-6">
 <h3 className="text-lg font-bold text-gray-900 mb-4">Informasi Sistem</h3>
 <div className="space-y-2 text-sm text-gray-600">
-<p>• Versi Dashboard: 6.1.0</p>
+<p>• Versi Dashboard: 7.5.0</p>
 <p>• Database: Firebase Realtime Database</p>
 <p>• Real-time Sync: Aktif</p>
 <p>• Last Updated: {new Date().toLocaleDateString('id-ID')}</p>
-<p>• Fitur: Advanced Similarity Checker (5 Algoritma), Auto-Create Bimbingan untuk 2 Dosen, Early Warning, WhatsApp Integration</p>
-<p>• Fitur Bimbingan: Timeline 10 pertemuan, progress 10% per pertemuan, riwayat detail, cetak laporan dengan tanda tangan otomatis</p>
+<p>• Fitur: Advanced Similarity Checker (5 Algoritma), Auto-Create Bimbingan untuk Pembimbing 1 & 2, Early Warning, WhatsApp Integration, Timeline Bimbingan 10 Pertemuan, Edit Profil, Dual Pembimbing, Tabel Proposal Informatif</p>
+
 </div>
 </div>
 </div>
 );
 };
 // ============================================
-// MODAL COMPONENT - DIPERBAIKI LENGKAP DENGAN FITUR EDIT PROFIL
+// MODAL COMPONENT - DIPERBAIKI LENGKAP (TERMASUK OPERATOR)
 // ============================================
 const Modal = ({ type, item, onSave, onClose, onCheckSimilarity, similarityResult, dosenList, mahasiswaList, currentUser, userRole }) => {
 const [formData, setFormData] = React.useState(item || {});
 const [isSaving, setIsSaving] = React.useState(false);
 const [showPassword, setShowPassword] = React.useState(false);
-const [confirmPassword, setConfirmPassword] = React.useState('');
 
 React.useEffect(() => {
-if (item) {
-setFormData(item);
-if (item.password) {
-setConfirmPassword(item.password);
-}
-} else {
-if (type === 'mahasiswa') {
-setFormData({
-nim: currentUser?.nim || '',
-nama: '',
-prodi: '',
-whatsapp: '',
-password: ''
-});
-} else if (type === 'dosen') {
-setFormData({
-nip: '',
-nama: '',
-keahlian: '',
-whatsapp: '',
-password: ''
-});
-} else if (type === 'operator') {
-setFormData({
-username: '',
-nama: '',
-whatsapp: '',
-password: '',
-status: 'aktif'
-});
-} else if (type === 'proposals') {
-setFormData({
+if (item) setFormData(item);
+else setFormData({
 nim: currentUser?.nim || '',
 mahasiswaNama: currentUser?.nama || '',
 prodi: currentUser?.prodi || '',
-whatsapp: currentUser?.whatsapp || '',
-judul: '',
-abstrak: '',
-pembimbing1: '',
-pembimbing2: '',
-status: 'Menunggu',
-catatan: ''
+whatsapp: currentUser?.whatsapp || ''
 });
-} else if (type === 'bimbingan') {
-setFormData({
-nim: currentUser?.nim || '',
-mahasiswaNama: currentUser?.nama || '',
-dosenNama: '',
-judul: '',
-prodi: currentUser?.prodi || '',
-whatsapp: currentUser?.whatsapp || '',
-progress: 0,
-status: 'berlangsung',
-pembimbingKe: 1,
-meetings: [],
-catatan: '',
-lastUpdate: new Date().toISOString().split('T')[0]
-});
-} else if (type === 'repository') {
-setFormData({
-nim: '',
-penulis: '',
-prodi: '',
-judul: '',
-abstrak: '',
-tahun: new Date().getFullYear(),
-pembimbing: '',
-fileUrl: ''
-});
-} else if (type === 'profile') {
-// Untuk edit profil, kita copy dari currentUser
-setFormData({
-...currentUser,
-password: '' // Password dikosongkan untuk keamanan
-});
-}
-}
-}, [item, currentUser, type]);
+}, [item, currentUser]);
 
 const handleSubmit = async (e) => {
 e.preventDefault();
-
-// Validasi password jika diisi
-if (formData.password && formData.password !== confirmPassword) {
-alert('Password dan konfirmasi password tidak cocok!');
-return;
-}
-
 // Validasi berdasarkan tipe
 if (type === 'mahasiswa' && (!formData.nim || !formData.nama || !formData.prodi || !formData.whatsapp)) {
 alert('Harap lengkapi semua field wajib untuk mahasiswa!');
@@ -3565,15 +4359,9 @@ if (type === 'repository' && (!formData.judul || !formData.penulis || !formData.
 alert('Harap lengkapi semua field wajib untuk repository!');
 return;
 }
-
 setIsSaving(true);
 try { 
-// Hapus field password jika kosong (untuk update tanpa mengubah password)
-const dataToSave = { ...formData };
-if (!dataToSave.password) {
-delete dataToSave.password;
-}
-await onSave(type, dataToSave); 
+await onSave(type, formData); 
 } catch (err) { 
 console.error('Save error:', err); 
 } finally { 
@@ -3584,93 +4372,11 @@ setIsSaving(false);
 const renderForm = () => {
 switch(type) {
 case 'mahasiswa':
-case 'dosen':
-case 'operator':
-case 'profile':
-return renderUserForm();
-case 'proposals':
-return renderProposalForm();
-case 'bimbingan':
-return renderBimbinganForm();
-case 'repository':
-return renderRepositoryForm();
-default:
-return (
-<div className="text-center py-8 text-gray-500">
-<p className="text-lg font-medium">Form untuk tipe "{type}" tidak ditemukan</p>
-<p className="mt-2">Silakan hubungi administrator sistem</p>
-</div>
-);
-}
-};
-
-const renderUserForm = () => {
-const isProfile = type === 'profile';
-const userType = isProfile ? currentUser?.role : type;
-const isAdmin = userRole === 'admin';
-// Admin dan Operator bisa mengedit semua field
-const canEditAll = isAdmin || userRole === 'operator';
-const canEditSelf = !canEditAll && isProfile; // User biasa hanya bisa edit profil sendiri
-
-let title = '';
-if (isProfile) {
-title = 'Edit Profil Saya';
-} else if (type === 'mahasiswa') {
-title = item ? 'Edit Data Mahasiswa' : 'Tambah Mahasiswa';
-} else if (type === 'dosen') {
-title = item ? 'Edit Data Dosen' : 'Tambah Dosen';
-} else if (type === 'operator') {
-title = item ? 'Edit Data Operator' : 'Tambah Operator';
-}
-
 return (
 <>
 <div className="form-section">
-<h3 className="text-lg font-bold text-gray-800 mb-3">
-{isProfile ? 'Data Profil' : `Data ${type === 'mahasiswa' ? 'Mahasiswa' : type === 'dosen' ? 'Dosen' : 'Operator'}`}
-<span className="required-star">*</span>
-</h3>
-
-{type === 'mahasiswa' && (
-<>
-<input type="text" placeholder="NIM (2 digit pertama tahun angkatan)" value={formData.nim || ''} onChange={(e) => setFormData({...formData, nim: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={!canEditAll && !canEditSelf} />
-<input type="text" placeholder="Nama Lengkap" value={formData.nama || ''} onChange={(e) => setFormData({...formData, nama: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={!canEditAll && !canEditSelf} />
-<select value={formData.prodi || ''} onChange={(e) => setFormData({...formData, prodi: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required disabled={!canEditAll && !canEditSelf}>
-<option value="">Pilih Program Studi</option>
-<option value="Ekonomi Syariah">Ekonomi Syariah</option>
-<option value="Perbankan Syariah">Perbankan Syariah</option>
-<option value="Manajemen Bisnis Syariah">Manajemen Bisnis Syariah</option>
-</select>
-<input type="tel" placeholder="Nomor WhatsApp" value={formData.whatsapp || ''} onChange={(e) => setFormData({...formData, whatsapp: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={!canEditAll && !canEditSelf} />
-</>
-)}
-
-{type === 'dosen' && (
-<>
-<input type="text" placeholder="NIP" value={formData.nip || ''} onChange={(e) => setFormData({...formData, nip: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={!canEditAll && !canEditSelf} />
-<input type="text" placeholder="Nama Lengkap" value={formData.nama || ''} onChange={(e) => setFormData({...formData, nama: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={!canEditAll && !canEditSelf} />
-<input type="text" placeholder="Bidang Keahlian" value={formData.keahlian || ''} onChange={(e) => setFormData({...formData, keahlian: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={!canEditAll && !canEditSelf} />
-<input type="tel" placeholder="Nomor WhatsApp" value={formData.whatsapp || ''} onChange={(e) => setFormData({...formData, whatsapp: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={!canEditAll && !canEditSelf} />
-</>
-)}
-
-{type === 'operator' && (
-<>
-<input type="text" placeholder="Username" value={formData.username || ''} onChange={(e) => setFormData({...formData, username: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={!canEditAll} />
-<input type="text" placeholder="Nama Lengkap" value={formData.nama || ''} onChange={(e) => setFormData({...formData, nama: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={!canEditAll} />
-<input type="tel" placeholder="Nomor WhatsApp" value={formData.whatsapp || ''} onChange={(e) => setFormData({...formData, whatsapp: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" />
-<select value={formData.status || 'aktif'} onChange={(e) => setFormData({...formData, status: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3">
-<option value="aktif">Aktif</option>
-<option value="nonaktif">Nonaktif</option>
-</select>
-</>
-)}
-
-{type === 'profile' && (
-<>
-{currentUser?.role === 'mahasiswa' && (
-<>
-<input type="text" placeholder="NIM" value={currentUser?.nim || ''} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg bg-gray-50 mb-3" readOnly />
+<h3 className="text-lg font-bold text-gray-800 mb-3">Data Mahasiswa <span className="required-star">*</span></h3>
+<input type="text" placeholder="NIM (2 digit pertama tahun angkatan, misal: 21 untuk 2021)" value={formData.nim || ''} onChange={(e) => setFormData({...formData, nim: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
 <input type="text" placeholder="Nama Lengkap" value={formData.nama || ''} onChange={(e) => setFormData({...formData, nama: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
 <select value={formData.prodi || ''} onChange={(e) => setFormData({...formData, prodi: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required>
 <option value="">Pilih Program Studi</option>
@@ -3679,122 +4385,134 @@ return (
 <option value="Manajemen Bisnis Syariah">Manajemen Bisnis Syariah</option>
 </select>
 <input type="tel" placeholder="Nomor WhatsApp" value={formData.whatsapp || ''} onChange={(e) => setFormData({...formData, whatsapp: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
-</>
-)}
-{currentUser?.role === 'dosen' && (
-<>
-<input type="text" placeholder="NIP" value={currentUser?.nip || ''} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg bg-gray-50 mb-3" readOnly />
-<input type="text" placeholder="Nama Lengkap" value={formData.nama || ''} onChange={(e) => setFormData({...formData, nama: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
-<input type="text" placeholder="Bidang Keahlian" value={formData.keahlian || ''} onChange={(e) => setFormData({...formData, keahlian: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
-<input type="tel" placeholder="Nomor WhatsApp" value={formData.whatsapp || ''} onChange={(e) => setFormData({...formData, whatsapp: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
-</>
-)}
-{currentUser?.role === 'operator' && (
-<>
-<input type="text" placeholder="Username" value={currentUser?.username || ''} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg bg-gray-50 mb-3" readOnly />
-<input type="text" placeholder="Nama Lengkap" value={formData.nama || ''} onChange={(e) => setFormData({...formData, nama: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
-<input type="tel" placeholder="Nomor WhatsApp" value={formData.whatsapp || ''} onChange={(e) => setFormData({...formData, whatsapp: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" />
-</>
-)}
-{currentUser?.role === 'admin' && (
-<>
-<input type="text" placeholder="Username" value="admin" className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg bg-gray-50 mb-3" readOnly />
-<input type="text" placeholder="Nama Lengkap" value={formData.nama || 'Administrator FEBI'} onChange={(e) => setFormData({...formData, nama: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
-</>
-)}
-</>
-)}
-</div>
-
-{/* Bagian Password - Hanya untuk edit profil atau admin/operator */}
-{((isProfile && !canEditAll) || canEditAll || (type !== 'profile' && canEditAll)) && (
-<div className="form-section">
-<h3 className="text-lg font-bold text-gray-800 mb-3">
-Ubah Password
-<span className="text-sm font-normal text-gray-500 ml-2">(kosongkan jika tidak ingin mengubah)</span>
-</h3>
-<div className="relative mb-3">
+{!item && <input type="password" placeholder="Password" value={formData.password || ''} onChange={(e) => setFormData({...formData, password: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />}
+{item && (
+<div className="mb-3">
+<label className="block text-sm font-semibold text-gray-700 mb-1">Password</label>
+<div className="relative">
 <input
-type={showPassword ? "text" : "password"}
-placeholder="Password Baru"
+type={showPassword ? 'text' : 'password'}
 value={formData.password || ''}
 onChange={(e) => setFormData({...formData, password: e.target.value})}
 className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 pr-10"
+placeholder="Kosongkan jika tidak ingin mengubah"
 />
 <button
 type="button"
 onClick={() => setShowPassword(!showPassword)}
-className="absolute right-3 top-2 text-gray-500 hover:text-emerald-600"
+className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-emerald-600"
 >
 {showPassword ? '👁️' : '👁️‍🗨️'}
 </button>
 </div>
+<p className="text-xs text-gray-500 mt-1">Kosongkan jika tidak ingin mengubah password</p>
+</div>
+)}
+</div>
+<div className="bg-blue-50 p-4 rounded-lg">
+<p className="text-sm text-blue-700 flex items-start">
+<span className="text-xl mr-2">ℹ️</span>
+<strong>Catatan:</strong> Password hanya diperlukan saat registrasi awal. Untuk edit data, password bisa dikosongkan jika tidak ingin diubah.
+</p>
+</div>
+</>
+);
+case 'dosen':
+return (
+<>
+<div className="form-section">
+<h3 className="text-lg font-bold text-gray-800 mb-3">Data Dosen <span className="required-star">*</span></h3>
+<input type="text" placeholder="NIP" value={formData.nip || ''} onChange={(e) => setFormData({...formData, nip: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
+<input type="text" placeholder="Nama Lengkap" value={formData.nama || ''} onChange={(e) => setFormData({...formData, nama: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
+<input type="text" placeholder="Bidang Keahlian" value={formData.keahlian || ''} onChange={(e) => setFormData({...formData, keahlian: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
+<input type="tel" placeholder="Nomor WhatsApp" value={formData.whatsapp || ''} onChange={(e) => setFormData({...formData, whatsapp: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
+{!item && <input type="password" placeholder="Password" value={formData.password || ''} onChange={(e) => setFormData({...formData, password: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />}
+{item && (
+<div className="mb-3">
+<label className="block text-sm font-semibold text-gray-700 mb-1">Password</label>
+<div className="relative">
 <input
-type={showPassword ? "text" : "password"}
-placeholder="Konfirmasi Password Baru"
-value={confirmPassword}
-onChange={(e) => setConfirmPassword(e.target.value)}
-className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3"
+type={showPassword ? 'text' : 'password'}
+value={formData.password || ''}
+onChange={(e) => setFormData({...formData, password: e.target.value})}
+className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 pr-10"
+placeholder="Kosongkan jika tidak ingin mengubah"
 />
+<button
+type="button"
+onClick={() => setShowPassword(!showPassword)}
+className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-emerald-600"
+>
+{showPassword ? '👁️' : '👁️‍🗨️'}
+</button>
+</div>
+<p className="text-xs text-gray-500 mt-1">Kosongkan jika tidak ingin mengubah password</p>
 </div>
 )}
-
-{/* Informasi tambahan */}
-{type === 'mahasiswa' && !item && (
+</div>
 <div className="bg-blue-50 p-4 rounded-lg">
 <p className="text-sm text-blue-700 flex items-start">
 <span className="text-xl mr-2">ℹ️</span>
-<strong>Catatan:</strong> Password akan dikirim ke nomor WhatsApp yang didaftarkan.
+<strong>Catatan:</strong> Password hanya diperlukan saat registrasi awal. Untuk edit data, password bisa dikosongkan jika tidak ingin diubah.
 </p>
 </div>
-)}
-{type === 'dosen' && !item && (
-<div className="bg-blue-50 p-4 rounded-lg">
-<p className="text-sm text-blue-700 flex items-start">
-<span className="text-xl mr-2">ℹ️</span>
-<strong>Catatan:</strong> Password akan dikirim ke nomor WhatsApp yang didaftarkan.
-</p>
+</>
+);
+case 'operator':
+return (
+<>
+<div className="form-section">
+<h3 className="text-lg font-bold text-gray-800 mb-3">Data Operator <span className="required-star">*</span></h3>
+<input type="text" placeholder="Username" value={formData.username || ''} onChange={(e) => setFormData({...formData, username: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
+<input type="text" placeholder="Nama Lengkap" value={formData.nama || ''} onChange={(e) => setFormData({...formData, nama: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
+<input type="tel" placeholder="Nomor WhatsApp" value={formData.whatsapp || ''} onChange={(e) => setFormData({...formData, whatsapp: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" />
+{!item && <input type="password" placeholder="Password" value={formData.password || ''} onChange={(e) => setFormData({...formData, password: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />}
+{item && (
+<div className="mb-3">
+<label className="block text-sm font-semibold text-gray-700 mb-1">Password</label>
+<div className="relative">
+<input
+type={showPassword ? 'text' : 'password'}
+value={formData.password || ''}
+onChange={(e) => setFormData({...formData, password: e.target.value})}
+className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 pr-10"
+placeholder="Kosongkan jika tidak ingin mengubah"
+/>
+<button
+type="button"
+onClick={() => setShowPassword(!showPassword)}
+className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-emerald-600"
+>
+{showPassword ? '👁️' : '👁️‍🗨️'}
+</button>
+</div>
+<p className="text-xs text-gray-500 mt-1">Kosongkan jika tidak ingin mengubah password</p>
 </div>
 )}
-{type === 'operator' && !item && (
+</div>
 <div className="bg-yellow-50 p-4 rounded-lg">
 <p className="text-sm text-yellow-700 flex items-start">
 <span className="text-xl mr-2">⚠️</span>
 <strong>Catatan:</strong> Operator memiliki akses penuh seperti admin, namun tidak bisa menghapus data.
 </p>
 </div>
-)}
-{isProfile && (
-<div className="bg-green-50 p-4 rounded-lg">
-<p className="text-sm text-green-700 flex items-start">
-<span className="text-xl mr-2">✅</span>
-Anda dapat mengubah data profil dan password Anda di sini.
-</p>
-</div>
-)}
 </>
 );
-};
-
-const renderProposalForm = () => {
-const isAdminOrOperator = userRole === 'admin' || userRole === 'operator';
-const isReadOnly = !isAdminOrOperator && !item;
-
+case 'proposals':
 return (
 <>
 <div className="form-section">
 <h3 className="text-lg font-bold text-gray-800 mb-3">Data Mahasiswa <span className="required-star">*</span></h3>
-<input type="text" placeholder="NIM Mahasiswa" value={formData.nim || currentUser?.nim || ''} onChange={(e) => setFormData({...formData, nim: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={isReadOnly} />
-<input type="text" placeholder="Nama Mahasiswa" value={formData.mahasiswaNama || currentUser?.nama || ''} onChange={(e) => setFormData({...formData, mahasiswaNama: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={isReadOnly} />
-<select value={formData.prodi || currentUser?.prodi || ''} onChange={(e) => setFormData({...formData, prodi: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required disabled={isReadOnly}>
+<input type="text" placeholder="NIM Mahasiswa" value={formData.nim || currentUser?.nim || ''} onChange={(e) => setFormData({...formData, nim: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={userRole !== 'admin' && userRole !== 'operator'} />
+<input type="text" placeholder="Nama Mahasiswa" value={formData.mahasiswaNama || currentUser?.nama || ''} onChange={(e) => setFormData({...formData, mahasiswaNama: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={userRole !== 'admin' && userRole !== 'operator'} />
+<select value={formData.prodi || currentUser?.prodi || ''} onChange={(e) => setFormData({...formData, prodi: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={userRole !== 'admin' && userRole !== 'operator'}>
 <option value="">Pilih Program Studi</option>
 <option value="Ekonomi Syariah">Ekonomi Syariah</option>
 <option value="Perbankan Syariah">Perbankan Syariah</option>
 <option value="Manajemen Bisnis Syariah">Manajemen Bisnis Syariah</option>
 </select>
-<input type="tel" placeholder="Nomor WhatsApp" value={formData.whatsapp || currentUser?.whatsapp || ''} onChange={(e) => setFormData({...formData, whatsapp: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={isReadOnly} />
+<input type="tel" placeholder="Nomor WhatsApp" value={formData.whatsapp || currentUser?.whatsapp || ''} onChange={(e) => setFormData({...formData, whatsapp: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={userRole !== 'admin' && userRole !== 'operator'} />
 </div>
-
 <div className="form-section">
 <h3 className="text-lg font-bold text-gray-800 mb-3">Pembimbing <span className="required-star">*</span></h3>
 <select value={formData.pembimbing1 || ''} onChange={(e) => setFormData({...formData, pembimbing1: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required>
@@ -3802,11 +4520,11 @@ return (
 {dosenList.map(d => <option key={d.id} value={d.nama}>{d.nama} - {d.keahlian}</option>)}
 </select>
 <select value={formData.pembimbing2 || ''} onChange={(e) => setFormData({...formData, pembimbing2: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3">
-<option value="">Pilih Pembimbing 2</option>
+<option value="">Pilih Pembimbing 2 (Opsional)</option>
+<option value="-">Tidak Ada</option>
 {dosenList.map(d => <option key={d.id} value={d.nama}>{d.nama} - {d.keahlian}</option>)}
 </select>
 </div>
-
 <div className="form-section">
 <h3 className="text-lg font-bold text-gray-800 mb-3">Judul Proposal <span className="required-star">*</span></h3>
 <input type="text" placeholder="Judul Proposal" value={formData.judul || ''} onChange={(e) => setFormData({...formData, judul: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
@@ -3894,12 +4612,10 @@ item.similarityScore >= 30 ? 'similarity-low' :
 </div>
 )}
 </div>
-
 <div className="form-section">
 <h3 className="text-lg font-bold text-gray-800 mb-3">Abstrak <span className="required-star">*</span></h3>
 <textarea placeholder="Abstrak (min. 150 karakter)" value={formData.abstrak || ''} onChange={(e) => setFormData({...formData, abstrak: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3 h-32" required minLength="150" />
 </div>
-
 {(userRole === 'admin' || userRole === 'operator') && (
 <div className="form-section">
 <h3 className="text-lg font-bold text-gray-800 mb-3">Validasi Admin/Operator</h3>
@@ -3914,43 +4630,34 @@ item.similarityScore >= 30 ? 'similarity-low' :
 )}
 </>
 );
-};
-
-const renderBimbinganForm = () => {
-const isAdminOrOperator = userRole === 'admin' || userRole === 'operator';
-const isDosen = userRole === 'dosen';
-const isReadOnly = !isAdminOrOperator && !isDosen && !item;
-
+case 'bimbingan':
 return (
 <>
 <div className="form-section">
 <h3 className="text-lg font-bold text-gray-800 mb-3">Data Mahasiswa & Dosen <span className="required-star">*</span></h3>
-<input type="text" placeholder="NIM Mahasiswa" value={formData.nim || currentUser?.nim || ''} onChange={(e) => setFormData({...formData, nim: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={isReadOnly} />
-<input type="text" placeholder="Nama Mahasiswa" value={formData.mahasiswaNama || currentUser?.nama || ''} onChange={(e) => setFormData({...formData, mahasiswaNama: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={isReadOnly} />
-<input type="text" placeholder="Nama Dosen" value={formData.dosenNama || ''} onChange={(e) => setFormData({...formData, dosenNama: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly={isReadOnly} />
+<input type="text" placeholder="NIM Mahasiswa" value={formData.nim || currentUser?.nim || ''} onChange={(e) => setFormData({...formData, nim: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly />
+<input type="text" placeholder="Nama Mahasiswa" value={formData.mahasiswaNama || currentUser?.nama || ''} onChange={(e) => setFormData({...formData, mahasiswaNama: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly />
+<input type="text" placeholder="Nama Dosen" value={formData.dosenNama || currentUser?.nama || ''} onChange={(e) => setFormData({...formData, dosenNama: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required readOnly />
 <select value={formData.pembimbingKe || 1} onChange={(e) => setFormData({...formData, pembimbingKe: parseInt(e.target.value)})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3">
 <option value="1">Pembimbing 1</option>
 <option value="2">Pembimbing 2</option>
 </select>
 </div>
-
 <div className="form-section">
 <h3 className="text-lg font-bold text-gray-800 mb-3">Judul Skripsi <span className="required-star">*</span></h3>
 <input type="text" placeholder="Judul Skripsi" value={formData.judul || ''} onChange={(e) => setFormData({...formData, judul: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
 </div>
-
 <div className="form-section">
 <h3 className="text-lg font-bold text-gray-800 mb-3">Progress Bimbingan <span className="required-star">*</span></h3>
-<p className="text-sm text-gray-500 mb-2">Progress akan dihitung otomatis berdasarkan jumlah pertemuan (10% per pertemuan, maksimal 10 pertemuan)</p>
 <div className="flex items-center mb-3">
-<span className="text-gray-600 mr-3">Progress Saat Ini:</span>
+<span className="text-gray-600 mr-3">Progress:</span>
+<input type="number" placeholder="Progress (%)" value={formData.progress || 0} onChange={(e) => setFormData({...formData, progress: parseInt(e.target.value)})} className="w-24 px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mr-3" min="0" max="100" required />
 <span className="text-lg font-bold text-emerald-600">{formData.progress || 0}%</span>
 </div>
 <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
 <div className="bg-emerald-600 h-3 rounded-full transition-all duration-300" style={{width: `${formData.progress || 0}%`}}></div>
 </div>
 </div>
-
 <div className="form-section">
 <h3 className="text-lg font-bold text-gray-800 mb-3">Catatan Bimbingan</h3>
 <textarea placeholder="Catatan Bimbingan" value={formData.catatan || ''} onChange={(e) => setFormData({...formData, catatan: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3 h-32" />
@@ -3962,9 +4669,7 @@ return (
 </div>
 </>
 );
-};
-
-const renderRepositoryForm = () => {
+case 'repository':
 return (
 <>
 <div className="form-section">
@@ -3978,17 +4683,14 @@ return (
 <option value="Manajemen Bisnis Syariah">Manajemen Bisnis Syariah</option>
 </select>
 </div>
-
 <div className="form-section">
 <h3 className="text-lg font-bold text-gray-800 mb-3">Judul Skripsi <span className="required-star">*</span></h3>
 <input type="text" placeholder="Judul Skripsi" value={formData.judul || ''} onChange={(e) => setFormData({...formData, judul: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
 </div>
-
 <div className="form-section">
 <h3 className="text-lg font-bold text-gray-800 mb-3">Abstrak <span className="required-star">*</span></h3>
 <textarea placeholder="Abstrak" value={formData.abstrak || ''} onChange={(e) => setFormData({...formData, abstrak: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3 h-32" required />
 </div>
-
 <div className="form-section">
 <h3 className="text-lg font-bold text-gray-800 mb-3">Informasi Tambahan <span className="required-star">*</span></h3>
 <input type="number" placeholder="Tahun" value={formData.tahun || new Date().getFullYear()} onChange={(e) => setFormData({...formData, tahun: parseInt(e.target.value)})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" min="2000" max="2100" required />
@@ -3997,8 +4699,15 @@ return (
 </div>
 </>
 );
+default:
+return (
+<div className="text-center py-8 text-gray-500">
+<p className="text-lg font-medium">Form untuk tipe "{type}" tidak ditemukan</p>
+<p className="mt-2">Silakan hubungi administrator sistem</p>
+</div>
+);
+}
 };
-
 return (
 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
 <div className="bg-white rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
@@ -4008,7 +4717,6 @@ return (
 {type === 'mahasiswa' ? 'Mahasiswa' : 
  type === 'dosen' ? 'Dosen' : 
  type === 'operator' ? 'Operator' : 
- type === 'profile' ? 'Profil Saya' :
  type === 'proposals' ? 'Proposal' : 
  type === 'bimbingan' ? 'Bimbingan' : 
  type === 'repository' ? 'Repository' : type}
@@ -4035,7 +4743,7 @@ Batal
 );
 };
 // ============================================
-// MAIN APP COMPONENT - DENGAN WORKFLOW INTEGRATION UNTUK 2 DOSEN
+// MAIN APP COMPONENT - DENGAN WORKFLOW INTEGRATION
 // ============================================
 const App = () => {
 const [currentUser, setCurrentUser] = React.useState(null);
@@ -4058,6 +4766,8 @@ const [systemReady, setSystemReady] = React.useState(false);
 const [initError, setInitError] = React.useState(null);
 const [loadingProgress, setLoadingProgress] = React.useState(0);
 const [dataInitialized, setDataInitialized] = React.useState(false);
+const [showProfileModal, setShowProfileModal] = React.useState(false);
+const [showProfileMenu, setShowProfileMenu] = React.useState(false);
 
 // Load user from localStorage dengan progress simulation
 React.useEffect(() => {
@@ -4203,14 +4913,14 @@ console.log('- Operator:', operatorArr.length);
 console.log('- User Role:', userRole);
 }, [mahasiswaArr, dosenArr, proposalsArr, bimbinganArr, operatorArr, userRole]);
 
-// Filter: Proposal approved tapi belum ada di bimbingan (untuk masing-masing dosen)
+// Filter: Proposal approved tapi belum ada di bimbingan (untuk kedua pembimbing)
 const pendingBimbingan = React.useMemo(() =>
-proposalsArr.filter(p =>
-p.status === 'Diterima' && (
-!bimbinganArr.some(b => b.nim === p.nim && b.judul === p.judul && b.dosenNama === p.pembimbing1) ||
-(p.pembimbing2 && !bimbinganArr.some(b => b.nim === p.nim && b.judul === p.judul && b.dosenNama === p.pembimbing2))
-)
-), [proposalsArr, bimbinganArr]
+proposalsArr.filter(p => {
+if (p.status !== 'Diterima') return false;
+const hasBimbingan1 = bimbinganArr.some(b => b.nim === p.nim && b.judul === p.judul && b.dosenNama === p.pembimbing1);
+const hasBimbingan2 = !p.pembimbing2 || p.pembimbing2 === '-' || bimbinganArr.some(b => b.nim === p.nim && b.judul === p.judul && b.dosenNama === p.pembimbing2);
+return !hasBimbingan1 || !hasBimbingan2;
+}), [proposalsArr, bimbinganArr]
 );
 
 const showToast = (msg, type = 'success') => {
@@ -4250,15 +4960,12 @@ setSimilarityResult(null);
 setShowModal(true);
 };
 
-// Fungsi khusus untuk edit profil
-const handleEditProfile = () => {
-setModalType('profile');
-setEditingItem(currentUser);
-setSimilarityResult(null);
-setShowModal(true);
-};
-
 const handleDelete = async (type, id, name) => {
+// Operator tidak bisa hapus, tapi pengecekan sudah dilakukan di tombol
+if (userRole === 'operator' && type !== 'proposals') { // Operator hanya bisa edit, tidak hapus
+showToast('Operator tidak memiliki izin hapus!', 'error');
+return;
+}
 if (!confirm(`Hapus "${name}"?`)) return;
 try {
 const success = await DB.remove(`${type}/${id}`);
@@ -4269,7 +4976,7 @@ showToast('Error: ' + err.message, 'error');
 }
 };
 
-// CRITICAL: Save dengan auto-create bimbingan untuk 2 dosen
+// CRITICAL: Save dengan auto-create bimbingan untuk kedua pembimbing
 const handleSave = async (type, data) => {
 if (!data) {
 showToast('Data tidak valid!', 'error');
@@ -4277,51 +4984,23 @@ return false;
 }
 try {
 if (editingItem) {
-// Handle khusus untuk update profil
-if (type === 'profile') {
-// Update user di localStorage
-const updatedUser = { ...currentUser, ...data };
-// Hapus password dari object jika kosong
-if (!updatedUser.password) {
-delete updatedUser.password;
-}
-setCurrentUser(updatedUser);
-localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-
-// Update di database sesuai role
-let dbPath = '';
-let dbData = { ...updatedUser };
-delete dbData.id; // Hapus id untuk update
-
-if (currentUser.role === 'mahasiswa') {
-dbPath = `mahasiswa/${currentUser.id}`;
-} else if (currentUser.role === 'dosen') {
-dbPath = `dosen/${currentUser.id}`;
-} else if (currentUser.role === 'operator') {
-dbPath = `operator/${currentUser.id}`;
-}
-
-if (dbPath) {
-await DB.set(dbPath, dbData);
-showToast('Profil berhasil diperbarui!', 'success');
-}
-setShowModal(false);
-return true;
-}
-
-// Jika status berubah menjadi "Diterima" (untuk proposal)
+// Jika status berubah menjadi "Diterima"
 if (type === 'proposals' && data.status === 'Diterima' && editingItem.status !== 'Diterima') {
 const success = await DB.set(`proposals/${editingItem.id}`, {
 ...data, updatedAt: new Date().toISOString()
 });
 if (success) {
-// Trigger auto-create bimbingan untuk kedua dosen
+// Trigger auto-create bimbingan untuk kedua pembimbing
 await createBimbinganFromProposal(data, editingItem.id);
-alert('✅ Proposal disetujui!\n\nSistem otomatis membuat record bimbingan untuk:\n• Pembimbing 1: ' + data.pembimbing1 + '\n' + (data.pembimbing2 ? '• Pembimbing 2: ' + data.pembimbing2 : '') + '\n\nMasing-masing dosen dapat memulai proses bimbingan.');
+alert('✅ Proposal disetujui!\n\nSistem otomatis membuat record bimbingan untuk:\n• Pembimbing 1: ' + data.pembimbing1 + '\n' + (data.pembimbing2 && data.pembimbing2 !== '-' ? '• Pembimbing 2: ' + data.pembimbing2 + '\n' : '') + '\nDosen pembimbing dapat langsung memulai proses bimbingan.');
 setShowModal(false);
 return true;
 }
 } else {
+// Hapus password jika kosong (tidak diubah)
+if (data.password === '') {
+delete data.password;
+}
 const result = await DB.set(`${type}/${editingItem.id}`, { ...data, updatedAt: new Date().toISOString() });
 if (result) showToast('Data berhasil diupdate!', 'success');
 else showToast('Gagal mengupdate data!', 'error');
@@ -4343,6 +5022,36 @@ return false;
 } finally {
 setEditingItem(null);
 setSimilarityResult(null);
+}
+};
+
+// Handle save profile
+const handleSaveProfile = async (updatedUser) => {
+try {
+// Hapus password jika kosong (tidak diubah)
+if (updatedUser.password === '') {
+delete updatedUser.password;
+}
+
+// Tentukan path berdasarkan role
+let path = '';
+if (userRole === 'mahasiswa') path = `mahasiswa/${currentUser.id}`;
+else if (userRole === 'dosen') path = `dosen/${currentUser.id}`;
+else if (userRole === 'operator') path = `operator/${currentUser.id}`;
+else if (userRole === 'admin') path = `admin/${currentUser.id}`;
+
+if (path) {
+await DB.set(path, { ...updatedUser, updatedAt: new Date().toISOString() });
+// Update current user
+const newUser = { ...currentUser, ...updatedUser };
+setCurrentUser(newUser);
+localStorage.setItem('currentUser', JSON.stringify(newUser));
+showToast('Profil berhasil diperbarui!', 'success');
+setShowProfileModal(false);
+}
+} catch (err) {
+console.error('Profile update error:', err);
+showToast('Gagal memperbarui profil: ' + err.message, 'error');
 }
 };
 
@@ -4380,7 +5089,7 @@ window.open(url, '_blank');
 showToast('Pesan WhatsApp terbuka di tab baru!', 'success');
 };
 
-// Mulai bimbingan manual (untuk dosen) dengan parameter pembimbingKe
+// Mulai bimbingan manual (untuk dosen) - dengan parameter pembimbingKe
 const handleMulaiBimbingan = async (proposal, pembimbingKe = 1) => {
 if (!currentUser || userRole !== 'dosen') {
 showToast('Hanya dosen yang dapat memulai bimbingan', 'error');
@@ -4388,15 +5097,22 @@ return;
 }
 
 const dosenNama = pembimbingKe === 1 ? proposal.pembimbing1 : proposal.pembimbing2;
+
+// Validasi apakah dosen ini adalah pembimbing yang sesuai
 if (currentUser.nama !== dosenNama) {
-showToast('Anda tidak berhak memulai bimbingan ini', 'error');
+showToast('Anda bukan pembimbing untuk proposal ini!', 'error');
 return;
 }
 
 // Cek duplikasi
-const exists = bimbinganArr.some(b => b.nim === proposal.nim && b.judul === proposal.judul && b.dosenNama === dosenNama);
+const exists = bimbinganArr.some(b => 
+b.nim === proposal.nim && 
+b.judul === proposal.judul && 
+b.dosenNama === dosenNama
+);
+
 if (exists) {
-showToast('Bimbingan untuk dosen ini sudah aktif!', 'info');
+showToast('Bimbingan untuk proposal ini sudah aktif!', 'info');
 setActiveMenu('bimbingan');
 return;
 }
@@ -4406,21 +5122,21 @@ const bimbinganData = {
 nim: proposal.nim,
 mahasiswaNama: proposal.mahasiswaNama,
 dosenNama: currentUser.nama,
+pembimbingKe: pembimbingKe,
 judul: proposal.judul,
 prodi: proposal.prodi,
 whatsapp: proposal.whatsapp,
 progress: 0,
 status: 'berlangsung',
-pembimbingKe: pembimbingKe,
-meetings: [],
-catatan: `Dimulai oleh ${currentUser.nama} (Pembimbing ${pembimbingKe}) pada ${new Date().toLocaleDateString('id-ID')}`,
+catatan: `Dimulai oleh ${currentUser.nama} sebagai Pembimbing ${pembimbingKe} pada ${new Date().toLocaleDateString('id-ID')}`,
 lastUpdate: new Date().toISOString().split('T')[0],
 proposalId: proposal.id,
-createdAt: new Date().toISOString()
+createdAt: new Date().toISOString(),
+meetings: []
 };
 const newId = await DB.push('bimbingan', bimbinganData);
 if (newId) {
-showToast(`✅ Bimbingan (Pembimbing ${pembimbingKe}) berhasil dimulai!`, 'success');
+showToast(`✅ Bimbingan (Pembimbing ${pembimbingKe}) berhasil dimulai!\n\nAnda dapat memantau progress melalui menu "Proses Bimbingan".`, 'success');
 setActiveMenu('bimbingan');
 }
 }
@@ -4466,7 +5182,7 @@ style={{ width: `${loadingProgress}%` }}
 {initError ? 'Error' : 'Menginisialisasi Sistem Bimbingan Terintegrasi...'}
 </p>
 <p className="mt-2 text-gray-300">
-{initError ? initError : loadingProgress < 100 ? 'Menghubungkan proposal → bimbingan (2 dosen) → repository' : 'Sistem siap...'}
+{initError ? initError : loadingProgress < 100 ? 'Menghubungkan proposal → bimbingan → repository' : 'Sistem siap...'}
 </p>
 {initError && (
 <button 
@@ -4493,7 +5209,7 @@ const menus = [
 { id: 'repository', label: 'Repository Skripsi', emoji: '📚', roles: ['mahasiswa', 'dosen', 'admin', 'operator'] },
 { id: 'kelola-mhs', label: 'Kelola Mahasiswa', emoji: '👥', roles: ['admin', 'operator'] },
 { id: 'kelola-dsn', label: 'Kelola Dosen', emoji: '👨‍🏫', roles: ['admin', 'operator'] },
-{ id: 'kelola-op', label: 'Kelola Operator', emoji: '👤', roles: ['admin'] },
+{ id: 'kelola-op', label: 'Kelola Operator', emoji: '👤', roles: ['admin'] }, // Hanya admin yang bisa melihat dan mengelola operator
 { id: 'settings', label: 'Pengaturan', emoji: '⚙️', roles: ['admin', 'operator'] },
 ];
 return (
@@ -4519,16 +5235,7 @@ return (
 </nav>
 <div className="absolute bottom-0 left-0 right-0 p-3 border-t border-emerald-700/50 bg-emerald-950/50">
 <div className="mb-3 px-3 py-2 bg-emerald-800/30 rounded-lg">
-<div className="flex items-center justify-between">
 <p className="text-white text-sm font-medium truncate">{currentUser?.nama}</p>
-<button 
-onClick={handleEditProfile}
-className="ml-2 text-xs text-emerald-300 hover:text-emerald-100"
-title="Edit Profil"
->
-✏️
-</button>
-</div>
 <p className="text-xs capitalize text-emerald-300">
 {userRole}
 </p>
@@ -4550,7 +5257,7 @@ const renderHeader = () => (
 <h1 className="text-lg font-bold text-emerald-900">
 {activeMenu === 'dashboard' ? 'Dashboard Utama' :
 activeMenu === 'proposal' ? 'Pengajuan Proposal Skripsi' :
-activeMenu === 'bimbingan' ? 'Manajemen Bimbingan (2 Dosen)' :
+activeMenu === 'bimbingan' ? 'Manajemen Bimbingan' :
 activeMenu === 'warning' ? 'Sistem Early Warning' :
 activeMenu === 'repository' ? 'Repository Skripsi' :
 activeMenu === 'kelola-mhs' ? 'Administrasi Mahasiswa' :
@@ -4559,8 +5266,8 @@ activeMenu === 'kelola-op' ? 'Administrasi Operator' :
 activeMenu === 'settings' ? 'Pengaturan Sistem' : 'Dashboard FEBI'}
 </h1>
 </div>
-<div className="flex items-center gap-3">
-<div className="flex items-center gap-2 px-3 py-2 bg-emerald-50 rounded-xl">
+<div className="flex items-center gap-3 relative">
+<div className="flex items-center gap-2 px-3 py-2 bg-emerald-50 rounded-xl cursor-pointer hover:bg-emerald-100 transition-all" onClick={() => setShowProfileMenu(!showProfileMenu)}>
 <div className="w-9 h-9 bg-emerald-600 rounded-full flex items-center justify-center text-white font-bold">
 {currentUser?.nama?.charAt(0).toUpperCase()}
 </div>
@@ -4570,14 +5277,27 @@ activeMenu === 'settings' ? 'Pengaturan Sistem' : 'Dashboard FEBI'}
 {userRole}
 </p>
 </div>
-<button 
-onClick={handleEditProfile}
-className="ml-2 text-xs text-emerald-600 hover:text-emerald-800"
-title="Edit Profil"
->
-✏️
-</button>
 </div>
+
+{/* Profile Menu Dropdown */}
+{showProfileMenu && (
+<div className="profile-menu">
+<div className="profile-menu-item" onClick={() => { setShowProfileModal(true); setShowProfileMenu(false); }}>
+<span className="text-xl">👤</span>
+<div>
+<p className="font-medium text-sm">Edit Profil</p>
+<p className="text-xs text-gray-500">Perbarui data diri dan password</p>
+</div>
+</div>
+<div className="profile-menu-item" onClick={() => { handleLogout(); setShowProfileMenu(false); }}>
+<span className="text-xl">🚪</span>
+<div>
+<p className="font-medium text-sm">Keluar</p>
+<p className="text-xs text-gray-500">Akhiri sesi</p>
+</div>
+</div>
+</div>
+)}
 </div>
 </header>
 );
@@ -4623,6 +5343,9 @@ onDelete={(id, name) => handleDelete('bimbingan', id, name)}
 mahasiswaList={mahasiswaArr}
 dosenList={dosenArr}
 onNavigate={handleNavigate}
+onAddMeeting={() => {}} // Akan di-handle di dalam BimbinganPage
+onEditMeeting={() => {}}
+onDeleteMeeting={() => {}}
 />;
 case 'warning':
 return <EarlyWarningPage
@@ -4662,9 +5385,9 @@ case 'kelola-op':
 return <KelolaOperatorPage
 operator={operatorArr}
 userRole={userRole}
-onAdd={handleAdd}
+onAdd={() => handleAdd('operator')}
 onEdit={(item) => handleEdit('operator', item)}
-onDelete={handleDelete}
+onDelete={(id, name) => handleDelete('operator', id, name)}
 />;
 case 'settings':
 return <SettingsPage userRole={userRole} />;
@@ -4706,6 +5429,14 @@ currentUser={currentUser}
 userRole={userRole}
 />
 )}
+{showProfileModal && (
+<ProfileModal
+user={currentUser}
+userRole={userRole}
+onClose={() => setShowProfileModal(false)}
+onSave={handleSaveProfile}
+/>
+)}
 {toast.show && (
 <div className={`fixed bottom-6 right-6 px-5 py-3 rounded-xl shadow-2xl z-50 animate-fadeIn flex items-center gap-2 ${
 toast.type === 'success' ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'
@@ -4725,28 +5456,26 @@ ReactDOM.render(
 </React.StrictMode>,
 document.getElementById('root')
 );
-console.log('✅ Dashboard FEBI v6.1.0 (DENGAN DUKUNGAN 2 DOSEN PEMBIMBING) loaded successfully!');
+console.log('✅ Dashboard FEBI v7.5.0 (DENGAN TABEL PROPOSAL INFORMATIF) loaded successfully!');
 console.log('🔐 Authentication system active');
 console.log('🔍 ADVANCED SIMILARITY CHECKER (5 Algoritma Hybrid) - OPERATIONAL');
 console.log('📊 Cosine • Jaccard Bigram/Trigram • Levenshtein • Semantic Matching');
-console.log('🔄 WORKFLOW INTEGRATION: Auto-create bimbingan untuk 2 dosen saat proposal disetujui');
+console.log('🔄 WORKFLOW INTEGRATION: Auto-create bimbingan untuk Pembimbing 1 & 2');
 console.log('⚠️ Early Warning System dengan WhatsApp integration');
 console.log('✅ ROLE OPERATOR: Akses penuh seperti admin, namun tanpa hak hapus');
-console.log('✅ FITUR EDIT PROFIL: Semua user dapat mengedit profil dan password');
-console.log('✅ KELOLA OPERATOR: Admin dapat menambah/mengedit/menghapus operator');
-console.log('✅ FITUR BIMBINGAN: Timeline 10 pertemuan, progress 10% per pertemuan, dukungan 2 dosen');
-console.log('✅ RIWAYAT PERTEMUAN: Setiap bimbingan tercatat detail dengan tanggal dan catatan');
-console.log('✅ LAPORAN CETAK: Nama mahasiswa dan dosen otomatis terisi di tanda tangan');
 console.log('✅ Login Demo: admin/admin123 • operator/operator123');
-console.log('✅ SEMUA MODAL BERFUNGSI: Mahasiswa, Dosen, Proposal, Bimbingan, Repository, Operator, Profil');
-console.log('📊 BIMBINGAN PAGE: Tabel dinamis dengan statistik, filter, detail, timeline, dan cetak laporan');
+console.log('✅ SEMUA MODAL BERFUNGSI: Mahasiswa, Dosen, Proposal, Bimbingan, Repository, Operator');
+console.log('📊 BIMBINGAN PAGE: Timeline 10 pertemuan dengan visual progress, dual pembimbing berdampingan');
+console.log('✅ EDIT PROFIL: Semua user dapat mengedit profil termasuk password, admin dapat melihat semua password');
 console.log('✅ Loading System: Progress bar, error handling, koneksi stabil');
 console.log('✅ Data Inisialisasi: Data dummy otomatis terisi jika database kosong');
 console.log('✅ Early Warning: Perhitungan semester dari 2 digit pertama NIM (contoh: 21 → 2021)');
-console.log('📝 PROPOSAL PAGE: Tampilan tabel yang informatif, rapi, dan komprehensif dengan dukungan 2 dosen!');
-console.log('🔧 FIX: Operator sekarang dapat menambah dan mengedit data Mahasiswa & Dosen!');
-console.log('🎓 LOGO: Ikon topi toga dengan bayangan oranye telah diterapkan!');
-console.log('👥 FITUR BARU: Dosen Pembimbing 2 sekarang memiliki akses penuh seperti Dosen Pembimbing 1!');
+console.log('✅ KELOLA OPERATOR: Admin dapat menambah, mengedit, dan menghapus operator');
+console.log('✅ Operator tidak bisa menghapus data apapun (hanya admin yang bisa hapus)');
+console.log('✅ SEMUA PAGE: userRole didefinisikan dengan benar, tidak ada error ReferenceError');
+console.log('✅ TANDA TANGAN CETAK: Nama dan NIP/NIM terisi otomatis sesuai data');
+console.log('✅ DUAL PEMBIMBING: Pembimbing 2 mendapat hak yang sama, tampilan berdampingan untuk mahasiswa');
+console.log('✅ TABEL PROPOSAL: Tabel informatif dengan filter, sorting, preview abstrak, dan status visual');
 </script>
 </body>
 </html>
