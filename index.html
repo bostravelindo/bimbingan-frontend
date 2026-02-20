@@ -239,196 +239,6 @@ color: #047857;
 background: #fef3c7;
 color: #b45309;
 }
-/* Proposal Table */
-.proposal-table {
-width: 100%;
-border-collapse: separate;
-border-spacing: 0 8px;
-}
-.proposal-table th {
-padding: 12px 16px;
-text-align: left;
-font-weight: 600;
-font-size: 12px;
-text-transform: uppercase;
-letter-spacing: 0.5px;
-color: #64748b;
-background: #f8fafc;
-border-bottom: 2px solid #e2e8f0;
-}
-.proposal-table td {
-padding: 16px;
-background: white;
-border-radius: 12px;
-box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-transition: all 0.2s;
-}
-.proposal-table tr:hover td {
-box-shadow: 0 8px 16px rgba(4,120,87,0.08);
-transform: translateY(-2px);
-}
-.status-badge {
-display: inline-flex;
-align-items: center;
-padding: 4px 12px;
-border-radius: 20px;
-font-size: 12px;
-font-weight: 600;
-gap: 4px;
-}
-.status-badge.menunggu {
-background: #fef3c7;
-color: #92400e;
-}
-.status-badge.diterima {
-background: #d1fae5;
-color: #065f46;
-}
-.status-badge.diperbaiki {
-background: #fed7aa;
-color: #9a3412;
-}
-.status-badge.ditolak {
-background: #fee2e2;
-color: #991b1b;
-}
-.proposal-card {
-background: white;
-border-radius: 16px;
-padding: 20px;
-box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-border: 1px solid #e2e8f0;
-transition: all 0.3s;
-}
-.proposal-card:hover {
-box-shadow: 0 12px 24px rgba(4,120,87,0.12);
-border-color: #047857;
-}
-.proposal-header {
-display: flex;
-justify-content: space-between;
-align-items: flex-start;
-margin-bottom: 16px;
-}
-.proposal-title {
-font-size: 18px;
-font-weight: 700;
-color: #0f172a;
-line-height: 1.4;
-}
-.proposal-meta {
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-gap: 12px;
-margin: 16px 0;
-padding: 16px;
-background: #f8fafc;
-border-radius: 12px;
-}
-.meta-item {
-display: flex;
-align-items: center;
-gap: 8px;
-}
-.meta-icon {
-width: 32px;
-height: 32px;
-background: white;
-border-radius: 8px;
-display: flex;
-align-items: center;
-justify-content: center;
-color: #047857;
-}
-.meta-label {
-font-size: 11px;
-color: #64748b;
-text-transform: uppercase;
-letter-spacing: 0.3px;
-}
-.meta-value {
-font-size: 14px;
-font-weight: 600;
-color: #0f172a;
-}
-.abstrak-preview {
-background: #f1f5f9;
-padding: 12px 16px;
-border-radius: 8px;
-font-size: 13px;
-color: #334155;
-line-height: 1.6;
-margin: 16px 0;
-border-left: 3px solid #047857;
-}
-.catatan-validasi {
-background: #eff6ff;
-padding: 12px 16px;
-border-radius: 8px;
-font-size: 13px;
-color: #1e40af;
-margin: 16px 0;
-border-left: 3px solid #3b82f6;
-}
-.pembimbing-info {
-display: flex;
-gap: 16px;
-margin: 12px 0;
-}
-.pembimbing-item {
-flex: 1;
-padding: 12px;
-background: #f8fafc;
-border-radius: 8px;
-}
-.pembimbing-label {
-font-size: 11px;
-color: #64748b;
-margin-bottom: 4px;
-}
-.pembimbing-nama {
-font-weight: 600;
-color: #0f172a;
-}
-.pembimbing-ke {
-display: inline-block;
-padding: 2px 8px;
-border-radius: 12px;
-font-size: 10px;
-font-weight: 600;
-margin-left: 8px;
-}
-.pembimbing-ke-1 {
-background: #d1fae5;
-color: #047857;
-}
-.pembimbing-ke-2 {
-background: #fef3c7;
-color: #b45309;
-}
-.progress-indicator {
-display: inline-flex;
-align-items: center;
-gap: 6px;
-padding: 4px 12px;
-background: #f1f5f9;
-border-radius: 20px;
-font-size: 12px;
-font-weight: 500;
-}
-.progress-dot {
-width: 8px;
-height: 8px;
-border-radius: 50%;
-}
-.progress-dot.aktif {
-background: #047857;
-animation: pulse 2s infinite;
-}
-@keyframes pulse {
-0%, 100% { opacity: 1; }
-50% { opacity: 0.5; }
-}
 </style>
 </head>
 <body>
@@ -836,7 +646,7 @@ if (newId1) results.push(newId1);
 }
 
 // Buat bimbingan untuk pembimbing 2 (jika ada)
-if (proposalData.pembimbing2 && proposalData.pembimbing2 !== '-' && proposalData.pembimbing2 !== '') {
+if (proposalData.pembimbing2 && proposalData.pembimbing2 !== '-') {
 const existing2 = Object.values(bimbinganSnapshot || {}).find(b =>
 b.nim === proposalData.nim && b.judul === proposalData.judul && b.dosenNama === proposalData.pembimbing2
 );
@@ -1327,11 +1137,10 @@ prodi: "Ekonomi Syariah",
 pembimbing1: "Dr. Hj. Siti Aminah, M.Ag",
 pembimbing2: "Dr. Ahmad Rizal, M.Si",
 whatsapp: "081234567890",
-abstrak: "Penelitian ini bertujuan untuk menganalisis pengaruh literasi keuangan syariah terhadap minat menabung mahasiswa di bank syariah. Metode penelitian menggunakan pendekatan kuantitatif dengan sampel 100 responden. Hasil penelitian diharapkan dapat memberikan kontribusi bagi pengembangan literasi keuangan syariah di kalangan mahasiswa.",
+abstrak: "Penelitian ini bertujuan untuk menganalisis pengaruh literasi keuangan syariah terhadap minat menabung mahasiswa di bank syariah. Metode penelitian menggunakan pendekatan kuantitatif dengan sampel 100 responden.",
 status: "Menunggu",
 tahun: "2025",
-catatan: "",
-tanggalPengajuan: "2026-02-15"
+catatan: ""
 },
 {
 id: "proposal2",
@@ -1342,11 +1151,10 @@ prodi: "Perbankan Syariah",
 pembimbing1: "Dr. Muhammad Iqbal, M.Ec",
 pembimbing2: "Dr. Siti Khadijah, M.Si",
 whatsapp: "081234567891",
-abstrak: "Penelitian ini menganalisis strategi pemasaran produk perbankan syariah dalam menghadapi era digitalisasi. Studi kasus dilakukan pada Bank Syariah Indonesia KC Samarinda. Penelitian menggunakan metode kualitatif dengan wawancara mendalam terhadap manajer pemasaran.",
+abstrak: "Penelitian ini menganalisis strategi pemasaran produk perbankan syariah dalam menghadapi era digitalisasi. Studi kasus dilakukan pada Bank Syariah Indonesia KC Samarinda.",
 status: "Diterima",
 tahun: "2025",
-catatan: "Proposal diterima, silakan lanjut ke tahap bimbingan. Perhatikan saran perbaikan pada bab 1 dan 2.",
-tanggalPengajuan: "2026-02-10"
+catatan: "Proposal diterima, silakan lanjut ke tahap bimbingan"
 },
 {
 id: "proposal3",
@@ -1357,41 +1165,10 @@ prodi: "Manajemen Bisnis Syariah",
 pembimbing1: "Dr. Abdul Malik, M.M",
 pembimbing2: "Dr. Nurul Huda, M.Si",
 whatsapp: "081234567892",
-abstrak: "Penelitian ini mengkaji peran manajemen bisnis syariah dalam meningkatkan kinerja UMKM di Kota Samarinda. Pendekatan kualitatif digunakan untuk memahami fenomena secara mendalam. Data dikumpulkan melalui observasi dan wawancara dengan 10 pelaku UMKM.",
+abstrak: "Penelitian ini mengkaji peran manajemen bisnis syariah dalam meningkatkan kinerja UMKM di Kota Samarinda. Pendekatan kualitatif digunakan untuk memahami fenomena secara mendalam.",
 status: "Menunggu",
 tahun: "2025",
-catatan: "",
-tanggalPengajuan: "2026-02-18"
-},
-{
-id: "proposal4",
-judul: "Analisis Dampak Fintech Syariah terhadap Inklusi Keuangan Masyarakat",
-mahasiswaNama: "Dian Permata Sari",
-nim: "1813181033",
-prodi: "Ekonomi Syariah",
-pembimbing1: "Dr. Hj. Siti Aminah, M.Ag",
-pembimbing2: "Dr. Ahmad Rizal, M.Si",
-whatsapp: "081234567896",
-abstrak: "Penelitian ini menganalisis dampak fintech syariah terhadap inklusi keuangan masyarakat di Kalimantan Timur. Menggunakan pendekatan kuantitatif dengan sampel 200 responden pengguna fintech syariah. Hasil menunjukkan fintech syariah berkontribusi positif terhadap inklusi keuangan.",
-status: "Diperbaiki",
-tahun: "2025",
-catatan: "Perlu perbaikan pada metodologi penelitian dan penambahan tinjauan pustaka terkait fintech syariah.",
-tanggalPengajuan: "2026-02-05"
-},
-{
-id: "proposal5",
-judul: "Strategi Pengembangan Produk Perbankan Syariah untuk Generasi Milenial",
-mahasiswaNama: "Eko Prasetyo",
-nim: "191401004",
-prodi: "Perbankan Syariah",
-pembimbing1: "Dr. Muhammad Iqbal, M.Ec",
-pembimbing2: "-",
-whatsapp: "081234567897",
-abstrak: "Penelitian ini bertujuan mengembangkan strategi produk perbankan syariah yang sesuai dengan kebutuhan generasi milenial. Menggunakan metode survey dengan 150 responden dan analisis SWOT. Diharapkan dapat memberikan rekomendasi bagi bank syariah.",
-status: "Ditolak",
-tahun: "2025",
-catatan: "Judul dan topik terlalu umum. Perlu fokus pada aspek spesifik dan data yang lebih mendalam. Silakan ajukan ulang dengan proposal yang lebih terarah.",
-tanggalPengajuan: "2026-02-01"
+catatan: ""
 }
 ];
 
@@ -1864,7 +1641,7 @@ Mulai Bimbingan
 </div>
 )}
 <div className="bg-white rounded-2xl shadow-sm p-6">
-<h3 className="text-xl font-bold text-emerald-900 mb-4">👨‍🏫 Selamat Datang di Dashboard Bimbingan Skripsi & Repository</h3>
+<h3 className="text-xl font-bold text-emerald-900 mb-4">Selamat Datang di Dashboard Bimbingan Skripsi & Repository</h3>
 <p className="text-gray-600 mb-4">Asisten Pendamping Monitoring dan Evaluasi Percepatan Penyelesaian Karya Akhir Mahasiswa.</p>
 <div className="grid sm:grid-cols-3 gap-4">
 <div className="p-4 bg-emerald-50 rounded-xl">
@@ -3492,20 +3269,38 @@ onClose={() => { setShowPrintPreview(false); setPrintData(null); }}
 // ============================================
 // EARLY WARNING PAGE - DENGAN PERHITUNGAN SEMESTER YANG BENAR
 // ============================================
-const EarlyWarningPage = ({ bimbingan, mahasiswa, currentUser, userRole, onSendWhatsApp, calculateSemesterFromNIM, onNavigate }) => {
+const EarlyWarningPage = ({ bimbingan, mahasiswa, currentUser, userRole, onSendWhatsApp, onNavigate }) => {
 const today = new Date();
 const warningData = [];
 
-// Fungsi untuk menghitung semester dari 2 digit pertama NIM
+// Fungsi untuk menghitung semester dari 2 digit pertama NIM dengan logika yang benar
 const calculateSemesterCorrectly = (nim) => {
 if (!nim || nim.length < 2) return 1;
+  
 // Ambil 2 digit pertama untuk tahun angkatan
 const tahunDuaDigit = nim.substring(0, 2);
 const angkatan = parseInt(tahunDuaDigit);
 if (isNaN(angkatan) || angkatan < 10 || angkatan > 99) return 1;
-const currentYear = new Date().getFullYear();
-const tahunPenuh = 2000 + angkatan; // Misal: 21 -> 2021
-const semester = (currentYear - tahunPenuh) * 2 + 1;
+  
+const tahunMasuk = 2000 + angkatan; // Misal: 21 -> 2021
+const bulanSekarang = today.getMonth() + 1; // Januari = 1, Desember = 12
+const tahunSekarang = today.getFullYear();
+
+// Hitung selisih tahun
+const selisihTahun = tahunSekarang - tahunMasuk;
+
+// Jika selisih tahun negatif, berarti NIM tidak valid atau tahun depan
+if (selisihTahun < 0) return 1;
+
+// Hitung semester berdasarkan bulan
+let semester = selisihTahun * 2 + 1; // Default: semester ganjil
+
+// Jika bulan Januari-Juni (semester genap), tambah 1
+if (bulanSekarang >= 1 && bulanSekarang <= 6) {
+semester += 1;
+}
+
+// Maksimal semester 14 (7 tahun)
 return Math.max(1, Math.min(16, semester));
 };
 
@@ -3639,7 +3434,7 @@ Lihat Detail Bimbingan →
 )}
 {w.whatsapp && canSendWhatsApp && (
 <div className="mt-3 pt-3 border-t border-current">
-<button onClick={() => onSendWhatsApp(w.whatsapp, `Assalamualaikum ${w.nama || w.mahasiswaNama}, ini early warning dari FEBI UINSI. ${w.type === 'semester' ? 'Anda sudah memasuki semester akhir, mohon segera menyelesaikan bimbingan.' : 'Mohon segera update status bimbingan Anda.'}`)} className="px-3 py-1 bg-emerald-600 text-white rounded text-xs hover:bg-emerald-700">
+<button onClick={() => onSendWhatsApp(w.whatsapp, `Assalamualaikum ${w.nama || w.mahasiswaNama}, ini early warning dari FEBI UINSI. ${w.type === 'semester' ? 'Anda sudah memasuki semester akhir (Semester ' + w.semester + '), mohon segera menyelesaikan bimbingan.' : 'Mohon segera update status bimbingan Anda.'}`)} className="px-3 py-1 bg-emerald-600 text-white rounded text-xs hover:bg-emerald-700">
 📱 Kirim WA Peringatan
 </button>
 </div>
@@ -4087,7 +3882,12 @@ const angkatan = parseInt(tahunDuaDigit);
 if (isNaN(angkatan) || angkatan < 10 || angkatan > 99) return 1;
 const currentYear = new Date().getFullYear();
 const tahunPenuh = 2000 + angkatan; // Misal: 21 -> 2021
-return Math.max(1, Math.min(16, (currentYear - tahunPenuh) * 2 + 1));
+const bulanSekarang = new Date().getMonth() + 1;
+let semester = (currentYear - tahunPenuh) * 2 + 1;
+if (bulanSekarang >= 1 && bulanSekarang <= 6) {
+semester += 1;
+}
+return Math.max(1, Math.min(16, semester));
 };
 
 const canAdd = userRole === 'admin' || userRole === 'operator';
@@ -4119,15 +3919,16 @@ return (
 <tbody>
 {mahasiswa.map((m) => {
 const semesterFromNIM = calculateSemesterFromNIM(m.nim);
+const isWarning = semesterFromNIM >= 11;
 return (
 <tr key={m.id} className="border-b hover:bg-gray-50">
 <td className="px-6 py-4">{m.nim}</td>
 <td className="px-6 py-4">{m.nama}</td>
 <td className="px-6 py-4">{m.prodi}</td>
 <td className="px-6 py-4">
-<span className={`inline-block px-2 py-1 rounded text-xs font-semibold ${semesterFromNIM >= 11 ? 'bg-yellow-100 text-yellow-700' : 'bg-emerald-100 text-emerald-700'}`}>
+<span className={`inline-block px-2 py-1 rounded text-xs font-semibold ${isWarning ? 'bg-yellow-100 text-yellow-700' : 'bg-emerald-100 text-emerald-700'}`}>
 {semesterFromNIM}
-{m.semester && m.semester !== semesterFromNIM && ` (data: ${m.semester})`}
+{isWarning && ' ⚠️'}
 </span>
 </td>
 <td className="px-6 py-4">{m.whatsapp}</td>
@@ -4307,7 +4108,7 @@ return (
 <p>• Database: Firebase Realtime Database</p>
 <p>• Real-time Sync: Aktif</p>
 <p>• Last Updated: {new Date().toLocaleDateString('id-ID')}</p>
-<p>• Fitur: Advanced Similarity Checker (5 Algoritma), Auto-Create Bimbingan untuk Pembimbing 1 & 2, Early Warning, WhatsApp Integration, Timeline Bimbingan 10 Pertemuan, Edit Profil, Dual Pembimbing, Tabel Proposal Informatif</p>
+<p>• Fitur: Advanced Similarity Checker (5 Algoritma), Auto-Create Bimbingan untuk Pembimbing 1 & 2, Early Warning, WhatsApp Integration, Timeline Bimbingan 10 Pertemuan, Edit Profil, Dual Pembimbing</p>
 
 </div>
 </div>
@@ -5142,17 +4943,6 @@ setActiveMenu('bimbingan');
 }
 };
 
-const calculateSemesterFromNIM = (nim) => {
-if (!nim || nim.length < 2) return 1;
-// Ambil 2 digit pertama untuk tahun angkatan
-const tahunDuaDigit = nim.substring(0, 2);
-const angkatan = parseInt(tahunDuaDigit);
-if (isNaN(angkatan) || angkatan < 10 || angkatan > 99) return 1;
-const currentYear = new Date().getFullYear();
-const tahunPenuh = 2000 + angkatan; // Misal: 21 -> 2021
-return Math.max(1, Math.min(16, (currentYear - tahunPenuh) * 2 + 1));
-};
-
 const handleNavigate = (menu) => {
 setActiveMenu(menu);
 };
@@ -5354,7 +5144,6 @@ mahasiswa={mahasiswaArr}
 currentUser={currentUser}
 userRole={userRole}
 onSendWhatsApp={sendWhatsAppWarning}
-calculateSemesterFromNIM={calculateSemesterFromNIM}
 onNavigate={handleNavigate}
 />;
 case 'repository':
@@ -5456,7 +5245,7 @@ ReactDOM.render(
 </React.StrictMode>,
 document.getElementById('root')
 );
-console.log('✅ Dashboard FEBI v7.5.0 (DENGAN TABEL PROPOSAL INFORMATIF) loaded successfully!');
+console.log('✅ Dashboard FEBI v7.5.0 (DENGAN LOGIKA SEMESTER REAL-TIME) loaded successfully!');
 console.log('🔐 Authentication system active');
 console.log('🔍 ADVANCED SIMILARITY CHECKER (5 Algoritma Hybrid) - OPERATIONAL');
 console.log('📊 Cosine • Jaccard Bigram/Trigram • Levenshtein • Semantic Matching');
@@ -5469,13 +5258,12 @@ console.log('📊 BIMBINGAN PAGE: Timeline 10 pertemuan dengan visual progress, 
 console.log('✅ EDIT PROFIL: Semua user dapat mengedit profil termasuk password, admin dapat melihat semua password');
 console.log('✅ Loading System: Progress bar, error handling, koneksi stabil');
 console.log('✅ Data Inisialisasi: Data dummy otomatis terisi jika database kosong');
-console.log('✅ Early Warning: Perhitungan semester dari 2 digit pertama NIM (contoh: 21 → 2021)');
+console.log('✅ Early Warning: Perhitungan semester real-time berdasarkan NIM dan bulan berjalan (Jan-Jun=Genap, Jul-Des=Ganjil)');
 console.log('✅ KELOLA OPERATOR: Admin dapat menambah, mengedit, dan menghapus operator');
 console.log('✅ Operator tidak bisa menghapus data apapun (hanya admin yang bisa hapus)');
 console.log('✅ SEMUA PAGE: userRole didefinisikan dengan benar, tidak ada error ReferenceError');
 console.log('✅ TANDA TANGAN CETAK: Nama dan NIP/NIM terisi otomatis sesuai data');
 console.log('✅ DUAL PEMBIMBING: Pembimbing 2 mendapat hak yang sama, tampilan berdampingan untuk mahasiswa');
-console.log('✅ TABEL PROPOSAL: Tabel informatif dengan filter, sorting, preview abstrak, dan status visual');
 </script>
 </body>
 </html>
