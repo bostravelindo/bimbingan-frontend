@@ -5708,7 +5708,405 @@ return (
 </button>
 </div>
 )}
-{similarityResult && (
+{similarityResult && (() => {
+// ── helper: label risiko ──
+const getLabelRisiko = (score) => {
+if (score >= 85) return { label: 'KRITIS - DITOLAK', warna: '#dc2626', bg: '#fee2e2', border: '#ef4444' };
+if (score >= 70) return { label: 'TINGGI - PERLU REVISI BESAR', warna: '#b45309', bg: '#fef3c7', border: '#f59e0b' };
+if (score >= 50) return { label: 'SEDANG - PERLU MODIFIKASI', warna: '#854d0e', bg: '#fef9c3', border: '#eab308' };
+if (score >= 25) return { label: 'RENDAH - MASIH PERLU PENYESUAIAN', warna: '#065f46', bg: '#dcfce7', border: '#10b981' };
+return { label: 'AMAN - LOLOS UJI SIMILARITY', warna: '#042f2e', bg: '#ccfbf1', border: '#14b8a6' };
+};
+// ── fungsi cetak ──
+const handleCetakSimilarity = () => {
+const now = new Date();
+const tglCetak = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+const jamCetak = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+const risikoInfo = getLabelRisiko(parseFloat(similarityResult.highestSimilarity));
+const printWindow = window.open('', '_blank', 'width=1000,height=800');
+
+// build tabel baris hasil similarity
+const buildRows = () => {
+if (!similarityResult.results || similarityResult.results.length === 0) {
+return '<tr><td colspan="7" style="text-align:center;color:#6b7280;padding:20px;">Tidak ada kemiripan terdeteksi (&lt; ambang batas 25%)</td></tr>';
+}
+return similarityResult.results.map((r, i) => {
+const getRisikoRow = (sc) => {
+if (sc >= 85) return { label: 'KRITIS', color: '#dc2626', bg: '#fee2e2' };
+if (sc >= 70) return { label: 'TINGGI', color: '#b45309', bg: '#fef3c7' };
+if (sc >= 50) return { label: 'SEDANG', color: '#854d0e', bg: '#fef9c3' };
+if (sc >= 25) return { label: 'RENDAH', color: '#065f46', bg: '#dcfce7' };
+return { label: 'AMAN', color: '#042f2e', bg: '#ccfbf1' };
+};
+const ri = getRisikoRow(r.similarityScore);
+const sumber = r.sourceLabel || (r.type === 'proposal' ? 'Proposal' : r.isFromUinsi ? 'Repository UINSI' : 'Repository Lokal');
+const details = r.similarityDetails || {};
+const cosine = details.cosine !== undefined ? details.cosine + '%' : '-';
+const jaccard = details.jaccardBigram !== undefined ? details.jaccardBigram + '%' : '-';
+const leven = details.levenshtein !== undefined ? details.levenshtein + '%' : '-';
+const semantic = details.semantic !== undefined ? details.semantic + '%' : '-';
+return `
+<tr>
+<td style="text-align:center;font-weight:600;color:#374151">${i + 1}</td>
+<td style="font-size:11px;line-height:1.5;padding:8px 6px">${r.title || '-'}</td>
+<td style="font-size:11px;color:#4b5563">${r.author || '-'}<br><span style="color:#6b7280;font-size:10px">${r.prodi || ''}</span></td>
+<td style="text-align:center;font-size:11px;color:#374151">${r.tahun || '-'}</td>
+<td style="text-align:center;font-size:11px;color:#6b7280">${sumber}</td>
+<td style="text-align:center">
+<span style="font-size:14px;font-weight:800;color:${ri.color}">${r.similarityScore}%</span>
+<div style="font-size:9px;margin-top:2px;color:#9ca3af">Cos:${cosine} Jac:${jaccard}<br>Lev:${leven} Sem:${semantic}</div>
+</td>
+<td style="text-align:center">
+<span style="background:${ri.bg};color:${ri.color};border:1.5px solid ${ri.color};padding:3px 8px;border-radius:12px;font-size:10px;font-weight:700">${ri.label}</span>
+</td>
+</tr>
+`;
+}).join('');
+};
+
+// build algoritma detail section
+const buildAlgoDetail = () => {
+if (!similarityResult.results || !similarityResult.results[0]) return '';
+const d = similarityResult.results[0].similarityDetails || {};
+const algoRows = [
+{ name: 'Cosine Similarity', key: 'cosine', bobot: '30%', desc: 'Kesamaan vektor kata berbobot TF' },
+{ name: 'Jaccard Bigram', key: 'jaccardBigram', bobot: '25%', desc: 'Irisan pasangan kata 2-gram' },
+{ name: 'Jaccard Trigram', key: 'jaccardTrigram', bobot: '20%', desc: 'Irisan pasangan kata 3-gram' },
+{ name: 'Levenshtein', key: 'levenshtein', bobot: '15%', desc: 'Jarak edit karakter string' },
+{ name: 'Semantic Match', key: 'semantic', bobot: '10%', desc: 'Pencocokan semantik kata kunci berbobot' },
+];
+return algoRows.map(a => {
+const val = d[a.key] !== undefined ? parseFloat(d[a.key]) : null;
+const bar = val !== null ? Math.round(val) : 0;
+const barColor = bar >= 50 ? '#dc2626' : bar >= 25 ? '#f59e0b' : '#10b981';
+return `
+<tr>
+<td style="font-weight:600;font-size:11px;padding:7px 8px">${a.name}</td>
+<td style="font-size:10px;color:#6b7280;padding:7px 8px">${a.desc}</td>
+<td style="text-align:center;font-size:10px;color:#374151;padding:7px 8px">${a.bobot}</td>
+<td style="padding:7px 8px">
+<div style="display:flex;align-items:center;gap:6px">
+<div style="flex:1;height:10px;background:#e5e7eb;border-radius:5px;overflow:hidden">
+<div style="width:${bar}%;height:100%;background:${barColor};border-radius:5px"></div>
+</div>
+<span style="font-size:11px;font-weight:700;color:${barColor};min-width:35px">${val !== null ? val + '%' : '-'}</span>
+</div>
+</td>
+</tr>
+`;
+}).join('');
+};
+
+// determine status color
+const statusBg = risikoInfo.bg;
+const statusBorder = risikoInfo.border;
+const statusColor = risikoInfo.warna;
+
+printWindow.document.write(`<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Hasil Uji Similarity - ${formData.mahasiswaNama || formData.nim || 'Mahasiswa'}</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Times New Roman', serif; background:#fff; color:#1f2937; }
+  .print-btn { position:fixed; top:16px; right:16px; z-index:9999; display:flex; gap:8px; }
+  .print-btn button { padding:8px 18px; border:none; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:Arial,sans-serif; }
+  .btn-print { background:#047857; color:#fff; }
+  .btn-print:hover { background:#065f46; }
+  .btn-close { background:#6b7280; color:#fff; }
+  .btn-close:hover { background:#374151; }
+  .page { max-width:820px; margin:0 auto; padding:20px 30px 40px; }
+
+  /* ── KOP ── */
+  .kop { display:flex; align-items:center; gap:20px; padding-bottom:12px; border-bottom:4px double #047857; margin-bottom:18px; }
+  .kop-logo { width:72px; height:72px; background:linear-gradient(135deg,#047857,#065f46); border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:36px; flex-shrink:0; }
+  .kop-text { flex:1; }
+  .kop-text h1 { font-size:16px; font-weight:700; color:#047857; letter-spacing:0.5px; margin-bottom:2px; }
+  .kop-text h2 { font-size:13px; font-weight:600; color:#065f46; margin-bottom:2px; }
+  .kop-text h3 { font-size:12px; color:#374151; }
+  .kop-text p { font-size:10px; color:#6b7280; margin-top:3px; border-top:1px solid #d1fae5; padding-top:3px; }
+  .doc-title { text-align:center; margin:14px 0; }
+  .doc-title h2 { font-size:15px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#047857; }
+  .doc-title .no-doc { font-size:10px; color:#6b7280; margin-top:3px; }
+
+  /* ── IDENTITAS ── */
+  .section { margin-bottom:14px; }
+  .section-title { font-size:12px; font-weight:700; text-transform:uppercase; color:#047857; background:#f0fdf4; padding:5px 10px; border-left:4px solid #047857; margin-bottom:8px; letter-spacing:0.5px; }
+  .id-table { width:100%; border-collapse:collapse; font-size:11.5px; }
+  .id-table td { padding:5px 8px; vertical-align:top; }
+  .id-table td:first-child { width:160px; font-weight:600; color:#374151; }
+  .id-table td:nth-child(2) { width:10px; color:#374151; }
+  .id-table tr:nth-child(even) { background:#f9fafb; }
+
+  /* ── VERDICT BADGE ── */
+  .verdict-box { border:2px solid ${statusBorder}; background:${statusBg}; border-radius:10px; padding:12px 16px; margin-bottom:14px; display:flex; align-items:center; gap:16px; }
+  .verdict-score { font-size:42px; font-weight:900; color:${statusColor}; line-height:1; }
+  .verdict-score span { font-size:18px; }
+  .verdict-info h3 { font-size:14px; font-weight:700; color:${statusColor}; margin-bottom:4px; }
+  .verdict-info p { font-size:11px; color:#374151; line-height:1.5; }
+  .verdict-info .rekomendasi { margin-top:5px; font-size:11px; color:#1f2937; background:rgba(255,255,255,0.7); padding:4px 8px; border-radius:6px; }
+
+  /* ── HASIL TABLE ── */
+  table.hasil { width:100%; border-collapse:collapse; font-size:11px; margin-top:6px; }
+  table.hasil th { background:#047857; color:#fff; padding:7px 6px; text-align:center; font-size:10.5px; font-weight:600; }
+  table.hasil td { padding:7px 6px; border-bottom:1px solid #e5e7eb; vertical-align:top; }
+  table.hasil tr:nth-child(even) { background:#f9fafb; }
+  table.hasil tr:hover { background:#f0fdf4; }
+  table.hasil td:first-child { text-align:center; }
+
+  /* ── ALGO TABLE ── */
+  table.algo { width:100%; border-collapse:collapse; font-size:11px; margin-top:6px; }
+  table.algo th { background:#1e40af; color:#fff; padding:7px 8px; text-align:left; font-size:10.5px; font-weight:600; }
+  table.algo td { padding:6px 8px; border-bottom:1px solid #e5e7eb; vertical-align:middle; }
+  table.algo tr:nth-child(even) { background:#f8fafc; }
+
+  /* ── BATAS TOLERANSI ── */
+  .tolerance-bar { margin:10px 0; }
+  .tol-label { font-size:10px; color:#6b7280; margin-bottom:4px; display:flex; justify-content:space-between; }
+  .tol-track { height:18px; background:#e5e7eb; border-radius:9px; overflow:hidden; position:relative; }
+  .tol-fill { height:100%; border-radius:9px; display:flex; align-items:center; justify-content:flex-end; padding-right:6px; font-size:10px; font-weight:700; color:#fff; transition:width 0.3s; }
+  .tol-limit { position:absolute; top:0; bottom:0; left:25%; width:2px; background:#dc2626; }
+  .tol-limit-label { position:absolute; top:-14px; left:24%; font-size:9px; color:#dc2626; font-weight:600; }
+
+  /* ── KETERANGAN ── */
+  .keterangan-box { background:#fffbeb; border:1px solid #fbbf24; border-radius:8px; padding:10px 12px; margin-bottom:14px; }
+  .keterangan-box h4 { font-size:11px; font-weight:700; color:#92400e; margin-bottom:5px; }
+  .keterangan-box ul { margin-left:16px; }
+  .keterangan-box li { font-size:10.5px; color:#374151; margin-bottom:2px; }
+
+  /* ── FOOTER TTD ── */
+  .footer-wrap { display:flex; justify-content:space-between; align-items:flex-end; margin-top:20px; padding-top:14px; border-top:1px solid #d1d5db; }
+  .footer-left { font-size:10px; color:#6b7280; line-height:1.7; max-width:60%; }
+  .ttd-box { text-align:center; min-width:210px; }
+  .ttd-place-date { font-size:11px; color:#374151; font-weight:600; margin-bottom:6px; }
+  .ttd-title { font-size:10.5px; color:#374151; font-weight:600; margin-bottom:3px; }
+  .ttd-name-wrap { margin-top:60px; text-align:center; }
+  .ttd-line { border-top:1.5px solid #374151; width:190px; margin:0 auto; padding-top:4px; }
+  .ttd-unit { font-size:11px; font-weight:700; color:#047857; }
+  .ttd-instansi { font-size:10px; color:#374151; }
+
+  /* ── CAP ── */
+  .watermark-safe { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) rotate(-30deg); font-size:80px; font-weight:900; color:rgba(16,185,129,0.06); pointer-events:none; z-index:0; white-space:nowrap; }
+
+  @media print {
+    .print-btn { display:none; }
+    body { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .page { padding:10px 20px; }
+    .watermark-safe { position:fixed; }
+  }
+</style>
+</head>
+<body>
+<div class="watermark-safe">FEBI UINSI SAMARINDA</div>
+
+<div class="print-btn no-print">
+  <button class="btn-print" onclick="window.print()">🖨️ Cetak</button>
+  <button class="btn-close" onclick="window.close()">✕ Tutup</button>
+</div>
+
+<div class="page">
+
+  <!-- KOP SURAT -->
+  <div class="kop">
+    <div class="kop-logo">🎓</div>
+    <div class="kop-text">
+      <h1>HASIL UJI SIMILARITY JUDUL SKRIPSI</h1>
+      <h2>FAKULTAS EKONOMI DAN BISNIS ISLAM (FEBI)</h2>
+      <h3>UNIVERSITAS ISLAM NEGERI SULTAN IDU SAMARINDA</h3>
+      <p>Jl. H.A.M. Rifadin, Samarinda Seberang, Kota Samarinda, Kalimantan Timur 75131 &nbsp;|&nbsp; febi.uinsi.ac.id</p>
+    </div>
+  </div>
+
+  <div class="doc-title">
+    <h2>Laporan Hasil Uji Kemiripan Judul Skripsi</h2>
+    <div class="no-doc">No. Dok: FEBI-SIM-${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${String(Math.floor(Math.random()*9000)+1000)}</div>
+  </div>
+
+  <!-- IDENTITAS MAHASISWA -->
+  <div class="section">
+    <div class="section-title">A. Identitas Mahasiswa</div>
+    <table class="id-table">
+      <tr><td>Nama Mahasiswa</td><td>:</td><td><strong>${formData.mahasiswaNama || currentUser?.nama || '-'}</strong></td></tr>
+      <tr><td>NIM</td><td>:</td><td>${formData.nim || currentUser?.nim || '-'}</td></tr>
+      <tr><td>Program Studi</td><td>:</td><td>${formData.prodi || currentUser?.prodi || '-'}</td></tr>
+      <tr><td>Nomor WhatsApp</td><td>:</td><td>${formData.whatsapp || currentUser?.whatsapp || '-'}</td></tr>
+      <tr><td>Dosen Pembimbing 1</td><td>:</td><td>${formData.pembimbing1 || '-'}</td></tr>
+      <tr><td>Dosen Pembimbing 2</td><td>:</td><td>${formData.pembimbing2 && formData.pembimbing2 !== '-' ? formData.pembimbing2 : '-'}</td></tr>
+      <tr><td>Tanggal Pengajuan</td><td>:</td><td>${now.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</td></tr>
+    </table>
+  </div>
+
+  <!-- JUDUL PROPOSAL -->
+  <div class="section">
+    <div class="section-title">B. Judul Proposal yang Diajukan</div>
+    <div style="background:#f0fdf4;border:1px solid #d1fae5;border-radius:8px;padding:10px 14px;font-size:12px;font-weight:600;color:#065f46;line-height:1.6">
+      "${formData.judul || '-'}"
+    </div>
+  </div>
+
+  <!-- VERDICT UTAMA -->
+  <div class="section">
+    <div class="section-title">C. Hasil Uji Similarity (Skor Keseluruhan)</div>
+    <div class="verdict-box">
+      <div>
+        <div class="verdict-score">${similarityResult.highestSimilarity}<span>%</span></div>
+        <div style="font-size:10px;color:${statusColor};margin-top:3px;text-align:center">Skor Tertinggi</div>
+      </div>
+      <div class="verdict-info" style="flex:1">
+        <h3>STATUS: ${risikoInfo.label}</h3>
+        <p>Batas toleransi maksimal similarity: <strong>25%</strong> &nbsp;|&nbsp; Total judul yang dibandingkan: <strong>${similarityResult.totalMatches || 0} judul terdeteksi mirip</strong></p>
+        <div class="rekomendasi">💡 ${similarityResult.recommendation || 'Tidak ada rekomendasi'}</div>
+      </div>
+    </div>
+
+    <!-- Progress Bar Batas Toleransi -->
+    <div class="tolerance-bar">
+      <div class="tol-label">
+        <span>0%</span>
+        <span style="color:#dc2626;font-weight:600">⬆ Batas Maks 25%</span>
+        <span>50%</span>
+        <span>75%</span>
+        <span>100%</span>
+      </div>
+      <div class="tol-track">
+        <div class="tol-fill" style="width:${Math.min(similarityResult.highestSimilarity,100)}%;background:${statusColor}">
+          ${similarityResult.highestSimilarity}%
+        </div>
+        <div class="tol-limit"></div>
+        <div class="tol-limit-label">25%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABEL DETAIL HASIL -->
+  <div class="section">
+    <div class="section-title">D. Tabel Detail Hasil Perbandingan Judul</div>
+    <table class="hasil">
+      <thead>
+        <tr>
+          <th style="width:30px">No</th>
+          <th style="width:30%">Judul yang Mirip</th>
+          <th style="width:18%">Penulis / Prodi</th>
+          <th style="width:6%">Tahun</th>
+          <th style="width:14%">Sumber</th>
+          <th style="width:15%">Skor Similarity</th>
+          <th style="width:13%">Peringkat Risiko</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${buildRows()}
+      </tbody>
+    </table>
+    ${(!similarityResult.results || similarityResult.results.length === 0) ? `
+    <div style="text-align:center;padding:12px;background:#f0fdf4;border-radius:8px;margin-top:8px">
+      <span style="font-size:24px">✅</span>
+      <p style="font-size:12px;color:#047857;font-weight:600;margin-top:4px">Judul Lolos Uji Similarity — Tidak ada kemiripan signifikan terdeteksi</p>
+    </div>` : ''}
+  </div>
+
+  <!-- DETAIL ALGORITMA -->
+  ${similarityResult.results && similarityResult.results[0] ? `
+  <div class="section">
+    <div class="section-title">E. Rincian Skor per Algoritma (Judul Paling Mirip)</div>
+    <p style="font-size:10.5px;color:#4b5563;margin-bottom:6px">
+      Judul pembanding: <em>"${(similarityResult.results[0] && similarityResult.results[0].title) || '-'}"</em>
+    </p>
+    <table class="algo">
+      <thead>
+        <tr>
+          <th style="width:22%">Algoritma</th>
+          <th style="width:32%">Deskripsi</th>
+          <th style="width:10%">Bobot</th>
+          <th>Visualisasi & Skor</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${buildAlgoDetail()}
+      </tbody>
+    </table>
+    <p style="font-size:10px;color:#6b7280;margin-top:5px">
+      * Skor akhir = rata-rata berbobot dari 5 algoritma di atas. Bobot mencerminkan kontribusi tiap algoritma terhadap skor final.
+    </p>
+  </div>
+  ` : ''}
+
+  <!-- KETERANGAN SKALA PENILAIAN -->
+  <div class="section">
+    <div class="section-title">F. Keterangan Skala Penilaian Similarity</div>
+    <table style="width:100%;border-collapse:collapse;font-size:10.5px">
+      <thead>
+        <tr>
+          <th style="background:#374151;color:#fff;padding:6px 8px;text-align:center;width:12%">Rentang Skor</th>
+          <th style="background:#374151;color:#fff;padding:6px 8px;text-align:center;width:20%">Peringkat Risiko</th>
+          <th style="background:#374151;color:#fff;padding:6px 8px;text-align:left">Interpretasi & Tindakan</th>
+          <th style="background:#374151;color:#fff;padding:6px 8px;text-align:center;width:12%">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="background:#fef2f2">
+          <td style="text-align:center;font-weight:700;color:#dc2626;padding:6px 8px">≥ 85%</td>
+          <td style="text-align:center;padding:6px 8px"><span style="background:#fee2e2;color:#dc2626;border:1.5px solid #ef4444;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700">KRITIS</span></td>
+          <td style="padding:6px 8px;font-size:10px;color:#374151">Judul sangat mirip dengan karya yang sudah ada. Wajib melakukan reformulasi total terhadap variabel, objek, dan pendekatan penelitian.</td>
+          <td style="text-align:center;font-weight:700;color:#dc2626;padding:6px 8px">DITOLAK</td>
+        </tr>
+        <tr style="background:#fffbeb">
+          <td style="text-align:center;font-weight:700;color:#b45309;padding:6px 8px">70% – 84%</td>
+          <td style="text-align:center;padding:6px 8px"><span style="background:#fef3c7;color:#b45309;border:1.5px solid #f59e0b;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700">TINGGI</span></td>
+          <td style="padding:6px 8px;font-size:10px;color:#374151">Kemiripan signifikan. Diperlukan modifikasi besar pada variabel penelitian, lokasi/objek studi, dan kerangka teori yang digunakan.</td>
+          <td style="text-align:center;font-weight:700;color:#b45309;padding:6px 8px">REVISI BESAR</td>
+        </tr>
+        <tr style="background:#fefce8">
+          <td style="text-align:center;font-weight:700;color:#854d0e;padding:6px 8px">50% – 69%</td>
+          <td style="text-align:center;padding:6px 8px"><span style="background:#fef9c3;color:#854d0e;border:1.5px solid #eab308;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700">SEDANG</span></td>
+          <td style="padding:6px 8px;font-size:10px;color:#374151">Terdapat kemiripan frasa kunci. Disarankan modifikasi pada judul dengan memperjelas fokus, variabel, atau konteks penelitian.</td>
+          <td style="text-align:center;font-weight:700;color:#854d0e;padding:6px 8px">REVISI</td>
+        </tr>
+        <tr style="background:#f0fdf4">
+          <td style="text-align:center;font-weight:700;color:#065f46;padding:6px 8px">25% – 49%</td>
+          <td style="text-align:center;padding:6px 8px"><span style="background:#dcfce7;color:#065f46;border:1.5px solid #10b981;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700">RENDAH</span></td>
+          <td style="padding:6px 8px;font-size:10px;color:#374151">Kemiripan masih terdeteksi namun dalam batas wajar. Dapat dipertimbangkan untuk diterima dengan penyesuaian minor.</td>
+          <td style="text-align:center;font-weight:700;color:#065f46;padding:6px 8px">PERLU CEK</td>
+        </tr>
+        <tr style="background:#f0fdfa">
+          <td style="text-align:center;font-weight:700;color:#0f766e;padding:6px 8px">&lt; 25%</td>
+          <td style="text-align:center;padding:6px 8px"><span style="background:#ccfbf1;color:#0f766e;border:1.5px solid #14b8a6;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700">AMAN</span></td>
+          <td style="padding:6px 8px;font-size:10px;color:#374151">Judul lolos uji similarity. Tingkat kemiripan di bawah ambang batas toleransi 25% yang ditetapkan FEBI UINSI Samarinda.</td>
+          <td style="text-align:center;font-weight:700;color:#0f766e;padding:6px 8px">LOLOS</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FOOTER: Tempat+Tanggal & TTD -->
+  <div class="footer-wrap">
+    <div class="footer-left">
+      <strong>Keterangan:</strong><br>
+      Laporan ini digenerate secara otomatis oleh Sistem Informasi Bimbingan Skripsi FEBI UINSI Samarinda.<br>
+      Basis data pembanding mencakup repository lokal FEBI, repository UINSI Samarinda, dan proposal yang telah diajukan.<br>
+      Dokumen ini sah sebagai bukti uji kemiripan judul skripsi di lingkungan FEBI UINSI Samarinda.<br>
+      Dicetak pada: ${tglCetak}, pukul ${jamCetak} WITA
+    </div>
+    <div class="ttd-box">
+      <div class="ttd-place-date">Samarinda, ${tglCetak}</div>
+      <div class="ttd-title">Unit Penjaminan Mutu</div>
+      <div class="ttd-name-wrap">
+        <div class="ttd-line">
+          <div class="ttd-unit">Unit Penjaminan Mutu</div>
+          <div class="ttd-instansi">FEBI UINSI Samarinda</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>`);
+printWindow.document.close();
+setTimeout(() => printWindow.focus(), 300);
+};
+
+return (
 <div className={`p-4 rounded-xl mb-3 border-2 ${
 similarityResult.status === 'Ditolak' ? 'bg-red-50 border-red-300' :
 similarityResult.status === 'Diperbaiki' ? 'bg-yellow-50 border-yellow-300' :
@@ -5782,9 +6180,23 @@ item.similarityScore >= 30 ? 'similarity-low' :
 })}
 </div>
 )}
+{/* ── TOMBOL CETAK ── */}
+<div className="mt-4 pt-3 border-t border-gray-200">
+<button
+type="button"
+onClick={handleCetakSimilarity}
+className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-emerald-700 to-teal-700 text-white rounded-xl font-bold text-sm hover:from-emerald-800 hover:to-teal-800 transition-all shadow-md hover:shadow-lg transform hover:scale-[1.01]"
+>
+<span className="text-lg">🖨️</span>
+Cetak Hasil Similarity
+<span className="text-xs opacity-80 ml-1">(Laporan Resmi FEBI UINSI)</span>
+</button>
 </div>
-)}
 </div>
+);
+})()}
+</div>
+
 <div className="form-section">
 <h3 className="text-lg font-bold text-gray-800 mb-3">Abstrak <span className="required-star">*</span></h3>
 <textarea placeholder="Abstrak (min. 150 karakter)" value={formData.abstrak || ''} onChange={(e) => setFormData({...formData, abstrak: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3 h-32" required minLength="150" />
