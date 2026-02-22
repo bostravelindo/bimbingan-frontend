@@ -2515,68 +2515,90 @@ className="kalender-save-btn px-6 py-2 text-sm bg-emerald-600 hover:bg-emerald-7
 });
 
 const DashboardPage = ({ mahasiswaArr, dosenArr, proposalsArr, repositoryArr, bimbinganArr, pendingBimbingan, userRole, currentUser, onNavigate, kalenderAkademik, onSaveKalender }) => {
-// Hitung statistik berdasarkan role
-const getMahasiswaCount = () => {
-if (userRole === 'mahasiswa') return 1;
-return mahasiswaArr.length;
-};
-
-const getDosenCount = () => {
-if (userRole === 'dosen') return 1;
-return dosenArr.length;
-};
-
-const getProposalCount = () => {
-if (userRole === 'mahasiswa') {
-return proposalsArr.filter(p => p.nim === currentUser?.nim).length;
-}
-if (userRole === 'dosen') {
-return proposalsArr.filter(p => p.pembimbing1 === currentUser?.nama || p.pembimbing2 === currentUser?.nama).length;
-}
-return proposalsArr.length;
-};
-
-const getBimbinganCount = () => {
-if (userRole === 'mahasiswa') {
-return bimbinganArr.filter(b => b.nim === currentUser?.nim).length;
-}
-if (userRole === 'dosen') {
-return bimbinganArr.filter(b => b.dosenNama === currentUser?.nama).length;
-}
-return bimbinganArr.length;
-};
+// ── Statistik riil: angka aktual data yang diinput, sama untuk semua role ──
+const statMahasiswa = mahasiswaArr.length;
+const statDosen     = dosenArr.length;
+const statProposal  = proposalsArr.length;
+const statRepo      = repositoryArr.length;
 
 return (
 <div className="space-y-6">
-<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-<div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-lg p-6 text-white">
-<div className="flex items-center justify-between mb-3">
-<span className="text-4xl">👥</span>
-<span className="text-3xl font-black">{getMahasiswaCount()}</span>
+
+{/* ══ 4 STAT CARDS — angka riil, tampil identik untuk semua role ══ */}
+<div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+
+{/* ── Total Mahasiswa ── */}
+<div
+  className="relative overflow-hidden bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-lg p-5 text-white cursor-pointer hover:shadow-xl hover:brightness-110 active:scale-[.98] transition-all duration-150"
+  onClick={() => onNavigate && onNavigate('mahasiswa')}
+  title="Lihat data mahasiswa"
+>
+  <div className="absolute -top-5 -right-5 w-20 h-20 rounded-full bg-white/10 pointer-events-none" />
+  <div className="absolute -bottom-4 -left-4 w-16 h-16 rounded-full bg-white/10 pointer-events-none" />
+  <div className="relative">
+    <div className="flex items-start justify-between mb-3">
+      <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-xl">👥</div>
+      <span className="text-4xl font-black tabular-nums leading-none">{statMahasiswa}</span>
+    </div>
+    <p className="text-sm font-bold tracking-wide">Total Mahasiswa</p>
+    <p className="text-emerald-100 text-[11px] mt-0.5">Data aktual terdaftar</p>
+  </div>
 </div>
-<h3 className="text-sm font-semibold">Total Mahasiswa</h3>
+
+{/* ── Total Dosen ── */}
+<div
+  className="relative overflow-hidden bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-lg p-5 text-white cursor-pointer hover:shadow-xl hover:brightness-110 active:scale-[.98] transition-all duration-150"
+  onClick={() => onNavigate && onNavigate('dosen')}
+  title="Lihat data dosen"
+>
+  <div className="absolute -top-5 -right-5 w-20 h-20 rounded-full bg-white/10 pointer-events-none" />
+  <div className="absolute -bottom-4 -left-4 w-16 h-16 rounded-full bg-white/10 pointer-events-none" />
+  <div className="relative">
+    <div className="flex items-start justify-between mb-3">
+      <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-xl">👨‍🏫</div>
+      <span className="text-4xl font-black tabular-nums leading-none">{statDosen}</span>
+    </div>
+    <p className="text-sm font-bold tracking-wide">Total Dosen</p>
+    <p className="text-blue-100 text-[11px] mt-0.5">Dosen pembimbing aktif</p>
+  </div>
 </div>
-<div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-lg p-6 text-white">
-<div className="flex items-center justify-between mb-3">
-<span className="text-4xl">👨‍🏫</span>
-<span className="text-3xl font-black">{getDosenCount()}</span>
+
+{/* ── Total Proposal ── */}
+<div
+  className="relative overflow-hidden bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl shadow-lg p-5 text-white cursor-pointer hover:shadow-xl hover:brightness-110 active:scale-[.98] transition-all duration-150"
+  onClick={() => onNavigate && onNavigate('proposal')}
+  title="Lihat data proposal"
+>
+  <div className="absolute -top-5 -right-5 w-20 h-20 rounded-full bg-white/10 pointer-events-none" />
+  <div className="absolute -bottom-4 -left-4 w-16 h-16 rounded-full bg-white/10 pointer-events-none" />
+  <div className="relative">
+    <div className="flex items-start justify-between mb-3">
+      <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-xl">📝</div>
+      <span className="text-4xl font-black tabular-nums leading-none">{statProposal}</span>
+    </div>
+    <p className="text-sm font-bold tracking-wide">Total Proposal</p>
+    <p className="text-purple-100 text-[11px] mt-0.5">Semua proposal masuk</p>
+  </div>
 </div>
-<h3 className="text-sm font-semibold">Total Dosen</h3>
+
+{/* ── Repository ── */}
+<div
+  className="relative overflow-hidden bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl shadow-lg p-5 text-white cursor-pointer hover:shadow-xl hover:brightness-110 active:scale-[.98] transition-all duration-150"
+  onClick={() => onNavigate && onNavigate('repository')}
+  title="Lihat repository"
+>
+  <div className="absolute -top-5 -right-5 w-20 h-20 rounded-full bg-white/10 pointer-events-none" />
+  <div className="absolute -bottom-4 -left-4 w-16 h-16 rounded-full bg-white/10 pointer-events-none" />
+  <div className="relative">
+    <div className="flex items-start justify-between mb-3">
+      <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-xl">📚</div>
+      <span className="text-4xl font-black tabular-nums leading-none">{statRepo}</span>
+    </div>
+    <p className="text-sm font-bold tracking-wide">Repository</p>
+    <p className="text-amber-100 text-[11px] mt-0.5">Karya skripsi tersimpan</p>
+  </div>
 </div>
-<div className="bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl shadow-lg p-6 text-white">
-<div className="flex items-center justify-between mb-3">
-<span className="text-4xl">📝</span>
-<span className="text-3xl font-black">{getProposalCount()}</span>
-</div>
-<h3 className="text-sm font-semibold">Total Proposal</h3>
-</div>
-<div className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl shadow-lg p-6 text-white">
-<div className="flex items-center justify-between mb-3">
-<span className="text-4xl">📚</span>
-<span className="text-3xl font-black">{repositoryArr.length}</span>
-</div>
-<h3 className="text-sm font-semibold">Repository</h3>
-</div>
+
 </div>
 {/* Workflow Status Cards */}
 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
