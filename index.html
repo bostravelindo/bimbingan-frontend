@@ -9365,7 +9365,23 @@ setActiveMenu('bimbingan');
 };
 
 const handleNavigate = (menu) => {
-setActiveMenu(menu);
+// Peta alias stat-card → route aktual berdasarkan role
+const resolveMenu = (m) => {
+  if (m === 'mahasiswa') {
+    // admin & operator → halaman administrasi mahasiswa
+    if (userRole === 'admin' || userRole === 'operator') return 'kelola-mhs';
+    // dosen & mahasiswa → halaman bimbingan (data mahasiswa terlihat di sini)
+    return 'bimbingan';
+  }
+  if (m === 'dosen') {
+    // admin & operator → halaman administrasi dosen
+    if (userRole === 'admin' || userRole === 'operator') return 'kelola-dsn';
+    // dosen & mahasiswa → halaman bimbingan (info dosen terlihat di sini)
+    return 'bimbingan';
+  }
+  return m; // semua route lain langsung diteruskan
+};
+setActiveMenu(resolveMenu(menu));
 };
 
 // Expose functions to window for global access
