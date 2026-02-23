@@ -611,34 +611,71 @@ sum + (1 + (0.5 * (1 - idx / Math.max(tokens1.length, 1)))), 0
 );
 return (weightedMatch / maxPossible) * 100;
 }
-calculateHybridSimilarity(newTitle, existingTitle) {
-if (!newTitle || !existingTitle) return { score: 0, details: {} };
+calculateTitleScore(newTitle, existingTitle) {
+if (!newTitle || !existingTitle) return { score: 0, cosine: 0, jaccardBigram: 0, jaccardTrigram: 0, levenshtein: 0, semantic: 0 };
 const cosine = this.cosineSimilarity(newTitle, existingTitle);
 const jaccardBigram = this.jaccardSimilarity(newTitle, existingTitle, 2);
 const jaccardTrigram = this.jaccardSimilarity(newTitle, existingTitle, 3);
 const levenshtein = this.levenshteinSimilarity(newTitle, existingTitle);
 const semantic = this.semanticKeywordMatch(newTitle, existingTitle);
-const weightedScore = (
+const score = (
 cosine * 0.30 +
 jaccardBigram * 0.25 +
 jaccardTrigram * 0.20 +
 levenshtein * 0.15 +
 semantic * 0.10
 );
+return { score, cosine, jaccardBigram, jaccardTrigram, levenshtein, semantic };
+}
+calculateAbstractScore(newAbstrak, existingAbstrak) {
+if (!newAbstrak || !existingAbstrak || newAbstrak.trim().length < 30 || existingAbstrak.trim().length < 30) return null;
+const cosine = this.cosineSimilarity(newAbstrak, existingAbstrak);
+const jaccardBigram = this.jaccardSimilarity(newAbstrak, existingAbstrak, 2);
+const jaccardTrigram = this.jaccardSimilarity(newAbstrak, existingAbstrak, 3);
+const levenshtein = this.levenshteinSimilarity(newAbstrak, existingAbstrak);
+const semantic = this.semanticKeywordMatch(newAbstrak, existingAbstrak);
+const score = (
+cosine * 0.30 +
+jaccardBigram * 0.25 +
+jaccardTrigram * 0.20 +
+levenshtein * 0.15 +
+semantic * 0.10
+);
+return { score, cosine, jaccardBigram, jaccardTrigram, levenshtein, semantic };
+}
+calculateHybridSimilarity(newTitle, existingTitle, newAbstrak, existingAbstrak) {
+if (!newTitle || !existingTitle) return { score: 0, details: {} };
+const TITLE_WEIGHT = 0.70;
+const ABSTRACT_WEIGHT = 0.30;
+const titleResult = this.calculateTitleScore(newTitle, existingTitle);
+const abstractResult = this.calculateAbstractScore(newAbstrak, existingAbstrak);
+const hasAbstract = abstractResult !== null;
+// Final combined score: 70% title + 30% abstract (if available), else 100% title
+const finalScore = hasAbstract
+? (titleResult.score * TITLE_WEIGHT + abstractResult.score * ABSTRACT_WEIGHT)
+: titleResult.score;
 return {
-score: Math.min(100, Math.max(0, weightedScore.toFixed(1))),
+score: Math.min(100, Math.max(0, finalScore.toFixed(1))),
+hasAbstractScore: hasAbstract,
+titleScore: titleResult.score.toFixed(1),
+abstractScore: hasAbstract ? abstractResult.score.toFixed(1) : null,
 details: {
-cosine: cosine.toFixed(1),
-jaccardBigram: jaccardBigram.toFixed(1),
-jaccardTrigram: jaccardTrigram.toFixed(1),
-levenshtein: levenshtein.toFixed(1),
-semantic: semantic.toFixed(1),
+cosine: titleResult.cosine.toFixed(1),
+jaccardBigram: titleResult.jaccardBigram.toFixed(1),
+jaccardTrigram: titleResult.jaccardTrigram.toFixed(1),
+levenshtein: titleResult.levenshtein.toFixed(1),
+semantic: titleResult.semantic.toFixed(1),
+abstractCosine: hasAbstract ? abstractResult.cosine.toFixed(1) : null,
+abstractJaccardBigram: hasAbstract ? abstractResult.jaccardBigram.toFixed(1) : null,
+abstractJaccardTrigram: hasAbstract ? abstractResult.jaccardTrigram.toFixed(1) : null,
+abstractLevenshtein: hasAbstract ? abstractResult.levenshtein.toFixed(1) : null,
+abstractSemantic: hasAbstract ? abstractResult.semantic.toFixed(1) : null,
 preprocessedNew: this.preprocess(newTitle),
 preprocessedExisting: this.preprocess(existingTitle)
 }
 };
 }
-checkAgainstDatabase(newTitle, existingProposals = {}, existingRepository = {}) {
+checkAgainstDatabase(newTitle, existingProposals = {}, existingRepository = {}, newAbstrak = '') {
 if (!newTitle || newTitle.trim().length < 10) {
 return {
 status: 'error',
@@ -649,9 +686,11 @@ recommendation: 'Perluas judul penelitian dengan variabel dan konteks yang jelas
 }
 const results = [];
 const checker = this;
+const hasNewAbstrak = newAbstrak && newAbstrak.trim().length >= 30;
 Object.entries(existingProposals).forEach(([id, proposal]) => {
 if (!proposal.judul || proposal.status === 'Ditolak') return;
-const similarity = checker.calculateHybridSimilarity(newTitle, proposal.judul);
+const existingAbstrak = hasNewAbstrak ? (proposal.abstrak || '') : '';
+const similarity = checker.calculateHybridSimilarity(newTitle, proposal.judul, newAbstrak, existingAbstrak);
 if (similarity.score >= checker.thresholds.low) {
 results.push({
 id,
@@ -663,6 +702,9 @@ pembimbing1: proposal.pembimbing1,
 pembimbing2: proposal.pembimbing2 || '-',
 tahun: proposal.tahun || new Date().getFullYear(),
 similarityScore: parseFloat(similarity.score),
+titleScore: parseFloat(similarity.titleScore || similarity.score),
+abstractScore: similarity.hasAbstractScore ? parseFloat(similarity.abstractScore) : null,
+hasAbstractScore: similarity.hasAbstractScore || false,
 similarityDetails: similarity.details,
 riskLevel: this.getRiskLevel(similarity.score)
 });
@@ -670,7 +712,8 @@ riskLevel: this.getRiskLevel(similarity.score)
 });
 Object.entries(existingRepository).forEach(([id, repo]) => {
 if (!repo.judul) return;
-const similarity = checker.calculateHybridSimilarity(newTitle, repo.judul);
+const existingAbstrak = hasNewAbstrak ? (repo.abstrak || '') : '';
+const similarity = checker.calculateHybridSimilarity(newTitle, repo.judul, newAbstrak, existingAbstrak);
 if (similarity.score >= checker.thresholds.low) {
 results.push({
 id,
@@ -682,6 +725,9 @@ pembimbing1: repo.pembimbing,
 pembimbing2: '-',
 tahun: repo.tahun,
 similarityScore: parseFloat(similarity.score),
+titleScore: parseFloat(similarity.titleScore || similarity.score),
+abstractScore: similarity.hasAbstractScore ? parseFloat(similarity.abstractScore) : null,
+hasAbstractScore: similarity.hasAbstractScore || false,
 similarityDetails: similarity.details,
 riskLevel: this.getRiskLevel(similarity.score)
 });
@@ -731,8 +777,8 @@ return { new: highlightedNew };
 }
 }
 const similarityChecker = new AcademicSimilarityChecker();
-const checkProposalSimilarityAdvanced = (newTitle, existingProposals, existingRepository) => {
-return similarityChecker.checkAgainstDatabase(newTitle, existingProposals, existingRepository);
+const checkProposalSimilarityAdvanced = (newTitle, existingProposals, existingRepository, newAbstrak) => {
+return similarityChecker.checkAgainstDatabase(newTitle, existingProposals, existingRepository, newAbstrak);
 };
 // ============================================
 // CRITICAL FIX: AUTO-CREATE BIMBINGAN ON APPROVAL (UNTUK PEMBIMBING 1 DAN 2)
@@ -8100,9 +8146,14 @@ return (
 <input type="text" placeholder="Judul Proposal" value={formData.judul || ''} onChange={(e) => setFormData({...formData, judul: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
 {onCheckSimilarity && (
 <div className="mb-3">
-<button type="button" onClick={() => onCheckSimilarity(formData.judul)} className="w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg hover:from-blue-700 hover:to-cyan-700 font-semibold transition-all">
-🔍 Cek Similarity (Advanced 5-Algoritma)
+<button type="button" onClick={() => onCheckSimilarity(formData.judul, formData.abstrak)} className="w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg hover:from-blue-700 hover:to-cyan-700 font-semibold transition-all">
+🔍 Cek Similarity (Judul 70% + Abstrak 30%)
 </button>
+{formData.abstrak && formData.abstrak.trim().length >= 30 ? (
+<p className="text-xs text-emerald-600 mt-1 text-center">✅ Abstrak terdeteksi — analisis akan menggunakan bobot <strong>Judul 70% + Abstrak 30%</strong></p>
+) : (
+<p className="text-xs text-amber-600 mt-1 text-center">ℹ️ Isi abstrak (min. 30 karakter) untuk analisis gabungan yang lebih akurat</p>
+)}
 </div>
 )}
 {similarityResult && (() => {
@@ -8120,6 +8171,21 @@ const now = new Date();
 const tglCetak = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 const jamCetak = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
 const risikoInfo = getLabelRisiko(parseFloat(similarityResult.highestSimilarity));
+
+// ── Koordinator Program Studi berdasarkan prodi mahasiswa ──
+const getKoordinatorProdi = (prodi) => {
+  const prodiNorm = (prodi || '').trim().toLowerCase();
+  if (prodiNorm.includes('ekonomi')) {
+    return { nama: 'Muhammad Syarif, M. Sc.', prodi: 'Ekonomi Syariah' };
+  } else if (prodiNorm.includes('perbankan')) {
+    return { nama: 'Alias Candra, M. E.I', prodi: 'Perbankan Syariah' };
+  } else if (prodiNorm.includes('manajemen')) {
+    return { nama: 'Nur Rahmatullah, S.E, M. SA.', prodi: 'Manajemen Bisnis Syariah' };
+  }
+  return { nama: 'Koordinator', prodi: prodi || 'Program Studi' };
+};
+const koordinator = getKoordinatorProdi(formData.prodi || formData.prodiMahasiswa || '');
+
 const printWindow = window.open('', '_blank', 'width=1000,height=800');
 
 // build tabel baris hasil similarity
@@ -8142,6 +8208,9 @@ const cosine = details.cosine !== undefined ? details.cosine + '%' : '-';
 const jaccard = details.jaccardBigram !== undefined ? details.jaccardBigram + '%' : '-';
 const leven = details.levenshtein !== undefined ? details.levenshtein + '%' : '-';
 const semantic = details.semantic !== undefined ? details.semantic + '%' : '-';
+const scoreBreakdown = r.hasAbstractScore
+? `<div style="font-size:9px;margin-top:2px;color:#7c3aed">📝${r.titleScore}% × 70%<br>📄${r.abstractScore !== null && r.abstractScore !== undefined ? r.abstractScore + '%' : '-'} × 30%</div>`
+: `<div style="font-size:9px;margin-top:2px;color:#6b7280">Judul saja (100%)</div>`;
 return `
 <tr>
 <td style="text-align:center;font-weight:600;color:#374151">${i + 1}</td>
@@ -8151,6 +8220,7 @@ return `
 <td style="text-align:center;font-size:11px;color:#6b7280">${sumber}</td>
 <td style="text-align:center">
 <span style="font-size:14px;font-weight:800;color:${ri.color}">${r.similarityScore}%</span>
+${scoreBreakdown}
 <div style="font-size:9px;margin-top:2px;color:#9ca3af">Cos:${cosine} Jac:${jaccard}<br>Lev:${leven} Sem:${semantic}</div>
 </td>
 <td style="text-align:center">
@@ -8161,10 +8231,10 @@ return `
 }).join('');
 };
 
-// build algoritma detail section
 const buildAlgoDetail = () => {
 if (!similarityResult.results || !similarityResult.results[0]) return '';
 const d = similarityResult.results[0].similarityDetails || {};
+const hasAbstract = similarityResult.results[0].hasAbstractScore && d.abstractCosine !== null;
 const algoRows = [
 { name: 'Cosine Similarity', key: 'cosine', bobot: '30%', desc: 'Kesamaan vektor kata berbobot TF' },
 { name: 'Jaccard Bigram', key: 'jaccardBigram', bobot: '25%', desc: 'Irisan pasangan kata 2-gram' },
@@ -8172,13 +8242,13 @@ const algoRows = [
 { name: 'Levenshtein', key: 'levenshtein', bobot: '15%', desc: 'Jarak edit karakter string' },
 { name: 'Semantic Match', key: 'semantic', bobot: '10%', desc: 'Pencocokan semantik kata kunci berbobot' },
 ];
-return algoRows.map(a => {
-const val = d[a.key] !== undefined ? parseFloat(d[a.key]) : null;
+const buildSection = (rows, dataObj, sectionColor, sectionLabel) => rows.map(a => {
+const val = dataObj[a.key] !== undefined ? parseFloat(dataObj[a.key]) : null;
 const bar = val !== null ? Math.round(val) : 0;
 const barColor = bar >= 50 ? '#dc2626' : bar >= 25 ? '#f59e0b' : '#10b981';
 return `
 <tr>
-<td style="font-weight:600;font-size:11px;padding:7px 8px">${a.name}</td>
+<td style="font-weight:600;font-size:11px;padding:7px 8px;color:${sectionColor}">[${sectionLabel}] ${a.name}</td>
 <td style="font-size:10px;color:#6b7280;padding:7px 8px">${a.desc}</td>
 <td style="text-align:center;font-size:10px;color:#374151;padding:7px 8px">${a.bobot}</td>
 <td style="padding:7px 8px">
@@ -8192,6 +8262,21 @@ return `
 </tr>
 `;
 }).join('');
+const abstractAlgoMap = {
+cosine: 'abstractCosine', jaccardBigram: 'abstractJaccardBigram', jaccardTrigram: 'abstractJaccardTrigram',
+levenshtein: 'abstractLevenshtein', semantic: 'abstractSemantic'
+};
+const abstractMappedRows = algoRows.map(a => ({ ...a, key: abstractAlgoMap[a.key] }));
+const titleRows = buildSection(algoRows, d, '#1e40af', 'JUDUL');
+const abstractRows = hasAbstract ? buildSection(abstractMappedRows, d, '#7c3aed', 'ABSTRAK') : '';
+const modeSummary = hasAbstract
+? `<tr><td colspan="4" style="padding:8px 10px;background:#f0fdf4;font-size:11px;font-weight:600;color:#065f46;border-bottom:1px solid #e5e7eb">
+📊 Bobot Gabungan: Skor Judul <strong>${similarityResult.results[0].titleScore}%</strong> × 70% + Skor Abstrak <strong>${similarityResult.results[0].abstractScore !== null && similarityResult.results[0].abstractScore !== undefined ? similarityResult.results[0].abstractScore + '%' : '-'}</strong> × 30% = <strong>${similarityResult.highestSimilarity}%</strong>
+</td></tr>`
+: `<tr><td colspan="4" style="padding:8px 10px;background:#fffbeb;font-size:11px;font-weight:600;color:#92400e;border-bottom:1px solid #e5e7eb">
+ℹ️ Mode: Judul saja (100%) — abstrak tidak tersedia pada entri pembanding
+</td></tr>`;
+return modeSummary + titleRows + abstractRows;
 };
 
 // determine status color
@@ -8354,6 +8439,7 @@ printWindow.document.write(`<!DOCTYPE html>
       <div class="verdict-info" style="flex:1">
         <h3>STATUS: ${risikoInfo.label}</h3>
         <p>Batas toleransi maksimal similarity: <strong>25%</strong> &nbsp;|&nbsp; Total judul yang dibandingkan: <strong>${similarityResult.totalMatches || 0} judul terdeteksi mirip</strong></p>
+        <p style="margin-top:4px;font-size:10.5px;color:#374151">Mode Analisis: <strong>${similarityResult.usedAbstract ? '📝 Judul 70% + 📄 Abstrak 30% (Gabungan)' : '📝 Judul saja 100%'}</strong></p>
         <div class="rekomendasi">💡 ${similarityResult.recommendation || 'Tidak ada rekomendasi'}</div>
       </div>
     </div>
@@ -8413,7 +8499,7 @@ printWindow.document.write(`<!DOCTYPE html>
     <table class="algo">
       <thead>
         <tr>
-          <th style="width:22%">Algoritma</th>
+          <th style="width:22%">Algoritma (Segmen)</th>
           <th style="width:32%">Deskripsi</th>
           <th style="width:10%">Bobot</th>
           <th>Visualisasi & Skor</th>
@@ -8424,7 +8510,7 @@ printWindow.document.write(`<!DOCTYPE html>
       </tbody>
     </table>
     <p style="font-size:10px;color:#6b7280;margin-top:5px">
-      * Skor akhir = rata-rata berbobot dari 5 algoritma di atas. Bobot mencerminkan kontribusi tiap algoritma terhadap skor final.
+      * Skor Akhir = (Skor Judul × 70%) + (Skor Abstrak × 30%) bila abstrak tersedia; atau Skor Judul × 100% bila abstrak tidak tersedia.
     </p>
   </div>
   ` : ''}
@@ -8487,11 +8573,12 @@ printWindow.document.write(`<!DOCTYPE html>
     </div>
     <div class="ttd-box">
       <div class="ttd-place-date">Samarinda, ${tglCetak}</div>
-      <div class="ttd-title">Tika Parlina, M.M.</div>
+      <div class="ttd-title">Koordinator</div>
+      <div class="ttd-title" style="font-weight:400;">Program Studi ${koordinator.prodi}</div>
+      <div class="ttd-title" style="font-weight:400;">FEBI UINSI Samarinda</div>
       <div class="ttd-name-wrap">
         <div class="ttd-line">
-          <div class="ttd-unit">Unit Penjaminan Mutu</div>
-          <div class="ttd-instansi">FEBI UINSI Samarinda</div>
+          <div class="ttd-unit">${koordinator.nama}</div>
         </div>
       </div>
     </div>
@@ -8522,10 +8609,19 @@ similarityResult.highestSimilarity >= 30 ? 'similarity-low' :
 }`}>
 {similarityResult.status.toUpperCase()}
 </p>
+{similarityResult.usedAbstract && similarityResult.results[0] && (
+<div className="mt-2 flex gap-2 text-xs">
+<span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full font-semibold">📝 Judul: {similarityResult.results[0].titleScore !== undefined ? similarityResult.results[0].titleScore : '-'}% (70%)</span>
+<span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full font-semibold">📄 Abstrak: {similarityResult.results[0].abstractScore !== null && similarityResult.results[0].abstractScore !== undefined ? similarityResult.results[0].abstractScore : '-'}% (30%)</span>
+</div>
+)}
+{!similarityResult.usedAbstract && (
+<p className="text-xs text-gray-400 mt-1">Mode: Judul saja (100%) — tambahkan abstrak untuk akurasi lebih tinggi</p>
+)}
 </div>
 {similarityResult.results[0] && (
 <div className="mb-3">
-<h4 className="font-bold text-xs text-gray-600 mb-2">🔍 Detail Metrik Similarity:</h4>
+<h4 className="font-bold text-xs text-gray-600 mb-2">🔍 Detail Metrik Similarity (Judul):</h4>
 <div className="grid grid-cols-2 gap-2 text-xs">
 <div className="metric-card bg-white p-2 rounded-lg">
 <span className="algorithm-badge algo-cosine">Cosine</span>
@@ -8544,6 +8640,29 @@ similarityResult.highestSimilarity >= 30 ? 'similarity-low' :
 <p className="text-lg font-bold text-amber-600">{similarityResult.results[0].similarityDetails.levenshtein}%</p>
 </div>
 </div>
+{similarityResult.results[0].hasAbstractScore && similarityResult.results[0].similarityDetails.abstractCosine !== null && (
+<div className="mt-2">
+<h4 className="font-bold text-xs text-purple-700 mb-2">📄 Detail Metrik Similarity (Abstrak):</h4>
+<div className="grid grid-cols-2 gap-2 text-xs">
+<div className="metric-card bg-purple-50 p-2 rounded-lg">
+<span className="algorithm-badge" style={{background:'#ede9fe',color:'#6d28d9'}}>Cosine</span>
+<p className="text-lg font-bold text-purple-600">{similarityResult.results[0].similarityDetails.abstractCosine}%</p>
+</div>
+<div className="metric-card bg-purple-50 p-2 rounded-lg">
+<span className="algorithm-badge" style={{background:'#ede9fe',color:'#6d28d9'}}>Jaccard Bi</span>
+<p className="text-lg font-bold text-purple-600">{similarityResult.results[0].similarityDetails.abstractJaccardBigram}%</p>
+</div>
+<div className="metric-card bg-purple-50 p-2 rounded-lg">
+<span className="algorithm-badge" style={{background:'#ede9fe',color:'#6d28d9'}}>Jaccard Tri</span>
+<p className="text-lg font-bold text-purple-600">{similarityResult.results[0].similarityDetails.abstractJaccardTrigram}%</p>
+</div>
+<div className="metric-card bg-purple-50 p-2 rounded-lg">
+<span className="algorithm-badge" style={{background:'#ede9fe',color:'#6d28d9'}}>Levenshtein</span>
+<p className="text-lg font-bold text-purple-600">{similarityResult.results[0].similarityDetails.abstractLevenshtein}%</p>
+</div>
+</div>
+</div>
+)}
 </div>
 )}
 <div className="mb-3 p-3 bg-blue-50 rounded-lg">
@@ -8562,7 +8681,7 @@ return (
 </p>
 <div dangerouslySetInnerHTML={{ __html: highlight.new }} className="text-sm font-semibold mb-1" />
 <p className="text-xs text-gray-600">{item.author} • {item.prodi}</p>
-<div className="mt-2 flex justify-between items-center">
+<div className="mt-2 flex flex-wrap gap-1 items-center">
 <span className={`similarity-badge ${
 item.similarityScore >= 85 ? 'similarity-critical' :
 item.similarityScore >= 70 ? 'similarity-high' :
@@ -8572,6 +8691,12 @@ item.similarityScore >= 30 ? 'similarity-low' :
 }`}>
 {item.similarityScore}%
 </span>
+{item.hasAbstractScore && (
+<>
+<span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full">📝 Judul: {item.titleScore}%</span>
+<span className="text-xs px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full">📄 Abstrak: {item.abstractScore !== null && item.abstractScore !== undefined ? item.abstractScore + '%' : '-'}</span>
+</>
+)}
 </div>
 </div>
 );
@@ -9253,7 +9378,7 @@ showToast('Gagal memperbarui profil: ' + err.message, 'error');
 }
 };
 
-const handleCheckSimilarity = async (judul) => {
+const handleCheckSimilarity = async (judul, abstrak) => {
 if (!judul?.trim()) {
 showToast('Masukkan judul proposal terlebih dahulu!', 'error');
 return;
@@ -9281,15 +9406,18 @@ _sourceUrl: item.url || ''
 });
 const totalSources = proposalsArr ? proposalsArr.length : 0;
 const totalRepo = Object.keys(combinedRepo).length;
-const result = checkProposalSimilarityAdvanced(judul, proposals, combinedRepo);
+const hasAbstrak = abstrak && abstrak.trim().length >= 30;
+const result = checkProposalSimilarityAdvanced(judul, proposals, combinedRepo, abstrak || '');
 // Tandai hasil mana yang dari UINSI
 result.results = (result.results || []).map(r => ({
 ...r,
 isFromUinsi: r.id && r.id.toString().startsWith('uinsi_'),
 sourceLabel: (r.id && r.id.toString().startsWith('uinsi_')) ? '🌐 Repository UINSI' : (r.type === 'proposal' ? '📝 Proposal' : '🏛️ Repository Lokal')
 }));
+result.usedAbstract = hasAbstrak;
 setSimilarityResult(result);
-showToast(`Similarity check selesai! (${result.highestSimilarity}%) — ${totalRepo} skripsi + ${totalSources} proposal dicek`, 'success');
+const modeInfo = hasAbstrak ? ' [Judul 70% + Abstrak 30%]' : ' [Judul 100%]';
+showToast(`Similarity check selesai! (${result.highestSimilarity}%)${modeInfo} — ${totalRepo} skripsi + ${totalSources} proposal dicek`, 'success');
 } catch (err) {
 console.error('Similarity check error:', err);
 showToast('Error saat cek similarity: ' + err.message, 'error');
@@ -9689,10 +9817,11 @@ ReactDOM.render(
 </React.StrictMode>,
 document.getElementById('root')
 );
-console.log('✅ Dashboard FEBI v8.0.0 (DENGAN PAGINATION 15 BARIS) loaded successfully!');
+console.log('✅ Dashboard FEBI v8.1.0 (SIMILARITY UPGRADE: JUDUL 70% + ABSTRAK 30%) loaded successfully!');
 console.log('🔐 Authentication system active');
-console.log('🔍 ADVANCED SIMILARITY CHECKER (5 Algoritma Hybrid) - OPERATIONAL');
+console.log('🔍 ADVANCED SIMILARITY CHECKER (5 Algoritma Hybrid + Bobot Abstrak) - OPERATIONAL');
 console.log('📊 Cosine • Jaccard Bigram/Trigram • Levenshtein • Semantic Matching');
+console.log('⚖️ Bobot: Judul 70% + Abstrak 30% (bila abstrak tersedia) | Judul 100% (fallback)');
 console.log('🔄 WORKFLOW INTEGRATION: Auto-create bimbingan untuk Pembimbing 1 & 2');
 console.log('⚠️ Early Warning System dengan WhatsApp integration');
 console.log('✅ SEMUA MODAL BERFUNGSI: Mahasiswa, Dosen, Proposal, Bimbingan, Repository, Operator');
@@ -9708,6 +9837,7 @@ console.log('✅ PAGINATION: Semua halaman utama memiliki pagination 15 baris pe
 console.log('✅ REPOSITORY UINSI: Tab Repository UINSI Samarinda terintegrasi (170 seed + live OAI-PMH + Firebase cache)');
 console.log('✅ SIMILARITY TERINTEGRASI: Cek similarity kini mencakup Proposal + Repository Lokal + Repository UINSI Samarinda');
 console.log('✅ CORS PROXY CASCADE: 8 proxy fallback untuk fetch live dari repository.uinsi.ac.id');
+console.log('✅ ABSTRAK SIMILARITY: Bobot proporsional Judul 70% + Abstrak 30% untuk akurasi lebih tinggi');
 </script>
 </body>
 </html>
