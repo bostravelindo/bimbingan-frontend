@@ -8722,7 +8722,7 @@ Cetak Hasil Similarity
 
 <div className="form-section">
 <h3 className="text-lg font-bold text-gray-800 mb-3">Abstrak <span className="required-star">*</span></h3>
-<textarea placeholder="Abstrak (min. 150 karakter)" value={formData.abstrak || ''} onChange={(e) => setFormData({...formData, abstrak: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3 h-32" required minLength="150" />
+<textarea placeholder="Abstrak (latar belakang, tujuan, metode dan pendekatan - min. 150 karakter)" value={formData.abstrak || ''} onChange={(e) => setFormData({...formData, abstrak: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3 h-32" required minLength="150" />
 </div>
 {(userRole === 'admin' || userRole === 'operator') && (
 <div className="form-section">
