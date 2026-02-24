@@ -60,6 +60,9 @@ display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; 
 .algo-jaccard { background: #d1fae5; color: #064e3b; }
 .algo-levenshtein { background: #fde68a; color: #92400e; }
 .algo-semantic { background: #fca5a5; color: #991b1b; }
+.algo-chargram { background: #e0e7ff; color: #3730a3; }
+.algo-fourgram { background: #cffafe; color: #0e7490; }
+.algo-overlap { background: #fce7f3; color: #9d174d; }
 .loading-screen { position: fixed; inset: 0; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; }
 .loading-spinner { width: 64px; height: 64px; border: 6px solid rgba(251, 191, 36, 0.2); border-top-color: #fbbf24; border-radius: 50%; animation: spin 1s linear infinite; }
 .error-boundary { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; padding: 2rem; text-align: center; }
@@ -514,6 +517,8 @@ return (
 };
 // ============================================
 // ADVANCED SIMILARITY CHECKER - ACADEMIC VALIDATION
+// 8 Algoritma Hybrid: Cosine • Jaccard Bi/Tri/Four-gram • Levenshtein
+//                    Semantic Match • Character N-gram • Overlap Coefficient
 // ============================================
 class AcademicSimilarityChecker {
 constructor() {
@@ -531,6 +536,8 @@ medium: 50,
 low: 30
 };
 }
+
+// ── Preprocessing: lowercase, strip diacritic, filter stopword ──
 preprocess(text) {
 if (!text || typeof text !== 'string') return '';
 return text
@@ -543,15 +550,35 @@ return text
 .filter(word => word.length > 2 && !this.stopwords.has(word))
 .join(' ');
 }
+
+// ── Word-level N-gram tokenizer ──
 tokenizeToNgrams(text, n = 2) {
 const tokens = this.preprocess(text).split(' ').filter(t => t);
-if (tokens.length < n) return tokens;
+if (tokens.length < n) return tokens.length > 0 ? tokens : [];
 const ngrams = [];
 for (let i = 0; i <= tokens.length - n; i++) {
 ngrams.push(tokens.slice(i, i + n).join(' '));
 }
 return ngrams;
 }
+
+// ── Character-level N-gram tokenizer (no stopword removal, preserves structure) ──
+tokenizeToCharNgrams(text, n = 3) {
+const cleaned = text
+.toLowerCase()
+.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+.replace(/[^\w\s]/g, '')
+.replace(/\s+/g, ' ')
+.trim();
+if (cleaned.length < n) return [cleaned];
+const ngrams = [];
+for (let i = 0; i <= cleaned.length - n; i++) {
+ngrams.push(cleaned.substring(i, i + n));
+}
+return ngrams;
+}
+
+// ── 1. Cosine Similarity (TF-weighted unigram vectors) ──
 cosineSimilarity(text1, text2) {
 const tokens1 = this.preprocess(text1).split(' ').filter(t => t);
 const tokens2 = this.preprocess(text2).split(' ').filter(t => t);
@@ -565,6 +592,8 @@ const magnitude1 = Math.sqrt(vec1.reduce((sum, val) => sum + val * val, 0));
 const magnitude2 = Math.sqrt(vec2.reduce((sum, val) => sum + val * val, 0));
 return magnitude1 && magnitude2 ? (dotProduct / (magnitude1 * magnitude2)) * 100 : 0;
 }
+
+// ── 2/3/4. Jaccard Word N-gram (Bigram, Trigram, Fourgram) ──
 jaccardSimilarity(text1, text2, n = 2) {
 const ngrams1 = new Set(this.tokenizeToNgrams(text1, n));
 const ngrams2 = new Set(this.tokenizeToNgrams(text2, n));
@@ -574,12 +603,13 @@ const intersection = new Set([...ngrams1].filter(x => ngrams2.has(x)));
 const union = new Set([...ngrams1, ...ngrams2]);
 return (intersection.size / union.size) * 100;
 }
+
+// ── 5. Levenshtein Edit-Distance Similarity ──
 levenshteinSimilarity(text1, text2) {
 const s1 = this.preprocess(text1);
 const s2 = this.preprocess(text2);
 if (!s1 || !s2) return 0;
-const len1 = s1.length;
-const len2 = s2.length;
+const len1 = s1.length, len2 = s2.length;
 if (s1 === s2) return 100;
 const matrix = Array(len2 + 1).fill(null).map(() => Array(len1 + 1).fill(0));
 for (let i = 0; i <= len1; i++) matrix[0][i] = i;
@@ -598,6 +628,8 @@ const distance = matrix[len2][len1];
 const maxLength = Math.max(len1, len2);
 return maxLength ? ((maxLength - distance) / maxLength) * 100 : 0;
 }
+
+// ── 6. Semantic Keyword Match (weighted positional) ──
 semanticKeywordMatch(text1, text2) {
 const tokens1 = this.preprocess(text1).split(' ').filter(t => t.length > 3);
 const tokens2 = this.preprocess(text2).split(' ').filter(t => t.length > 3);
@@ -611,46 +643,83 @@ sum + (1 + (0.5 * (1 - idx / Math.max(tokens1.length, 1)))), 0
 );
 return (weightedMatch / maxPossible) * 100;
 }
-calculateTitleScore(newTitle, existingTitle) {
-if (!newTitle || !existingTitle) return { score: 0, cosine: 0, jaccardBigram: 0, jaccardTrigram: 0, levenshtein: 0, semantic: 0 };
-const cosine = this.cosineSimilarity(newTitle, existingTitle);
-const jaccardBigram = this.jaccardSimilarity(newTitle, existingTitle, 2);
-const jaccardTrigram = this.jaccardSimilarity(newTitle, existingTitle, 3);
-const levenshtein = this.levenshteinSimilarity(newTitle, existingTitle);
-const semantic = this.semanticKeywordMatch(newTitle, existingTitle);
-const score = (
-cosine * 0.30 +
-jaccardBigram * 0.25 +
-jaccardTrigram * 0.20 +
-levenshtein * 0.15 +
-semantic * 0.10
-);
-return { score, cosine, jaccardBigram, jaccardTrigram, levenshtein, semantic };
+
+// ── 7. Character N-gram Similarity (Jaccard pada char-3gram) ──
+// Mendeteksi kemiripan pada level karakter — efektif menangkap parafrase,
+// typo, variasi ejaan, dan penggantian sinonim dengan imbuhan berbeda.
+characterNgramSimilarity(text1, text2, n = 3) {
+const cgrams1 = new Set(this.tokenizeToCharNgrams(text1, n));
+const cgrams2 = new Set(this.tokenizeToCharNgrams(text2, n));
+if (cgrams1.size === 0 && cgrams2.size === 0) return 100;
+if (cgrams1.size === 0 || cgrams2.size === 0) return 0;
+const intersection = new Set([...cgrams1].filter(x => cgrams2.has(x)));
+const union = new Set([...cgrams1, ...cgrams2]);
+return (intersection.size / union.size) * 100;
 }
+
+// ── 8. Overlap Coefficient (Szymkiewicz–Simpson) ──
+// Nilai = |irisan| / min(|A|, |B|)
+// Lebih akurat dari Jaccard untuk teks dengan panjang sangat berbeda.
+// Judul pendek yang merupakan subset dari judul panjang tetap terdeteksi.
+overlapCoefficient(text1, text2, n = 2) {
+const ngrams1 = new Set(this.tokenizeToNgrams(text1, n));
+const ngrams2 = new Set(this.tokenizeToNgrams(text2, n));
+if (ngrams1.size === 0 && ngrams2.size === 0) return 100;
+if (ngrams1.size === 0 || ngrams2.size === 0) return 0;
+const intersection = [...ngrams1].filter(x => ngrams2.has(x)).length;
+const minSize = Math.min(ngrams1.size, ngrams2.size);
+return (intersection / minSize) * 100;
+}
+
+// ── Hitung skor lengkap satu teks ──
+// Bobot 8 algoritma (total = 100%):
+//   Cosine          20% — vektor TF unigram
+//   Jaccard Bigram  15% — pasangan kata (2-gram)
+//   Jaccard Trigram 15% — triplet kata (3-gram)
+//   Jaccard Fourgram 10% — frasa 4 kata khas judul panjang
+//   Levenshtein      8% — edit distance karakter
+//   Semantic         7% — keyword berbobot posisi
+//   Char N-gram     15% — similarity level karakter (anti-parafrase)
+//   Overlap Coeff   10% — irisan/min (anti-asymmetry)
+_computeScores(text1, text2) {
+const cosine          = this.cosineSimilarity(text1, text2);
+const jaccardBigram   = this.jaccardSimilarity(text1, text2, 2);
+const jaccardTrigram  = this.jaccardSimilarity(text1, text2, 3);
+const jaccardFourgram = this.jaccardSimilarity(text1, text2, 4);
+const levenshtein     = this.levenshteinSimilarity(text1, text2);
+const semantic        = this.semanticKeywordMatch(text1, text2);
+const charNgram       = this.characterNgramSimilarity(text1, text2, 3);
+const overlapCoeff    = this.overlapCoefficient(text1, text2, 2);
+const score = (
+cosine          * 0.20 +
+jaccardBigram   * 0.15 +
+jaccardTrigram  * 0.15 +
+jaccardFourgram * 0.10 +
+levenshtein     * 0.08 +
+semantic        * 0.07 +
+charNgram       * 0.15 +
+overlapCoeff    * 0.10
+);
+return { score, cosine, jaccardBigram, jaccardTrigram, jaccardFourgram, levenshtein, semantic, charNgram, overlapCoeff };
+}
+
+calculateTitleScore(newTitle, existingTitle) {
+if (!newTitle || !existingTitle) return { score: 0, cosine: 0, jaccardBigram: 0, jaccardTrigram: 0, jaccardFourgram: 0, levenshtein: 0, semantic: 0, charNgram: 0, overlapCoeff: 0 };
+return this._computeScores(newTitle, existingTitle);
+}
+
 calculateAbstractScore(newAbstrak, existingAbstrak) {
 if (!newAbstrak || !existingAbstrak || newAbstrak.trim().length < 30 || existingAbstrak.trim().length < 30) return null;
-const cosine = this.cosineSimilarity(newAbstrak, existingAbstrak);
-const jaccardBigram = this.jaccardSimilarity(newAbstrak, existingAbstrak, 2);
-const jaccardTrigram = this.jaccardSimilarity(newAbstrak, existingAbstrak, 3);
-const levenshtein = this.levenshteinSimilarity(newAbstrak, existingAbstrak);
-const semantic = this.semanticKeywordMatch(newAbstrak, existingAbstrak);
-const score = (
-cosine * 0.30 +
-jaccardBigram * 0.25 +
-jaccardTrigram * 0.20 +
-levenshtein * 0.15 +
-semantic * 0.10
-);
-return { score, cosine, jaccardBigram, jaccardTrigram, levenshtein, semantic };
+return this._computeScores(newAbstrak, existingAbstrak);
 }
+
 calculateHybridSimilarity(newTitle, existingTitle, newAbstrak, existingAbstrak) {
 if (!newTitle || !existingTitle) return { score: 0, details: {} };
 const TITLE_WEIGHT = 0.70;
 const ABSTRACT_WEIGHT = 0.30;
-const titleResult = this.calculateTitleScore(newTitle, existingTitle);
+const titleResult   = this.calculateTitleScore(newTitle, existingTitle);
 const abstractResult = this.calculateAbstractScore(newAbstrak, existingAbstrak);
 const hasAbstract = abstractResult !== null;
-// Final combined score: 70% title + 30% abstract (if available), else 100% title
 const finalScore = hasAbstract
 ? (titleResult.score * TITLE_WEIGHT + abstractResult.score * ABSTRACT_WEIGHT)
 : titleResult.score;
@@ -660,17 +729,26 @@ hasAbstractScore: hasAbstract,
 titleScore: titleResult.score.toFixed(1),
 abstractScore: hasAbstract ? abstractResult.score.toFixed(1) : null,
 details: {
-cosine: titleResult.cosine.toFixed(1),
-jaccardBigram: titleResult.jaccardBigram.toFixed(1),
-jaccardTrigram: titleResult.jaccardTrigram.toFixed(1),
-levenshtein: titleResult.levenshtein.toFixed(1),
-semantic: titleResult.semantic.toFixed(1),
-abstractCosine: hasAbstract ? abstractResult.cosine.toFixed(1) : null,
-abstractJaccardBigram: hasAbstract ? abstractResult.jaccardBigram.toFixed(1) : null,
-abstractJaccardTrigram: hasAbstract ? abstractResult.jaccardTrigram.toFixed(1) : null,
-abstractLevenshtein: hasAbstract ? abstractResult.levenshtein.toFixed(1) : null,
-abstractSemantic: hasAbstract ? abstractResult.semantic.toFixed(1) : null,
-preprocessedNew: this.preprocess(newTitle),
+// ── Judul ──
+cosine:           titleResult.cosine.toFixed(1),
+jaccardBigram:    titleResult.jaccardBigram.toFixed(1),
+jaccardTrigram:   titleResult.jaccardTrigram.toFixed(1),
+jaccardFourgram:  titleResult.jaccardFourgram.toFixed(1),
+levenshtein:      titleResult.levenshtein.toFixed(1),
+semantic:         titleResult.semantic.toFixed(1),
+charNgram:        titleResult.charNgram.toFixed(1),
+overlapCoeff:     titleResult.overlapCoeff.toFixed(1),
+// ── Abstrak ──
+abstractCosine:          hasAbstract ? abstractResult.cosine.toFixed(1)          : null,
+abstractJaccardBigram:   hasAbstract ? abstractResult.jaccardBigram.toFixed(1)   : null,
+abstractJaccardTrigram:  hasAbstract ? abstractResult.jaccardTrigram.toFixed(1)  : null,
+abstractJaccardFourgram: hasAbstract ? abstractResult.jaccardFourgram.toFixed(1) : null,
+abstractLevenshtein:     hasAbstract ? abstractResult.levenshtein.toFixed(1)     : null,
+abstractSemantic:        hasAbstract ? abstractResult.semantic.toFixed(1)        : null,
+abstractCharNgram:       hasAbstract ? abstractResult.charNgram.toFixed(1)       : null,
+abstractOverlapCoeff:    hasAbstract ? abstractResult.overlapCoeff.toFixed(1)    : null,
+// ── Debug ──
+preprocessedNew:      this.preprocess(newTitle),
 preprocessedExisting: this.preprocess(existingTitle)
 }
 };
@@ -8270,7 +8348,7 @@ return `
 <td style="text-align:center">
 <span style="font-size:14px;font-weight:800;color:${ri.color}">${r.similarityScore}%</span>
 ${scoreBreakdown}
-<div style="font-size:9px;margin-top:2px;color:#9ca3af">Cos:${cosine} Jac:${jaccard}<br>Lev:${leven} Sem:${semantic}</div>
+<div style="font-size:9px;margin-top:2px;color:#9ca3af">Cos:${cosine} Jac2:${jaccard}<br>Chr:${details.charNgram !== undefined ? details.charNgram+'%' : '-'} Ovl:${details.overlapCoeff !== undefined ? details.overlapCoeff+'%' : '-'}</div>
 </td>
 <td style="text-align:center">
 <span style="background:${ri.bg};color:${ri.color};border:1.5px solid ${ri.color};padding:3px 8px;border-radius:12px;font-size:10px;font-weight:700">${ri.label}</span>
@@ -8285,11 +8363,14 @@ if (!similarityResult.results || !similarityResult.results[0]) return '';
 const d = similarityResult.results[0].similarityDetails || {};
 const hasAbstract = similarityResult.results[0].hasAbstractScore && d.abstractCosine !== null;
 const algoRows = [
-{ name: 'Cosine Similarity', key: 'cosine', bobot: '30%', desc: 'Kesamaan vektor kata berbobot TF' },
-{ name: 'Jaccard Bigram', key: 'jaccardBigram', bobot: '25%', desc: 'Irisan pasangan kata 2-gram' },
-{ name: 'Jaccard Trigram', key: 'jaccardTrigram', bobot: '20%', desc: 'Irisan pasangan kata 3-gram' },
-{ name: 'Levenshtein', key: 'levenshtein', bobot: '15%', desc: 'Jarak edit karakter string' },
-{ name: 'Semantic Match', key: 'semantic', bobot: '10%', desc: 'Pencocokan semantik kata kunci berbobot' },
+{ name: 'Cosine Similarity',   key: 'cosine',          bobot: '20%', desc: 'Kesamaan vektor kata berbobot TF' },
+{ name: 'Jaccard Bigram',       key: 'jaccardBigram',   bobot: '15%', desc: 'Irisan pasangan kata 2-gram' },
+{ name: 'Jaccard Trigram',      key: 'jaccardTrigram',  bobot: '15%', desc: 'Irisan frasa 3 kata (trigram)' },
+{ name: 'Jaccard Fourgram',     key: 'jaccardFourgram', bobot: '10%', desc: 'Irisan frasa 4 kata — khas judul panjang' },
+{ name: 'Levenshtein',          key: 'levenshtein',     bobot: '8%',  desc: 'Jarak edit karakter string' },
+{ name: 'Semantic Match',       key: 'semantic',        bobot: '7%',  desc: 'Pencocokan semantik kata kunci berbobot' },
+{ name: 'Character N-gram',     key: 'charNgram',       bobot: '15%', desc: 'Similarity level karakter (char-3gram) — anti parafrase & typo' },
+{ name: 'Overlap Coefficient',  key: 'overlapCoeff',    bobot: '10%', desc: 'Irisan ÷ min(|A|,|B|) — akurat untuk teks berbeda panjang' },
 ];
 const buildSection = (rows, dataObj, sectionColor, sectionLabel) => rows.map(a => {
 const val = dataObj[a.key] !== undefined ? parseFloat(dataObj[a.key]) : null;
@@ -8313,7 +8394,8 @@ return `
 }).join('');
 const abstractAlgoMap = {
 cosine: 'abstractCosine', jaccardBigram: 'abstractJaccardBigram', jaccardTrigram: 'abstractJaccardTrigram',
-levenshtein: 'abstractLevenshtein', semantic: 'abstractSemantic'
+jaccardFourgram: 'abstractJaccardFourgram', levenshtein: 'abstractLevenshtein', semantic: 'abstractSemantic',
+charNgram: 'abstractCharNgram', overlapCoeff: 'abstractOverlapCoeff'
 };
 const abstractMappedRows = algoRows.map(a => ({ ...a, key: abstractAlgoMap[a.key] }));
 const titleRows = buildSection(algoRows, d, '#1e40af', 'JUDUL');
@@ -8670,44 +8752,92 @@ similarityResult.highestSimilarity >= 30 ? 'similarity-low' :
 </div>
 {similarityResult.results[0] && (
 <div className="mb-3">
-<h4 className="font-bold text-xs text-gray-600 mb-2">🔍 Detail Metrik Similarity (Judul):</h4>
+<h4 className="font-bold text-xs text-gray-600 mb-2">🔍 Detail Metrik Similarity (Judul) — 8 Algoritma:</h4>
 <div className="grid grid-cols-2 gap-2 text-xs">
 <div className="metric-card bg-white p-2 rounded-lg">
 <span className="algorithm-badge algo-cosine">Cosine</span>
 <p className="text-lg font-bold text-blue-600">{similarityResult.results[0].similarityDetails.cosine}%</p>
+<p className="text-xs text-gray-400">Vektor TF · bobot 20%</p>
 </div>
 <div className="metric-card bg-white p-2 rounded-lg">
 <span className="algorithm-badge algo-jaccard">Jaccard Bi</span>
 <p className="text-lg font-bold text-green-600">{similarityResult.results[0].similarityDetails.jaccardBigram}%</p>
+<p className="text-xs text-gray-400">2-gram · bobot 15%</p>
 </div>
 <div className="metric-card bg-white p-2 rounded-lg">
 <span className="algorithm-badge algo-jaccard">Jaccard Tri</span>
 <p className="text-lg font-bold text-emerald-600">{similarityResult.results[0].similarityDetails.jaccardTrigram}%</p>
+<p className="text-xs text-gray-400">3-gram · bobot 15%</p>
+</div>
+<div className="metric-card bg-white p-2 rounded-lg">
+<span className="algorithm-badge algo-fourgram">Jaccard 4-gram</span>
+<p className="text-lg font-bold text-cyan-600">{similarityResult.results[0].similarityDetails.jaccardFourgram}%</p>
+<p className="text-xs text-gray-400">4-gram · bobot 10%</p>
 </div>
 <div className="metric-card bg-white p-2 rounded-lg">
 <span className="algorithm-badge algo-levenshtein">Levenshtein</span>
 <p className="text-lg font-bold text-amber-600">{similarityResult.results[0].similarityDetails.levenshtein}%</p>
+<p className="text-xs text-gray-400">Edit dist · bobot 8%</p>
+</div>
+<div className="metric-card bg-white p-2 rounded-lg">
+<span className="algorithm-badge algo-semantic">Semantic</span>
+<p className="text-lg font-bold text-red-500">{similarityResult.results[0].similarityDetails.semantic}%</p>
+<p className="text-xs text-gray-400">Keyword · bobot 7%</p>
+</div>
+<div className="metric-card bg-indigo-50 p-2 rounded-lg">
+<span className="algorithm-badge algo-chargram">Char N-gram</span>
+<p className="text-lg font-bold text-indigo-600">{similarityResult.results[0].similarityDetails.charNgram}%</p>
+<p className="text-xs text-gray-400">Karakter · bobot 15%</p>
+</div>
+<div className="metric-card bg-pink-50 p-2 rounded-lg">
+<span className="algorithm-badge algo-overlap">Overlap Coeff</span>
+<p className="text-lg font-bold text-pink-600">{similarityResult.results[0].similarityDetails.overlapCoeff}%</p>
+<p className="text-xs text-gray-400">Szymkiewicz · bobot 10%</p>
 </div>
 </div>
 {similarityResult.results[0].hasAbstractScore && similarityResult.results[0].similarityDetails.abstractCosine !== null && (
 <div className="mt-2">
-<h4 className="font-bold text-xs text-purple-700 mb-2">📄 Detail Metrik Similarity (Abstrak):</h4>
+<h4 className="font-bold text-xs text-purple-700 mb-2">📄 Detail Metrik Similarity (Abstrak) — 8 Algoritma:</h4>
 <div className="grid grid-cols-2 gap-2 text-xs">
 <div className="metric-card bg-purple-50 p-2 rounded-lg">
 <span className="algorithm-badge" style={{background:'#ede9fe',color:'#6d28d9'}}>Cosine</span>
 <p className="text-lg font-bold text-purple-600">{similarityResult.results[0].similarityDetails.abstractCosine}%</p>
+<p className="text-xs text-gray-400">Vektor TF · 20%</p>
 </div>
 <div className="metric-card bg-purple-50 p-2 rounded-lg">
 <span className="algorithm-badge" style={{background:'#ede9fe',color:'#6d28d9'}}>Jaccard Bi</span>
 <p className="text-lg font-bold text-purple-600">{similarityResult.results[0].similarityDetails.abstractJaccardBigram}%</p>
+<p className="text-xs text-gray-400">2-gram · 15%</p>
 </div>
 <div className="metric-card bg-purple-50 p-2 rounded-lg">
 <span className="algorithm-badge" style={{background:'#ede9fe',color:'#6d28d9'}}>Jaccard Tri</span>
 <p className="text-lg font-bold text-purple-600">{similarityResult.results[0].similarityDetails.abstractJaccardTrigram}%</p>
+<p className="text-xs text-gray-400">3-gram · 15%</p>
+</div>
+<div className="metric-card bg-purple-50 p-2 rounded-lg">
+<span className="algorithm-badge" style={{background:'#cffafe',color:'#0e7490'}}>4-gram</span>
+<p className="text-lg font-bold text-cyan-600">{similarityResult.results[0].similarityDetails.abstractJaccardFourgram}%</p>
+<p className="text-xs text-gray-400">4-gram · 10%</p>
 </div>
 <div className="metric-card bg-purple-50 p-2 rounded-lg">
 <span className="algorithm-badge" style={{background:'#ede9fe',color:'#6d28d9'}}>Levenshtein</span>
 <p className="text-lg font-bold text-purple-600">{similarityResult.results[0].similarityDetails.abstractLevenshtein}%</p>
+<p className="text-xs text-gray-400">Edit dist · 8%</p>
+</div>
+<div className="metric-card bg-purple-50 p-2 rounded-lg">
+<span className="algorithm-badge" style={{background:'#ede9fe',color:'#6d28d9'}}>Semantic</span>
+<p className="text-lg font-bold text-purple-500">{similarityResult.results[0].similarityDetails.abstractSemantic}%</p>
+<p className="text-xs text-gray-400">Keyword · 7%</p>
+</div>
+<div className="metric-card bg-indigo-50 p-2 rounded-lg">
+<span className="algorithm-badge algo-chargram">Char N-gram</span>
+<p className="text-lg font-bold text-indigo-600">{similarityResult.results[0].similarityDetails.abstractCharNgram}%</p>
+<p className="text-xs text-gray-400">Karakter · 15%</p>
+</div>
+<div className="metric-card bg-pink-50 p-2 rounded-lg">
+<span className="algorithm-badge algo-overlap">Overlap Coeff</span>
+<p className="text-lg font-bold text-pink-600">{similarityResult.results[0].similarityDetails.abstractOverlapCoeff}%</p>
+<p className="text-xs text-gray-400">Szymkiewicz · 10%</p>
 </div>
 </div>
 </div>
@@ -9866,11 +9996,12 @@ ReactDOM.render(
 </React.StrictMode>,
 document.getElementById('root')
 );
-console.log('✅ Dashboard FEBI v8.1.0 (SIMILARITY UPGRADE: JUDUL 70% + ABSTRAK 30%) loaded successfully!');
+console.log('✅ Dashboard FEBI v9.0.0 (SIMILARITY UPGRADE: 8 ALGORITMA HYBRID) loaded successfully!');
 console.log('🔐 Authentication system active');
-console.log('🔍 ADVANCED SIMILARITY CHECKER (5 Algoritma Hybrid + Bobot Abstrak) - OPERATIONAL');
-console.log('📊 Cosine • Jaccard Bigram/Trigram • Levenshtein • Semantic Matching');
-console.log('⚖️ Bobot: Judul 70% + Abstrak 30% (bila abstrak tersedia) | Judul 100% (fallback)');
+console.log('🔍 ADVANCED SIMILARITY CHECKER (8 Algoritma Hybrid + Bobot Dinamis) - OPERATIONAL');
+console.log('📊 Cosine • Jaccard Bi/Tri/Four-gram • Levenshtein • Semantic • Char N-gram • Overlap Coefficient');
+console.log('⚖️  Bobot: Cosine 20% | Jaccard-2 15% | Jaccard-3 15% | Jaccard-4 10% | Lev 8% | Sem 7% | Char-N 15% | Overlap 10%');
+console.log('🆕 BARU: Character N-gram (anti-parafrase/typo) + Fourgram (frasa panjang) + Overlap Coefficient (asimetri panjang)');
 console.log('🔄 WORKFLOW INTEGRATION: Auto-create bimbingan untuk Pembimbing 1 & 2');
 console.log('⚠️ Early Warning System dengan WhatsApp integration');
 console.log('✅ SEMUA MODAL BERFUNGSI: Mahasiswa, Dosen, Proposal, Bimbingan, Repository, Operator');
