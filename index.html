@@ -41,6 +41,43 @@ body { font-family: 'Inter', system-ui, sans-serif; background-color: #f8fafc; m
 50% { transform: translateY(-10px); }
 100% { transform: translateY(0px); }
 }
+@keyframes simPulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.15);opacity:.7} }
+@keyframes simScan { 0%{left:-30%} 100%{left:100%} }
+@keyframes simCheck { 0%{transform:scale(0) rotate(-45deg);opacity:0} 60%{transform:scale(1.2) rotate(0deg);opacity:1} 100%{transform:scale(1) rotate(0deg);opacity:1} }
+@keyframes simDots { 0%{content:'.'} 33%{content:'..'} 66%{content:'...'} }
+@keyframes simRingPulse { 0%{box-shadow:0 0 0 0 rgba(16,185,129,.5)} 70%{box-shadow:0 0 0 15px rgba(16,185,129,0)} 100%{box-shadow:0 0 0 0 rgba(16,185,129,0)} }
+@keyframes simGlow { 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.3)} }
+@keyframes simCountUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.sim-progress-overlay {
+position:absolute;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;
+background:rgba(255,255,255,.97);backdrop-filter:blur(8px);border-radius:12px;
+}
+.sim-ring {
+width:100px;height:100px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+position:relative;animation:simRingPulse 1.5s ease-out infinite;
+}
+.sim-ring svg { animation:simGlow 2s ease-in-out infinite; }
+.sim-scan-bar {
+position:absolute;top:0;height:100%;width:30%;
+background:linear-gradient(90deg,transparent,rgba(16,185,129,.12),transparent);
+animation:simScan 1.8s ease-in-out infinite;pointer-events:none;border-radius:12px;
+}
+.sim-step-row { display:flex;align-items:center;gap:10px;padding:6px 0;transition:all .3s ease; }
+.sim-step-icon {
+width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+font-size:13px;font-weight:700;transition:all .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0;
+}
+.sim-step-icon.pending { background:#f1f5f9;color:#94a3b8;border:2px solid #e2e8f0; }
+.sim-step-icon.active { background:#047857;color:white;border:2px solid #047857;animation:simPulse 1s ease-in-out infinite; }
+.sim-step-icon.done { background:#10b981;color:white;border:2px solid #10b981;animation:simCheck .4s ease-out; }
+.sim-step-text { font-size:13px;color:#64748b;transition:all .3s ease; }
+.sim-step-text.active { color:#047857;font-weight:600; }
+.sim-step-text.done { color:#10b981;font-weight:500; }
+.sim-pbar-track { width:100%;height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden;position:relative; }
+.sim-pbar-fill {
+height:100%;border-radius:3px;transition:width .4s ease;
+background:linear-gradient(90deg,#047857,#10b981,#34d399);background-size:200% 100%;animation:simGlow 2s ease-in-out infinite;
+}
 .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
 .animate-slideIn { animation: slideIn 0.2s ease-out; }
 .animate-float { animation: float 3s ease-in-out infinite; }
@@ -9196,11 +9233,11 @@ return (
 <div className="space-y-4">
 <div>
 <label className="block text-sm font-semibold text-gray-700 mb-2">Database URL</label>
-<input type="text" value="-" readOnly className="w-full px-4 py-2 border rounded-lg bg-gray-50" />
+<input type="text" value="..." readOnly className="w-full px-4 py-2 border rounded-lg bg-gray-50" />
 </div>
 <div>
 <label className="block text-sm font-semibold text-gray-700 mb-2">Project ID</label>
-<input type="text" value="-" readOnly className="w-full px-4 py-2 border rounded-lg bg-gray-50" />
+<input type="text" value="..." readOnly className="w-full px-4 py-2 border rounded-lg bg-gray-50" />
 </div>
 <div className="p-4 bg-emerald-50 rounded-lg">
 <p className="text-sm text-emerald-700">✅ Database terhubung dan berfungsi normal</p>
@@ -9210,12 +9247,12 @@ return (
 <div className="bg-white rounded-xl shadow-sm border p-6">
 <h3 className="text-lg font-bold text-gray-900 mb-4">Informasi Sistem</h3>
 <div className="space-y-2 text-sm text-gray-600">
-<p>• Versi Dashboard: 8.0.0 (Integrated Repository with 48-PTKIN)</p>
+<p>• Versi Dashboard: 8.0.0 (Integrated Repository)</p>
 <p>• Database: Firebase Realtime Database</p>
 <p>• Real-time Sync: Aktif</p>
-<p>• Fitur: Advanced Similarity Checker (8 Algoritma), Auto-Create Bimbingan untuk Pembimbing 1 & 2, Early Warning, WhatsApp Integration, Timeline Bimbingan 10 Pertemuan, Edit Profil, Dual Pembimbing,Auto Cetak Laporan</p>
 <p>• Last Updated: {new Date().toLocaleDateString('id-ID')}</p>
-<p>• Created with 👍 by ℐs.Z © 2026</p>
+<p>• Fitur: Advanced Similarity Checker (5 Algoritma), Auto-Create Bimbingan untuk Pembimbing 1 & 2, Early Warning, WhatsApp Integration, Timeline Bimbingan 10 Pertemuan, Edit Profil, Dual Pembimbing</p>
+<p>• Full-Fetch by Is.Z © 2026</p>
 </div>
 </div>
 </div>
@@ -9225,7 +9262,7 @@ return (
 // ============================================
 // MODAL COMPONENT - DIPERBAIKI LENGKAP (TERMASUK OPERATOR)
 // ============================================
-const Modal = ({ type, item, onSave, onClose, onCheckSimilarity, similarityResult, dosenList, mahasiswaList, currentUser, userRole }) => {
+const Modal = ({ type, item, onSave, onClose, onCheckSimilarity, similarityResult, similarityChecking, dosenList, mahasiswaList, currentUser, userRole }) => {
 const [formData, setFormData] = React.useState(item || {});
 const [isSaving, setIsSaving] = React.useState(false);
 const [showPassword, setShowPassword] = React.useState(false);
@@ -9464,15 +9501,68 @@ return (
 <h3 className="text-lg font-bold text-gray-800 mb-3">Judul Proposal <span className="required-star">*</span></h3>
 <input type="text" placeholder="Judul Proposal" value={formData.judul || ''} onChange={(e) => setFormData({...formData, judul: e.target.value})} className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-emerald-500 mb-3" required />
 {onCheckSimilarity && (
-<div className="mb-3">
-<button type="button" onClick={() => onCheckSimilarity(formData.judul, formData.abstrak)} className="w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg hover:from-blue-700 hover:to-cyan-700 font-semibold transition-all">
-🔍 Cek Similarity (Judul 70% + Abstrak 30%)
+<div className="mb-3" style={{position:'relative'}}>
+<button type="button" disabled={!!similarityChecking} onClick={() => onCheckSimilarity(formData.judul, formData.abstrak)} className="w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg hover:from-blue-700 hover:to-cyan-700 font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed" style={{position:'relative',overflow:'hidden'}}>
+{similarityChecking ? '⏳ Sedang Menganalisis...' : '🔍 Cek Similarity (Judul 70% + Abstrak 30%)'}
 </button>
 {formData.abstrak && formData.abstrak.trim().length >= 30 ? (
 <p className="text-xs text-emerald-600 mt-1 text-center">✅ Abstrak terdeteksi — analisis akan menggunakan bobot <strong>Judul 70% + Abstrak 30%</strong></p>
 ) : (
 <p className="text-xs text-amber-600 mt-1 text-center">ℹ️ Isi abstrak (min. 30 karakter) untuk analisis gabungan yang lebih akurat</p>
 )}
+{similarityChecking && (() => {
+const sc = similarityChecking;
+const steps = sc.steps || [];
+return (
+<div style={{marginTop:'12px',background:'linear-gradient(135deg,#f0fdf4 0%,#ecfdf5 50%,#f0fdfa 100%)',borderRadius:'16px',padding:'20px 18px',border:'2px solid #a7f3d0',position:'relative',overflow:'hidden'}}>
+<div className="sim-scan-bar"></div>
+{/* Circular progress ring */}
+<div style={{display:'flex',flexDirection:'column',alignItems:'center',marginBottom:'16px'}}>
+<div className="sim-ring">
+<svg width="100" height="100" viewBox="0 0 100 100">
+<circle cx="50" cy="50" r="42" fill="none" stroke="#e2e8f0" strokeWidth="6"/>
+<circle cx="50" cy="50" r="42" fill="none" stroke="url(#simGrad)" strokeWidth="6" strokeLinecap="round"
+strokeDasharray={`${2*Math.PI*42}`} strokeDashoffset={`${2*Math.PI*42*(1-sc.percent/100)}`}
+style={{transition:'stroke-dashoffset .5s ease',transform:'rotate(-90deg)',transformOrigin:'center'}}/>
+<defs><linearGradient id="simGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+<stop offset="0%" stopColor="#047857"/><stop offset="100%" stopColor="#34d399"/>
+</linearGradient></defs>
+</svg>
+<span style={{position:'absolute',fontSize:'22px',fontWeight:800,color:'#047857',animation:'simCountUp .3s ease-out'}} key={sc.percent}>{sc.percent}%</span>
+</div>
+<p style={{fontSize:'11px',color:'#64748b',marginTop:'6px',fontWeight:500}}>Analisis Similarity Terintegrasi Nasional</p>
+</div>
+{/* Progress bar */}
+<div className="sim-pbar-track" style={{marginBottom:'14px'}}>
+<div className="sim-pbar-fill" style={{width:`${sc.percent}%`}}></div>
+</div>
+{/* Step list */}
+<div style={{display:'flex',flexDirection:'column',gap:'2px'}}>
+{steps.map((s, i) => {
+const isDone = i < sc.step;
+const isActive = i === sc.step;
+const isPending = i > sc.step;
+return (
+<div key={i} className="sim-step-row" style={{opacity: isPending ? 0.4 : 1}}>
+<div className={`sim-step-icon ${isDone ? 'done' : isActive ? 'active' : 'pending'}`}>
+{isDone ? '✓' : isActive ? s.icon : (i+1)}
+</div>
+<span className={`sim-step-text ${isDone ? 'done' : isActive ? 'active' : ''}`}>
+{s.label}{isActive && <span style={{display:'inline-block',width:'18px',textAlign:'left'}} className="sim-dots-anim">...</span>}
+</span>
+</div>
+);
+})}
+</div>
+{sc.percent >= 100 && (
+<div style={{textAlign:'center',marginTop:'12px',animation:'simCheck .5s ease-out'}}>
+<span style={{fontSize:'22px'}}>🎉</span>
+<p style={{fontSize:'12px',fontWeight:700,color:'#047857',marginTop:'2px'}}>Analisis Selesai!</p>
+</div>
+)}
+</div>
+);
+})()}
 </div>
 )}
 {similarityResult && (() => {
@@ -10393,6 +10483,7 @@ const [showModal, setShowModal] = React.useState(false);
 const [modalType, setModalType] = React.useState('');
 const [editingItem, setEditingItem] = React.useState(null);
 const [similarityResult, setSimilarityResult] = React.useState(null);
+const [similarityChecking, setSimilarityChecking] = React.useState(null); // {step, percent, stepLabel}
 const [systemReady, setSystemReady] = React.useState(false);
 const [initError, setInitError] = React.useState(null);
 const [loadingProgress, setLoadingProgress] = React.useState(0);
@@ -10772,9 +10863,24 @@ if (judul.trim().length < 15) {
 showToast('Judul terlalu pendek! Minimal 15 karakter untuk analisis akurat.', 'error');
 return;
 }
+
+// ── Helper: animate step ──
+const SIM_STEPS = [
+{ label: 'Memuat data repository lokal & UINSI...', icon: '📂' },
+{ label: 'Mengintegrasikan data PTKIN Nasional...', icon: '🇮🇩' },
+{ label: 'Menjalankan 8 algoritma similarity judul...', icon: '🧬' },
+{ label: 'Menganalisis kemiripan abstrak...', icon: '📄' },
+{ label: 'Menghitung bobot gabungan (70% + 30%)...', icon: '⚖️' },
+{ label: 'Finalisasi & penilaian risiko...', icon: '✅' },
+];
+const delay = (ms) => new Promise(r => setTimeout(r, ms));
+
+setSimilarityResult(null);
+setSimilarityChecking({ step: 0, percent: 0, steps: SIM_STEPS });
+
 try {
-// ── Gabungkan repository lokal (Firebase) + repository UINSI (cache/seed) + PTKIN Nasional ──
-// untuk cek similarity yang komprehensif tingkat nasional
+// Step 0 - load repos
+await delay(350);
 const combinedRepo = { ...repository };
 uinsiRepository.forEach((item, idx) => {
 const key = `uinsi_${item.id || idx}`;
@@ -10789,7 +10895,10 @@ _sourceType: 'uinsi',
 _sourceUrl: item.url || ''
 };
 });
-// ── Tambahkan data PTKIN Nasional ──
+setSimilarityChecking(prev => ({ ...prev, step: 1, percent: 18 }));
+
+// Step 1 - PTKIN nasional
+await delay(300);
 ptkinNasionalRepository.forEach((item, idx) => {
 const key = `ptkin_${item.institusiId || 'nas'}_${item.id || idx}`;
 combinedRepo[key] = {
@@ -10804,11 +10913,22 @@ _sourceInstitusi: item.institusi || '',
 _sourceInstitusiId: item.institusiId || ''
 };
 });
+setSimilarityChecking(prev => ({ ...prev, step: 2, percent: 35 }));
+
+// Step 2 - Run algorithms
+await delay(400);
 const totalSources = proposalsArr ? proposalsArr.length : 0;
 const totalRepo = Object.keys(combinedRepo).length;
 const hasAbstrak = abstrak && abstrak.trim().length >= 30;
+setSimilarityChecking(prev => ({ ...prev, step: 3, percent: 55 }));
+
+// Step 3 - Abstract analysis
+await delay(350);
 const result = checkProposalSimilarityAdvanced(judul, proposals, combinedRepo, abstrak || '');
-// Tandai hasil mana yang dari UINSI
+setSimilarityChecking(prev => ({ ...prev, step: 4, percent: 78 }));
+
+// Step 4 - Weight calculation
+await delay(300);
 result.results = (result.results || []).map(r => ({
 ...r,
 isFromUinsi: r.id && r.id.toString().startsWith('uinsi_'),
@@ -10820,11 +10940,20 @@ sourceLabel: (r.id && r.id.toString().startsWith('ptkin_'))
     : (r.type === 'proposal' ? '📝 Proposal' : '🏛️ Repository Lokal')
 }));
 result.usedAbstract = hasAbstrak;
+setSimilarityChecking(prev => ({ ...prev, step: 5, percent: 95 }));
+
+// Step 5 - Finalize
+await delay(350);
+setSimilarityChecking(prev => ({ ...prev, step: 6, percent: 100 }));
+await delay(400);
+
 setSimilarityResult(result);
+setSimilarityChecking(null);
 const modeInfo = hasAbstrak ? ' [Judul 70% + Abstrak 30%]' : ' [Judul 100%]';
 showToast(`Similarity check selesai! (${result.highestSimilarity}%)${modeInfo} — ${totalRepo.toLocaleString()} skripsi + ${totalSources} proposal dicek`, 'success');
 } catch (err) {
 console.error('Similarity check error:', err);
+setSimilarityChecking(null);
 showToast('Error saat cek similarity: ' + err.message, 'error');
 }
 };
@@ -11191,6 +11320,7 @@ onSave={handleSave}
 onClose={() => { setShowModal(false); setEditingItem(null); setSimilarityResult(null); }}
 onCheckSimilarity={modalType === 'proposals' ? handleCheckSimilarity : null}
 similarityResult={similarityResult}
+similarityChecking={similarityChecking}
 dosenList={dosenArr}
 mahasiswaList={mahasiswaArr}
 currentUser={currentUser}
