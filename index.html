@@ -885,7 +885,7 @@ return {
 status,
 highestSimilarity: highest ? highest.similarityScore : 0,
 totalMatches: results.length,
-results: results.slice(0, 5),
+results: results.slice(0, 15),
 recommendation,
 thresholds: this.thresholds
 };
@@ -6572,6 +6572,77 @@ const PTKIN_STATS = {
 };
 
 // ============================================
+// JURNAL ILMIAH REGISTRY — OJS OAI-PMH Harvesting
+// Jurnal Ekonomi/Bisnis Islam & Syariah Nasional (SINTA & Non-SINTA)
+// ============================================
+const JURNAL_REGISTRY = [
+// ═══ SINTA 1-2 (Bereputasi Tinggi) ═══
+{id:'j-iqtishadia',nama:'Iqtishadia: Jurnal Kajian Ekonomi dan Bisnis Islam',singkatan:'Iqtishadia',sinta:'S2',penerbit:'IAIN Pekalongan',oaiBase:'https://e-journal.iainpekalongan.ac.id/index.php/Iqtishadia/oai',repoUrl:'https://e-journal.iainpekalongan.ac.id/index.php/Iqtishadia'},
+{id:'j-economica',nama:'Economica: Jurnal Ekonomi Islam',singkatan:'Economica',sinta:'S2',penerbit:'UIN Walisongo',oaiBase:'https://journal.walisongo.ac.id/index.php/economica/oai',repoUrl:'https://journal.walisongo.ac.id/index.php/economica'},
+{id:'j-equilibrium',nama:'Equilibrium: Jurnal Ekonomi Syariah',singkatan:'Equilibrium',sinta:'S2',penerbit:'IAIN Kudus',oaiBase:'https://journal.iainkudus.ac.id/index.php/equilibrium/oai',repoUrl:'https://journal.iainkudus.ac.id/index.php/equilibrium'},
+{id:'j-islamiconomics',nama:'Islamiconomics: Jurnal Ekonomi Islam',singkatan:'Islamiconomics',sinta:'S2',penerbit:'UIN SMH Banten',oaiBase:'https://journal.uinbanten.ac.id/index.php/Islamiconomics/oai',repoUrl:'https://journal.uinbanten.ac.id/index.php/Islamiconomics'},
+{id:'j-mazahib',nama:'Mazahib: Jurnal Pemikiran Hukum Islam',singkatan:'Mazahib UINSI',sinta:'S2',penerbit:'UINSI Samarinda',oaiBase:'https://journal.uinsi.ac.id/index.php/mazahib/oai',repoUrl:'https://journal.uinsi.ac.id/index.php/mazahib'},
+{id:'j-alishlah',nama:'Al-Ishlah: Jurnal Ilmiah Hukum',singkatan:'Al-Ishlah',sinta:'S2',penerbit:'UIN Ar-Raniry',oaiBase:'https://jurnal.ar-raniry.ac.id/index.php/usrah/oai',repoUrl:'https://jurnal.ar-raniry.ac.id/index.php/usrah'},
+{id:'j-aliqtishad',nama:'Al-Iqtishad: Jurnal Ilmu Ekonomi Syariah',singkatan:'Al-Iqtishad',sinta:'S2',penerbit:'UIN Jakarta',oaiBase:'https://journal.uinjkt.ac.id/index.php/iqtishad/oai',repoUrl:'https://journal.uinjkt.ac.id/index.php/iqtishad'},
+{id:'j-ahkam',nama:'Ahkam: Jurnal Ilmu Syariah',singkatan:'Ahkam',sinta:'S2',penerbit:'UIN Jakarta',oaiBase:'https://journal.uinjkt.ac.id/index.php/ahkam/oai',repoUrl:'https://journal.uinjkt.ac.id/index.php/ahkam'},
+{id:'j-inferensi',nama:'Inferensi: Jurnal Penelitian Sosial Keagamaan',singkatan:'Inferensi',sinta:'S2',penerbit:'IAIN Salatiga',oaiBase:'https://inferensi.iainsalatiga.ac.id/index.php/inferensi/oai',repoUrl:'https://inferensi.iainsalatiga.ac.id/index.php/inferensi'},
+{id:'j-samarah',nama:'Samarah: Jurnal Hukum Keluarga dan Hukum Islam',singkatan:'Samarah',sinta:'S2',penerbit:'UIN Ar-Raniry',oaiBase:'https://jurnal.ar-raniry.ac.id/index.php/samarah/oai',repoUrl:'https://jurnal.ar-raniry.ac.id/index.php/samarah'},
+// ═══ SINTA 3 ═══
+{id:'j-eldinar',nama:'El-Dinar: Jurnal Keuangan dan Perbankan Syariah',singkatan:'El-Dinar',sinta:'S3',penerbit:'UIN Malang',oaiBase:'https://ejournal.uin-malang.ac.id/index.php/dinar/oai',repoUrl:'https://ejournal.uin-malang.ac.id/index.php/dinar'},
+{id:'j-falah',nama:'Falah: Jurnal Ekonomi Syariah',singkatan:'Falah',sinta:'S3',penerbit:'IAIN Kediri',oaiBase:'https://ejournal.iainkediri.ac.id/index.php/falah/oai',repoUrl:'https://ejournal.iainkediri.ac.id/index.php/falah'},
+{id:'j-muqtasid',nama:'Muqtasid: Jurnal Ekonomi dan Perbankan Syariah',singkatan:'Muqtasid',sinta:'S3',penerbit:'UIN Salatiga',oaiBase:'https://muqtasid.iainsalatiga.ac.id/index.php/muqtasid/oai',repoUrl:'https://muqtasid.iainsalatiga.ac.id/index.php/muqtasid'},
+{id:'j-iqtishaduna',nama:'Iqtishaduna: Jurnal Ilmiah Ekonomi Kita',singkatan:'Iqtishaduna',sinta:'S3',penerbit:'STAI Iqra Annisa',oaiBase:'https://ejournal.staiannisa.ac.id/index.php/iqtishaduna/oai',repoUrl:'https://ejournal.staiannisa.ac.id/index.php/iqtishaduna'},
+{id:'j-eliqtishady',nama:'El-Iqtishady: Jurnal Hukum Ekonomi Syariah',singkatan:'El-Iqtishady',sinta:'S3',penerbit:'UIN Alauddin',oaiBase:'https://journal3.uin-alauddin.ac.id/index.php/iqtishadiy/oai',repoUrl:'https://journal3.uin-alauddin.ac.id/index.php/iqtishadiy'},
+{id:'j-alhurriyah',nama:'Al-Hurriyah: Jurnal Hukum Islam',singkatan:'Al-Hurriyah',sinta:'S3',penerbit:'IAIN Bukittinggi',oaiBase:'https://ejournal.iainbukittinggi.ac.id/index.php/alhurriyah/oai',repoUrl:'https://ejournal.iainbukittinggi.ac.id/index.php/alhurriyah'},
+{id:'j-tsaqafah',nama:'Tsaqafah: Jurnal Peradaban Islam',singkatan:'Tsaqafah',sinta:'S3',penerbit:'Unida Gontor',oaiBase:'https://ejournal.unida.gontor.ac.id/index.php/tsaqafah/oai',repoUrl:'https://ejournal.unida.gontor.ac.id/index.php/tsaqafah'},
+{id:'j-islamicrev',nama:'Islamic Review: Jurnal Riset dan Kajian Keislaman',singkatan:'Islamic Review',sinta:'S3',penerbit:'IAIN Surakarta',oaiBase:'https://journal.ipmafa.ac.id/index.php/islamicreview/oai',repoUrl:'https://journal.ipmafa.ac.id/index.php/islamicreview'},
+{id:'j-jsit',nama:'JSIT: Jurnal Studi Islam dan Tafsir',singkatan:'JSIT',sinta:'S3',penerbit:'UIN SGD Bandung',oaiBase:'https://journal.uinsgd.ac.id/index.php/jsit/oai',repoUrl:'https://journal.uinsgd.ac.id/index.php/jsit'},
+{id:'j-ziswaf',nama:'ZISWAF: Jurnal Zakat dan Wakaf',singkatan:'ZISWAF',sinta:'S3',penerbit:'IAIN Kudus',oaiBase:'https://journal.iainkudus.ac.id/index.php/Ziswaf/oai',repoUrl:'https://journal.iainkudus.ac.id/index.php/Ziswaf'},
+// ═══ SINTA 4 ═══
+{id:'j-jihbiz',nama:'JIhbiz: Jurnal Ekonomi, Keuangan dan Perbankan Syariah',singkatan:'JIhbiz',sinta:'S4',penerbit:'UIN Antasari',oaiBase:'https://jurnal.uin-antasari.ac.id/index.php/jihbiz/oai',repoUrl:'https://jurnal.uin-antasari.ac.id/index.php/jihbiz'},
+{id:'j-laamaisyir',nama:'Laa Maisyir: Jurnal Ekonomi Islam',singkatan:'Laa Maisyir',sinta:'S4',penerbit:'UIN Alauddin',oaiBase:'https://journal3.uin-alauddin.ac.id/index.php/laa_maisyir/oai',repoUrl:'https://journal3.uin-alauddin.ac.id/index.php/laa_maisyir'},
+{id:'j-altijary',nama:'Al-Tijary: Jurnal Ekonomi dan Bisnis Islam',singkatan:'Al-Tijary UINSI',sinta:'S4',penerbit:'FEBI UINSI',oaiBase:'https://journal.uinsi.ac.id/index.php/altijary/oai',repoUrl:'https://journal.uinsi.ac.id/index.php/altijary'},
+{id:'j-nurani',nama:'Nurani: Jurnal Kajian Syariah dan Masyarakat',singkatan:'Nurani',sinta:'S4',penerbit:'UIN RF Palembang',oaiBase:'https://jurnal.radenfatah.ac.id/index.php/nurani/oai',repoUrl:'https://jurnal.radenfatah.ac.id/index.php/nurani'},
+{id:'j-misykat',nama:'Misykat al-Anwar: Jurnal Kajian Islam dan Masyarakat',singkatan:'Misykat',sinta:'S4',penerbit:'UIN Jakarta',oaiBase:'https://journal.uinjkt.ac.id/index.php/misykat/oai',repoUrl:'https://journal.uinjkt.ac.id/index.php/misykat'},
+{id:'j-almashraf',nama:'Al-Mashrafiyah: Jurnal Ekonomi, Keuangan dan Perbankan Syariah',singkatan:'Al-Mashrafiyah',sinta:'S4',penerbit:'UIN Alauddin',oaiBase:'https://journal3.uin-alauddin.ac.id/index.php/almashrafiyah/oai',repoUrl:'https://journal3.uin-alauddin.ac.id/index.php/almashrafiyah'},
+{id:'j-alhikmah',nama:'Al-Hikmah: Jurnal Agama dan Ilmu Pengetahuan',singkatan:'Al-Hikmah',sinta:'S4',penerbit:'UIN Riau',oaiBase:'https://journal.uir.ac.id/index.php/alhikmah/oai',repoUrl:'https://journal.uir.ac.id/index.php/alhikmah'},
+{id:'j-finansia',nama:'Finansia: Jurnal Akuntansi dan Perbankan Syariah',singkatan:'Finansia',sinta:'S4',penerbit:'IAIN Pekalongan',oaiBase:'https://e-journal.iainpekalongan.ac.id/index.php/Finansia/oai',repoUrl:'https://e-journal.iainpekalongan.ac.id/index.php/Finansia'},
+{id:'j-juris',nama:'Juris: Jurnal Ilmiah Syariah',singkatan:'Juris',sinta:'S4',penerbit:'IAIN Batusangkar',oaiBase:'https://ejournal.iainbatusangkar.ac.id/ojs/index.php/Juris/oai',repoUrl:'https://ejournal.iainbatusangkar.ac.id/ojs/index.php/Juris'},
+{id:'j-iltizam',nama:'Iltizam: Journal of Shariah Economic Research',singkatan:'Iltizam',sinta:'S4',penerbit:'IAIN Kudus',oaiBase:'https://journal.iainkudus.ac.id/index.php/iltizam/oai',repoUrl:'https://journal.iainkudus.ac.id/index.php/iltizam'},
+{id:'j-eksyar',nama:'El-Mashlahah: Jurnal Hukum Islam dan Pranata Sosial',singkatan:'El-Mashlahah',sinta:'S4',penerbit:'STAI Al-Azhar',oaiBase:'https://ejournal.staialazhar.ac.id/index.php/elmashlahah/oai',repoUrl:'https://ejournal.staialazhar.ac.id/index.php/elmashlahah'},
+{id:'j-adl',nama:'Adl Islamic Economic: Jurnal Kajian Ekonomi Islam',singkatan:'Adl',sinta:'S4',penerbit:'IAIN Ponorogo',oaiBase:'https://jurnal.iainponorogo.ac.id/index.php/asy/oai',repoUrl:'https://jurnal.iainponorogo.ac.id/index.php/asy'},
+{id:'j-oikonomia',nama:'Oikonomia: Jurnal Perbankan dan Keuangan Syariah',singkatan:'Oikonomia',sinta:'S4',penerbit:'UINSI Samarinda',oaiBase:'https://journal.uinsi.ac.id/index.php/oikonomia/oai',repoUrl:'https://journal.uinsi.ac.id/index.php/oikonomia'},
+// ═══ SINTA 5-6 & Nasional ═══
+{id:'j-jiei',nama:'JIEI: Jurnal Ilmiah Ekonomi Islam',singkatan:'JIEI UINSI',sinta:'S5',penerbit:'FEBI UINSI',oaiBase:'https://journal.uinsi.ac.id/index.php/jiei/oai',repoUrl:'https://journal.uinsi.ac.id/index.php/jiei'},
+{id:'j-ekbis',nama:'EkBis: Jurnal Ekonomi dan Bisnis',singkatan:'EkBis',sinta:'S5',penerbit:'UIN RMS Surakarta',oaiBase:'https://ejournal.uinsaid.ac.id/index.php/ekbis/oai',repoUrl:'https://ejournal.uinsaid.ac.id/index.php/ekbis'},
+{id:'j-almasharif',nama:'Al-Masharif: Jurnal Ilmu Ekonomi dan Keislaman',singkatan:'Al-Masharif',sinta:'S5',penerbit:'UIN SYAHADA',oaiBase:'https://jurnal.iain-padangsidimpuan.ac.id/index.php/Al-masharif/oai',repoUrl:'https://jurnal.iain-padangsidimpuan.ac.id/index.php/Al-masharif'},
+{id:'j-syarikat',nama:'Syarikat: Jurnal Rumpun Ekonomi Syariah',singkatan:'Syarikat',sinta:'S5',penerbit:'STAIN Bengkalis',oaiBase:'https://ejournal.staibengkalis.ac.id/index.php/syarikat/oai',repoUrl:'https://ejournal.staibengkalis.ac.id/index.php/syarikat'},
+{id:'j-qawanin',nama:'Qawanin: Journal of Economic Syaria Law',singkatan:'Qawanin',sinta:'S5',penerbit:'IAIN Purwokerto',oaiBase:'https://syekhnurjati.ac.id/jurnal/index.php/qawanin/oai',repoUrl:'https://syekhnurjati.ac.id/jurnal/index.php/qawanin'},
+{id:'j-iqtisadiya',nama:'Iqtisadiya: Jurnal Ilmu Ekonomi Islam',singkatan:'Iqtisadiya',sinta:'S5',penerbit:'STAIN Pamekasan',oaiBase:'https://ejournal.iainmadura.ac.id/index.php/iqtisadiya/oai',repoUrl:'https://ejournal.iainmadura.ac.id/index.php/iqtisadiya'},
+{id:'j-jpes',nama:'JPES: Jurnal Pendidikan Ekonomi Syariah',singkatan:'JPES',sinta:'S5',penerbit:'UIN SGD Bandung',oaiBase:'https://journal.uinsgd.ac.id/index.php/jpes/oai',repoUrl:'https://journal.uinsgd.ac.id/index.php/jpes'},
+{id:'j-fenomena',nama:'Fenomena: Jurnal Penelitian',singkatan:'Fenomena UINSI',sinta:'S4',penerbit:'UINSI Samarinda',oaiBase:'https://journal.uinsi.ac.id/index.php/fenomena/oai',repoUrl:'https://journal.uinsi.ac.id/index.php/fenomena'},
+{id:'j-albanjari',nama:'Al-Banjari: Jurnal Ilmiah Ilmu-Ilmu Keislaman',singkatan:'Al-Banjari',sinta:'S3',penerbit:'UIN Antasari',oaiBase:'https://jurnal.uin-antasari.ac.id/index.php/al-banjari/oai',repoUrl:'https://jurnal.uin-antasari.ac.id/index.php/al-banjari'},
+{id:'j-iltizamj',nama:'Iltizam Journal of Shariah Economic Research',singkatan:'IltizamJ',sinta:'S5',penerbit:'IAIN Kudus',oaiBase:'https://journal.iainkudus.ac.id/index.php/iltizam/oai',repoUrl:'https://journal.iainkudus.ac.id/index.php/iltizam'},
+{id:'j-eksyiar',nama:'Eksyar: Jurnal Ekonomi Syariah dan Bisnis Islam',singkatan:'Eksyar',sinta:'S5',penerbit:'STAIN Ponorogo',oaiBase:'https://jurnal.iainponorogo.ac.id/index.php/eksyar/oai',repoUrl:'https://jurnal.iainponorogo.ac.id/index.php/eksyar'},
+{id:'j-banki',nama:'Bank-i: Jurnal Lembaga Keuangan Syariah',singkatan:'Bank-i',sinta:'S5',penerbit:'IAIN Pontianak',oaiBase:'https://jurnalbanki.com/index.php/banki/oai',repoUrl:'https://jurnalbanki.com/index.php/banki'},
+{id:'j-islaminomic',nama:'Islaminomic: Jurnal Ekonomi dan Perbankan Syariah',singkatan:'Islaminomic',sinta:'S5',penerbit:'UIN Banten',oaiBase:'https://journal.uinbanten.ac.id/index.php/islaminomic/oai',repoUrl:'https://journal.uinbanten.ac.id/index.php/islaminomic'},
+{id:'j-alkharaj',nama:'Al-Kharaj: Jurnal Ekonomi, Keuangan & Bisnis Syariah',singkatan:'Al-Kharaj',sinta:'S4',penerbit:'UIN Raden Mas',oaiBase:'https://ejournal.uinsaid.ac.id/index.php/al-kharaj/oai',repoUrl:'https://ejournal.uinsaid.ac.id/index.php/al-kharaj'},
+{id:'j-almal',nama:'Al-Mal: Jurnal Akuntansi dan Keuangan Islam',singkatan:'Al-Mal',sinta:'S5',penerbit:'UIN Raden Intan',oaiBase:'https://ejournal.radenintan.ac.id/index.php/al-mal/oai',repoUrl:'https://ejournal.radenintan.ac.id/index.php/al-mal'},
+{id:'j-almawaddah',nama:'Al-Mawaddah: Jurnal Hukum Keluarga Islam',singkatan:'Al-Mawaddah',sinta:'S5',penerbit:'UINSI Samarinda',oaiBase:'https://journal.uinsi.ac.id/index.php/almawaddah/oai',repoUrl:'https://journal.uinsi.ac.id/index.php/almawaddah'},
+{id:'j-syariah',nama:'Syariah: Jurnal Hukum dan Pemikiran',singkatan:'Syariah UIN Ants',sinta:'S4',penerbit:'UIN Antasari',oaiBase:'https://jurnal.uin-antasari.ac.id/index.php/syariah/oai',repoUrl:'https://jurnal.uin-antasari.ac.id/index.php/syariah'},
+{id:'j-tabsyir',nama:'Tabsyir: Jurnal Dakwah dan Komunikasi',singkatan:'Tabsyir',sinta:'S5',penerbit:'IAIN Kudus',oaiBase:'https://journal.iainkudus.ac.id/index.php/komunikasi/oai',repoUrl:'https://journal.iainkudus.ac.id/index.php/komunikasi'},
+{id:'j-alintaj',nama:'Al-Intaj: Jurnal Ekonomi dan Perbankan Syariah',singkatan:'Al-Intaj',sinta:'S5',penerbit:'IAIN Bengkulu',oaiBase:'https://ejournal.iainbengkulu.ac.id/index.php/Al-Intaj/oai',repoUrl:'https://ejournal.iainbengkulu.ac.id/index.php/Al-Intaj'},
+{id:'j-tawazun',nama:'Tawazun: Journal of Sharia Economic Law',singkatan:'Tawazun',sinta:'S5',penerbit:'UIN SGD Bandung',oaiBase:'https://journal.uinsgd.ac.id/index.php/tawazun/oai',repoUrl:'https://journal.uinsgd.ac.id/index.php/tawazun'},
+{id:'j-alhikmah2',nama:'Al-Hikmah: Media Dakwah, Komunikasi, Sosial dan Kebudayaan',singkatan:'Al-Hikmah Dakwah',sinta:'S5',penerbit:'UIN Antasari',oaiBase:'https://jurnal.uin-antasari.ac.id/index.php/alhikmah/oai',repoUrl:'https://jurnal.uin-antasari.ac.id/index.php/alhikmah'},
+];
+const JURNAL_STATS = {
+  total: JURNAL_REGISTRY.length,
+  sinta12: JURNAL_REGISTRY.filter(j => j.sinta === 'S1' || j.sinta === 'S2').length,
+  sinta34: JURNAL_REGISTRY.filter(j => j.sinta === 'S3' || j.sinta === 'S4').length,
+  sinta56: JURNAL_REGISTRY.filter(j => j.sinta === 'S5' || j.sinta === 'S6' || j.sinta === 'Nasional').length,
+};
+
+// ============================================
 // UINSI REPOSITORY TAB — VERSI CANGGIH MULTI-LAYER CORS BYPASS
 // Strategi:
 // 1. Expanded Seed 170 data (hardcoded, always available)
@@ -6610,8 +6681,87 @@ const [fetchProgress, setFetchProgress] = React.useState({ loaded: UINSI_REPOSIT
 const [fetchLog, setFetchLog] = React.useState([]);
 const [proxyStatus, setProxyStatus] = React.useState({}); // {proxyName: 'ok'|'fail'}
 const [showLog, setShowLog] = React.useState(false);
+const [uinsiCopiedFmt, setUinsiCopiedFmt] = React.useState(null);
 const abortRef = React.useRef(false);
 const stickyProxyIdx = React.useRef(-1); // indeks proxy yg terakhir berhasil
+
+// ── Copy citation helper ──
+const copyUinsiCitation = (fmt, text) => {
+  navigator.clipboard.writeText(text).then(() => {
+    setUinsiCopiedFmt(fmt);
+    setTimeout(() => setUinsiCopiedFmt(null), 2000);
+  });
+};
+
+// ── Print UINSI article detail ──
+const handlePrintUinsi = (item) => {
+  const w = window.open('', '_blank', 'width=800,height=900');
+  if (!w) { alert('Pop-up diblokir. Izinkan pop-up untuk cetak.'); return; }
+  const now = new Date();
+  const tgl = now.toLocaleDateString('id-ID', {day:'numeric',month:'long',year:'numeric'});
+  const jam = now.toLocaleTimeString('id-ID', {hour:'2-digit',minute:'2-digit'});
+  const authorFull = item.penulis || '-';
+  const year = item.tahun || 'n.d.';
+  const title = item.judul || '-';
+  const prodi = item.prodi || 'FEBI';
+  const citAPA = `${authorFull}. (${year}). ${title}. Skripsi, ${prodi}, FEBI UINSI Samarinda.`;
+  const citMLA = `${authorFull}. "${title}." Skripsi, Program Studi ${prodi}, FEBI UINSI Samarinda, ${year}.`;
+  const citChicago = `${authorFull}. "${title}." Skripsi, Universitas Islam Negeri Sultan Aji Muhammad Idris Samarinda, ${year}.`;
+  const citIEEE = `${authorFull}, "${title}," Skripsi, ${prodi}, FEBI UINSI Samarinda, ${year}.`;
+  const prodiColor = prodi === 'Ekonomi Syariah' ? '#059669' : prodi === 'Perbankan Syariah' ? '#7c3aed' : '#2563eb';
+
+  w.document.write(`<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><title>${title} — UINSI Samarinda</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Tahoma,sans-serif;padding:40px;color:#1e293b;max-width:800px;margin:0 auto;line-height:1.6}
+.header{background:linear-gradient(135deg,${prodiColor},#1e40af);color:white;padding:20px 28px;border-radius:12px;margin-bottom:24px}
+.header h1{font-size:13px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;opacity:.85;margin-bottom:4px}
+.header h2{font-size:18px;font-weight:700;line-height:1.4}
+.badge{display:inline-block;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:800;color:white;background:${prodiColor};margin-top:8px}
+.section{margin-bottom:18px;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden}
+.section-title{background:#f8fafc;padding:10px 16px;font-weight:700;font-size:12px;color:#475569;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;gap:6px}
+.section-body{padding:16px}
+.meta-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.meta-item{padding:10px 14px;background:#f8fafc;border-radius:8px;border:1px solid #e5e7eb}
+.meta-label{font-size:9px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.meta-value{font-size:13px;font-weight:600;color:#1e293b}
+.abstrak{font-size:13px;color:#374151;text-align:justify;line-height:1.7}
+.cit-box{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:14px;margin-top:8px}
+.cit-label{font-size:10px;font-weight:800;color:#92400e;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.cit-text{font-size:12px;color:#78350f;line-height:1.5;font-style:italic}
+.prov{font-size:11px;color:#6b7280;margin-top:12px;padding-top:12px;border-top:1px solid #e5e7eb}
+.footer{margin-top:24px;padding-top:16px;border-top:2px solid ${prodiColor};display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#6b7280}
+.btn-p{margin-top:20px;padding:10px 24px;background:${prodiColor};color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px}
+@media print{.btn-p{display:none}.header{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style></head><body>
+<div class="header">
+<h1>🌐 Detail Skripsi — Repository UINSI Samarinda</h1>
+<h2>${title}</h2>
+<span class="badge">${prodi} — FEBI UINSI</span>
+</div>
+<div class="section"><div class="section-title">📋 Metadata Skripsi</div><div class="section-body">
+<div class="meta-grid">
+<div class="meta-item"><div class="meta-label">Penulis</div><div class="meta-value">${authorFull}</div></div>
+<div class="meta-item"><div class="meta-label">Tahun</div><div class="meta-value">${year}</div></div>
+<div class="meta-item"><div class="meta-label">Program Studi</div><div class="meta-value">${prodi}</div></div>
+<div class="meta-item"><div class="meta-label">Institusi</div><div class="meta-value">UINSI Samarinda</div></div>
+<div class="meta-item"><div class="meta-label">Fakultas</div><div class="meta-value">FEBI</div></div>
+<div class="meta-item"><div class="meta-label">URL Repository</div><div class="meta-value" style="font-size:10px;word-break:break-all">${item.url||'-'}</div></div>
+</div></div></div>
+${item.abstrak?`<div class="section"><div class="section-title">📝 Abstrak</div><div class="section-body"><p class="abstrak">${item.abstrak}</p></div></div>`:''}
+<div class="section"><div class="section-title">📎 Sitasi</div><div class="section-body">
+<div class="cit-box"><div class="cit-label">APA Style</div><div class="cit-text">${citAPA}</div></div>
+<div class="cit-box"><div class="cit-label">MLA Style</div><div class="cit-text">${citMLA}</div></div>
+<div class="cit-box"><div class="cit-label">Chicago Style</div><div class="cit-text">${citChicago}</div></div>
+<div class="cit-box"><div class="cit-label">IEEE Style</div><div class="cit-text">${citIEEE}</div></div>
+</div></div>
+<div class="prov">🔐 <strong>Provenance:</strong> Data diambil via OAI-PMH Protocol dari repository.uinsi.ac.id (DSpace). Diindeks oleh SiBIRO FEBI UINSI Samarinda pada ${tgl}, ${jam} WITA.</div>
+<div class="footer"><div>SiBIRO — Sistem Deteksi Kemiripan Karya Ilmiah<br>FEBI UINSI Samarinda</div><div>${tgl}<br>${jam} WITA</div></div>
+<center><button class="btn-p" onclick="window.print()">🖨️ Cetak / Simpan PDF</button></center>
+</body></html>`);
+  w.document.close();
+  setTimeout(() => w.focus(), 200);
+};
 
 const addLog = (msg, type='info') => {
 setFetchLog(prev => [...prev.slice(-49), { msg, type, time: new Date().toLocaleTimeString() }]);
@@ -6678,13 +6828,52 @@ return winner.value;
 throw new Error('Semua proxy gagal untuk URL ini');
 };
 
-// ── Parse OAI-PMH XML ──
-const parseOaiXml = (xmlText, prodi) => {
+// ── Parse OAI-PMH XML (auto-detect prodi dari setSpec + content) ──
+const parseOaiXml = (xmlText, defaultProdi) => {
 const parser = new DOMParser();
 const doc = parser.parseFromString(xmlText, 'text/xml');
 if (doc.querySelector('parsererror')) return { items: [], resumption: null };
 const records = doc.querySelectorAll('record');
 const items = [];
+// Auto-detect prodi from setSpec or content keywords
+const detectProdi = (rec, text) => {
+if (defaultProdi && defaultProdi !== 'UINSI') return defaultProdi;
+const specs = Array.from(rec.querySelectorAll('header setSpec')).map(s=>s.textContent||'');
+for (const sp of specs) {
+if (sp.includes('_41')) return 'Ekonomi Syariah';
+if (sp.includes('_42')) return 'Perbankan Syariah';
+if (sp.includes('_43')) return 'Pendidikan Agama Islam';
+if (sp.includes('_44')) return 'Pendidikan Bahasa Arab';
+if (sp.includes('_45')) return 'Pendidikan Bahasa Inggris';
+if (sp.includes('_46')) return 'PGMI';
+if (sp.includes('_47')) return 'PIAUD';
+if (sp.includes('_48')) return 'Manajemen Pendidikan Islam';
+if (sp.includes('_49')) return 'Hukum Keluarga Islam';
+if (sp.includes('_50')) return 'Hukum Tata Negara';
+if (sp.includes('_51')) return 'Hukum Ekonomi Syariah';
+if (sp.includes('_52')) return 'Ilmu Al-Quran dan Tafsir';
+if (sp.includes('_53')) return 'Bimbingan Konseling Islam';
+if (sp.includes('_54')) return 'Komunikasi Penyiaran Islam';
+if (sp.includes('_55')) return 'Psikologi Islam';
+}
+const t = (text||'').toLowerCase();
+if (t.includes('perbankan syariah')||t.includes('bank syariah')) return 'Perbankan Syariah';
+if (t.includes('ekonomi syariah')||t.includes('ekonomi islam')) return 'Ekonomi Syariah';
+if (t.includes('pendidikan agama islam')) return 'Pendidikan Agama Islam';
+if (t.includes('bahasa arab')) return 'Pendidikan Bahasa Arab';
+if (t.includes('english')||t.includes('bahasa inggris')) return 'Pendidikan Bahasa Inggris';
+if (t.includes('hukum keluarga')) return 'Hukum Keluarga Islam';
+if (t.includes('hukum tata negara')||t.includes('siyasah')) return 'Hukum Tata Negara';
+if (t.includes('hukum ekonomi syariah')||t.includes('muamalah')) return 'Hukum Ekonomi Syariah';
+if (t.includes('bimbingan konseling')) return 'Bimbingan Konseling Islam';
+if (t.includes('komunikasi')||t.includes('penyiaran')||t.includes('dakwah')) return 'Komunikasi Penyiaran Islam';
+if (t.includes('al-quran')||t.includes('tafsir')) return 'Ilmu Al-Quran dan Tafsir';
+if (t.includes('psikologi')) return 'Psikologi Islam';
+if (t.includes('pgmi')||t.includes('madrasah ibtidaiyah')) return 'PGMI';
+if (t.includes('piaud')||t.includes('anak usia dini')) return 'PIAUD';
+if (t.includes('manajemen pendidikan')) return 'Manajemen Pendidikan Islam';
+return 'UINSI';
+};
 records.forEach((rec, i) => {
 const deleted = rec.querySelector('header')?.getAttribute('status') === 'deleted';
 if (deleted) return;
@@ -6698,12 +6887,13 @@ const judul = titles.length > 0 ? titles[0].textContent.trim() : '';
 const penulis = creators.length > 0 ? creators[0].textContent.trim() : '';
 const tahunRaw = dates.length > 0 ? dates[0].textContent.trim() : '';
 const tahun = tahunRaw.substring(0, 4);
-const abstrak = descs.length > 0 ? descs[0].textContent.trim().substring(0, 400) : '';
+const abstrak = descs.length > 0 ? descs[0].textContent.trim().substring(0, 500) : '';
+const prodi = detectProdi(rec, abstrak + ' ' + judul);
 if (judul && penulis) {
 items.push({
 id: 'oai_' + handle.replace(/\//g,'_') + '_' + i,
 judul, penulis, prodi, tahun,
-abstrak: abstrak || `${penulis}, ${tahun}. ${judul}. Skripsi, ${prodi}, FEBI UINSI Samarinda.`,
+abstrak: abstrak || `${penulis}, ${tahun}. ${judul}. Skripsi, ${prodi}, UINSI Samarinda.`,
 url: `https://repository.uinsi.ac.id/handle/${handle}`
 });
 }
@@ -6806,7 +6996,8 @@ const cache = await DB.get('uinsi_repository_cache');
 if (!cache || !cache.data || !cache.count) return null;
 const savedDate = cache.savedAt ? new Date(cache.savedAt).toLocaleDateString('id-ID') : '?';
 if (!silent) addLog(`✅ Cache Firebase loaded: ${cache.count} item (disimpan: ${savedDate})`, 'success');
-return cache.data;
+// Return object with data + metadata for incremental logic
+return { items: cache.data, savedAt: cache.savedAt || 0, count: cache.count };
 } catch(e) { return null; }
 };
 
@@ -6820,67 +7011,197 @@ return Array.from(seen.values());
 };
 
 // ── MAIN FETCH ORCHESTRATOR — ES & PS diambil PARALLEL ──
+// ── MAIN FETCH ORCHESTRATOR — FULL REPOSITORY + INCREMENTAL ──
 const fetchAllFromUinsi = async () => {
 if (fetchStatus === 'loading') return;
 abortRef.current = false;
-stickyProxyIdx.current = -1; // reset sticky proxy
+stickyProxyIdx.current = -1;
 setFetchStatus('loading');
 setFetchLog([]);
 setProxyStatus({});
-addLog('🚀 Memulai fetch data repository UINSI (Parallel Mode)...', 'info');
+addLog('🚀 FULL REPOSITORY HARVEST — seluruh fakultas UINSI...', 'info');
 
-// Step 1: Cek Firebase cache
+// ── Step 1: Load Firebase cache (display immediately) ──
 setFetchStatus('checking_cache');
-addLog('🔍 Memeriksa cache Firebase...', 'info');
-const cachedData = await loadCacheFromFirebase();
-if (cachedData && cachedData.length > 150) {
-const merged = mergeData(UINSI_REPOSITORY_DATA, cachedData);
+addLog('🔍 Memuat cache Firebase...', 'info');
+const cacheResult = await loadCacheFromFirebase();
+let cacheItems = [];
+let cacheSavedAt = 0;
+
+if (cacheResult && cacheResult.items && cacheResult.items.length > 150) {
+cacheItems = cacheResult.items;
+cacheSavedAt = cacheResult.savedAt || 0;
+const merged = mergeData(UINSI_REPOSITORY_DATA, cacheItems);
 setAllData(merged);
 if (onDataChange) onDataChange(merged);
-setFetchProgress({ loaded: merged.length, total: Math.max(800, merged.length), proxy: 'Firebase Cache', batch: 0 });
+setFetchProgress({ loaded: merged.length, total: merged.length, proxy: 'Firebase Cache', batch: 0 });
+addLog(`✅ Cache: ${merged.length} skripsi (saved: ${new Date(cacheSavedAt).toLocaleDateString('id-ID')})`, 'success');
+
+// Skip live fetch if cache < 6 hours old AND has significant data
+const hoursOld = (Date.now() - cacheSavedAt) / (1000*60*60);
+if (merged.length > 500 && hoursOld < 6) {
 setFetchStatus('done');
-addLog(`✅ Data dari cache Firebase: ${merged.length} skripsi`, 'success');
+addLog(`✅ Cache fresh (${hoursOld.toFixed(1)} jam). ${merged.length} skripsi siap.`, 'success');
 return;
 }
+addLog(`ℹ️ Cache ${hoursOld.toFixed(1)} jam lalu — melanjutkan fetch incremental...`, 'info');
+}
 
-// Step 2: Fetch live OAI-PMH — ES & PS secara PARALLEL
+// ── Step 2: FULL OAI-PMH harvest (tanpa set filter) ──
 setFetchStatus('loading');
+const BASE = 'https://repository.uinsi.ac.id/oai/request';
+let allFetched = [];
+let token = null;
+let batch = 0;
+const MAX_BATCH = 200;
 
-// Progress per koleksi
-let esCount = 0, psCount = 0;
-const updateProgress = () => {
-const loaded = UINSI_REPOSITORY_DATA.length + esCount + psCount;
-setFetchProgress(p => ({ ...p, loaded, total: Math.max(800, loaded + 50), proxy: 'OAI-PMH Parallel' }));
-};
+addLog('⚡ [1/3] Full OAI-PMH harvest (seluruh repository)...', 'info');
 
-addLog('⚡ Parallel fetch: Ekonomi Syariah + Perbankan Syariah serentak...', 'info');
+do {
+if (abortRef.current) break;
+const url = token
+? `${BASE}?verb=ListRecords&resumptionToken=${encodeURIComponent(token)}`
+: `${BASE}?verb=ListRecords&metadataPrefix=oai_dc`;
+try {
+let result = await fetchViaProxy(url, `batch${batch+1}`);
+if (!result?.text) {
+stickyProxyIdx.current = -1;
+result = await fetchViaProxy(url, `batch${batch+1} [retry]`);
+}
+if (result?.text) {
+const parsed = parseOaiXml(result.text, 'UINSI');
+allFetched.push(...parsed.items);
+token = parsed.resumption; batch++;
+if (batch % 5 === 0 || !token) addLog(`📦 batch${batch}: +${parsed.items.length} (total: ${allFetched.length}) ${token?'▸':'END'}`, 'success');
+setFetchProgress({ loaded: UINSI_REPOSITORY_DATA.length + allFetched.length, total: Math.max(allFetched.length + 500, cacheItems.length), proxy: 'OAI-PMH Full', batch });
+} else {
+addLog('⚠️ Proxy gagal pada batch ' + (batch+1) + ', lanjut per-koleksi...', 'warn');
+break;
+}
+} catch(e) { addLog(`⚠️ batch${batch+1}: ${e.message}`, 'warn'); break; }
+if (token) await new Promise(r => setTimeout(r, 60));
+} while (token && batch < MAX_BATCH && !abortRef.current);
 
-const [esResult, psResult] = await Promise.allSettled([
-fetchCollectionOai('col_123456789_41', 'Ekonomi Syariah', (n) => { esCount = n; updateProgress(); }),
-fetchCollectionOai('col_123456789_42', 'Perbankan Syariah', (n) => { psCount = n; updateProgress(); })
-]);
+addLog(`🏁 [1/3] Full harvest: ${allFetched.length} items (${batch} batch)`, 'success');
 
-const esItems = esResult.status === 'fulfilled' ? esResult.value : [];
-const psItems = psResult.status === 'fulfilled' ? psResult.value : [];
+// ── Step 3: ALWAYS per-collection fetch (semua fakultas + semua komunitas) — fills gaps ──
+// Data real dari homepage: E-Skripsi:3723 E-Thesis:408 E-Books:212 Jurnal-Dosen:167 Jurnal-Mhs:89 Prosiding:65 Laporan:47
+const UINSI_COLS = [
+// ── E-SKRIPSI (community 9) — 3723 items ──
+// FEBI
+{s:'col_123456789_41',p:'Ekonomi Syariah'},{s:'col_123456789_42',p:'Perbankan Syariah'},
+// FTIK
+{s:'col_123456789_43',p:'Pendidikan Agama Islam'},{s:'col_123456789_44',p:'Pendidikan Bahasa Arab'},
+{s:'col_123456789_45',p:'Pendidikan Bahasa Inggris'},{s:'col_123456789_46',p:'PGMI'},
+{s:'col_123456789_47',p:'PIAUD'},{s:'col_123456789_48',p:'Manajemen Pendidikan Islam'},
+// Fakultas Syariah
+{s:'col_123456789_49',p:'Hukum Keluarga Islam'},{s:'col_123456789_50',p:'Hukum Tata Negara'},
+{s:'col_123456789_51',p:'Hukum Ekonomi Syariah'},
+// FUAD
+{s:'col_123456789_52',p:'Ilmu Al-Quran dan Tafsir'},{s:'col_123456789_53',p:'Bimbingan Konseling Islam'},
+{s:'col_123456789_54',p:'Komunikasi Penyiaran Islam'},{s:'col_123456789_55',p:'Psikologi Islam'},
+// Extended prodi
+{s:'col_123456789_59',p:'Tadris Matematika'},{s:'col_123456789_60',p:'Tadris IPA'},
+{s:'col_123456789_61',p:'Tadris IPS'},
+// ── E-THESIS / Pascasarjana (community 56) — 408 items ──
+{s:'com_123456789_56',p:'E-Thesis (Pascasarjana)'},
+{s:'col_123456789_56',p:'Magister PAI'},{s:'col_123456789_57',p:'Magister Ekonomi Syariah'},
+{s:'col_123456789_58',p:'Magister Hukum Islam'},
+// ── E-BOOKS (community 65) — 212 items ──
+{s:'com_123456789_65',p:'E-Books'},
+// ── JURNAL DOSEN (community 690) — 167 items ──
+{s:'com_123456789_690',p:'Jurnal Dosen'},
+// ── JURNAL MAHASISWA (community 64) — 89 items ──
+{s:'com_123456789_64',p:'Jurnal Mahasiswa'},
+// ── PROSIDING (community 916) — 65 items ──
+{s:'com_123456789_916',p:'Prosiding'},
+// ── LAPORAN PENELITIAN (community 738) — 47 items ──
+{s:'com_123456789_738',p:'Laporan Penelitian'},
+// ── E-DISERTASI (community 3109) — 1 item ──
+{s:'com_123456789_3109',p:'E-Disertasi'},
+// ── PIDATO GURU BESAR (community 4674) — 6 items ──
+{s:'com_123456789_4674',p:'Pidato Guru Besar'},
+// ── Extra DSpace cols ──
+{s:'col_123456789_62',p:'Ilmu Perpustakaan'},{s:'col_123456789_63',p:'Sosiologi Agama'},
+{s:'col_123456789_64',p:'Manajemen Dakwah'},{s:'col_123456789_65',p:'Pengembangan Masyarakat Islam'},
+];
+if (!abortRef.current) {
+addLog(`⚡ [2/3] Per-koleksi fetch (${UINSI_COLS.length} koleksi)...`, 'info');
+let colDone = 0;
+for (let i = 0; i < UINSI_COLS.length && !abortRef.current; i += 4) {
+const chunk = UINSI_COLS.slice(i, i + 4);
+const results = await Promise.allSettled(
+chunk.map(c => fetchCollectionOai(c.s, c.p, (n) => {
+setFetchProgress(p => ({...p, loaded: UINSI_REPOSITORY_DATA.length + allFetched.length + n, proxy: c.p}));
+}))
+);
+results.forEach((r, idx) => {
+colDone++;
+if (r.status === 'fulfilled' && r.value.length > 0) {
+allFetched.push(...r.value);
+addLog(`✅ ${chunk[idx].p}: ${r.value.length} skripsi`, 'success');
+}
+});
+setFetchProgress(p => ({...p, loaded: UINSI_REPOSITORY_DATA.length + allFetched.length, proxy: `Koleksi ${colDone}/${UINSI_COLS.length}`}));
+await new Promise(r => setTimeout(r, 100));
+}
+addLog(`🏁 [2/3] Per-koleksi: ${allFetched.length} total items`, 'success');
+}
 
-if (esResult.status === 'rejected') addLog(`❌ ES gagal: ${esResult.reason?.message}`, 'error');
-if (psResult.status === 'rejected') addLog(`❌ PS gagal: ${psResult.reason?.message}`, 'error');
+// ── Step 4: ALWAYS auto-discover + fetch ALL sets ──
+if (!abortRef.current) {
+try {
+addLog('🔍 [3/3] Auto-discover via ListSets...', 'info');
+const sr = await fetchViaProxy(`${BASE}?verb=ListSets`, 'ListSets');
+if (sr?.text) {
+const sd = new DOMParser().parseFromString(sr.text, 'text/xml');
+const knownSets = new Set(UINSI_COLS.map(c => c.s));
+const extras = [];
+sd.querySelectorAll('set').forEach(s => {
+const spec = s.querySelector('setSpec')?.textContent?.trim();
+if (spec?.startsWith('col_') && !knownSets.has(spec)) {
+extras.push({s: spec, p: s.querySelector('setName')?.textContent?.trim() || spec});
+}
+});
+if (extras.length > 0) {
+addLog(`🔍 ${extras.length} koleksi tambahan ditemukan — fetching semua...`, 'info');
+for (let i = 0; i < extras.length && !abortRef.current; i += 4) {
+const chunk = extras.slice(i, i + 4);
+const results = await Promise.allSettled(
+chunk.map(ex => fetchCollectionOai(ex.s, ex.p, () => {}))
+);
+results.forEach((r, idx) => {
+if (r.status === 'fulfilled' && r.value.length > 0) {
+allFetched.push(...r.value);
+addLog(`✅ [Auto] ${chunk[idx].p}: ${r.value.length}`, 'success');
+}
+});
+await new Promise(r => setTimeout(r, 100));
+}
+} else {
+addLog('ℹ️ Tidak ada koleksi tambahan', 'info');
+}
+}
+} catch(e) { addLog('⚠️ ListSets: ' + e.message, 'warn'); }
+}
 
-addLog(`✅ ES: ${esItems.length} | PS: ${psItems.length} | Total fetch: ${esItems.length + psItems.length}`, 'success');
+// ── Step 5: Merge ALL sources (seed + cache + freshly fetched) + deduplicate ──
+const allSources = [...cacheItems, ...allFetched];
+const merged = mergeData(UINSI_REPOSITORY_DATA, allSources);
 
-const allItems = [...esItems, ...psItems];
-const merged = mergeData(UINSI_REPOSITORY_DATA, allItems);
-
-if (allItems.length > 20) {
+if (merged.length > UINSI_REPOSITORY_DATA.length) {
 setAllData(merged);
 if (onDataChange) onDataChange(merged);
-setFetchProgress({ loaded: merged.length, total: Math.max(800, merged.length), proxy: 'OAI-PMH Parallel', batch: allItems.length });
+setFetchProgress({ loaded: merged.length, total: merged.length, proxy: 'Complete ✓', batch: allFetched.length });
 setFetchStatus('done');
-addLog(`🎉 SELESAI! Total: ${merged.length} skripsi dimuat (ES:${esItems.length} + PS:${psItems.length} + seed:${UINSI_REPOSITORY_DATA.length})`, 'success');
+const pm = {}; merged.forEach(d => { const p = d.prodi||'Lainnya'; pm[p]=(pm[p]||0)+1; });
+const ps = Object.entries(pm).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([k,v])=>`${k}:${v}`).join(' · ');
+addLog(`🎉 SELESAI! Total: ${merged.length} skripsi (cache:${cacheItems.length} + fresh:${allFetched.length} + seed:${UINSI_REPOSITORY_DATA.length} → dedup:${merged.length})`, 'success');
+addLog(`📊 ${ps}`, 'info');
 await saveCacheToFirebase(merged);
 } else {
 setFetchStatus('partial');
-addLog(`⚠️ Fetch terbatas. Data seed ${UINSI_REPOSITORY_DATA.length} tetap aktif.`, 'warn');
+addLog(`⚠️ Fetch terbatas. Seed ${UINSI_REPOSITORY_DATA.length} tetap aktif.`, 'warn');
 }
 };
 
@@ -6915,12 +7236,12 @@ const autoLoad = async () => {
 if (!db) return;
 try {
 setFetchStatus('checking_cache');
-const cachedData = await loadCacheFromFirebase(true);
-if (cachedData && cachedData.length > UINSI_REPOSITORY_DATA.length) {
-const merged = mergeData(UINSI_REPOSITORY_DATA, cachedData);
+const cacheResult = await loadCacheFromFirebase(true);
+if (cacheResult && cacheResult.items && cacheResult.items.length > UINSI_REPOSITORY_DATA.length) {
+const merged = mergeData(UINSI_REPOSITORY_DATA, cacheResult.items);
 setAllData(merged);
 if (onDataChange) onDataChange(merged);
-setFetchProgress({ loaded: merged.length, total: Math.max(800, merged.length), proxy: 'Firebase Cache', batch: 0 });
+setFetchProgress({ loaded: merged.length, total: merged.length, proxy: 'Firebase Cache', batch: 0 });
 setFetchStatus('done');
 } else {
 setFetchStatus('idle');
@@ -6932,9 +7253,10 @@ autoLoad();
 
 const tahunList = [...new Set(allData.map(r => r.tahun).filter(Boolean))].sort((a,b)=>b-a);
 
-// Coverage dihitung dinamis — sesuai data aktual atau estimasi minimum 800
-const TOTAL_ESTIMATE = Math.max(800, allData.length);
-const coveragePercent = Math.round((allData.length / TOTAL_ESTIMATE) * 100);
+// Real count dari repository.uinsi.ac.id homepage:
+// E-Skripsi:3723 + E-Thesis:408 + E-Books:212 + Jurnal Dosen:167 + Jurnal Mhs:89 + Prosiding:65 + Laporan:47 + lainnya:25 = ~4736
+const UINSI_REAL_TOTAL = 4736;
+const coveragePercent = Math.min(100, Math.round((allData.length / UINSI_REAL_TOTAL) * 100));
 
 // ── Pagination ──
 const Pagination = () => {
@@ -6965,14 +7287,13 @@ return (
 <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-5 text-white">
 <div className="flex items-start justify-between gap-4 flex-wrap">
 <div className="flex-1 min-w-0">
-<h3 className="text-lg font-bold mb-1 flex items-center gap-2">🌐 Repository FEBI UINSI Samarinda
-<span className="text-xs bg-white/20 px-2 py-0.5 rounded-full">⚡ Parallel Proxy Race</span>
+<h3 className="text-lg font-bold mb-1 flex items-center gap-2">🌐 Repository UINSI Samarinda (Full)
+<span className="text-xs bg-white/20 px-2 py-0.5 rounded-full">⚡ Full Repository Harvest</span>
 </h3>
-<p className="text-blue-100 text-sm mb-2">Data skripsi dari <strong>repository.uinsi.ac.id</strong> — ES + PS (Fetch Paralel Otomatis)</p>
+<p className="text-blue-100 text-sm mb-2">Data dari <strong>SELURUH komunitas</strong> repository.uinsi.ac.id — E-Skripsi · E-Thesis · E-Books · Jurnal · Prosiding (Real total: ~4.736)</p>
 <div className="flex flex-wrap gap-2">
-<span className="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold">📂 ES: {allData.filter(r=>r.prodi==='Ekonomi Syariah').length}</span>
-<span className="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold">📂 PS: {allData.filter(r=>r.prodi==='Perbankan Syariah').length}</span>
-<span className="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold">📦 Loaded: {allData.length}</span>
+<span className="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold">🏛️ {[...new Set(allData.map(r=>r.prodi).filter(Boolean))].length} Prodi</span>
+<span className="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold">📦 Total: {allData.length.toLocaleString()}/{UINSI_REAL_TOTAL.toLocaleString()}</span>
 <span className="px-3 py-1 bg-yellow-400/30 rounded-full text-xs font-bold">Coverage: {coveragePercent}%</span>
 </div>
 {/* Coverage bar */}
@@ -7054,7 +7375,7 @@ style={{width:`${Math.min(100,(fetchProgress.loaded/fetchProgress.total)*100)}%`
 <div className="bg-green-50 border border-green-200 rounded-xl p-3 flex items-center gap-3">
 <span className="text-2xl">🎉</span>
 <div>
-<p className="font-semibold text-green-800 text-sm">Berhasil! {allData.length} skripsi dimuat (Coverage: {Math.min(100,coveragePercent)}%)</p>
+<p className="font-semibold text-green-800 text-sm">Berhasil! {allData.length.toLocaleString()} item dimuat dari ~{UINSI_REAL_TOTAL.toLocaleString()} (Coverage: {coveragePercent}%)</p>
 <p className="text-green-600 text-xs mt-0.5">Data tersimpan otomatis di Firebase cache selama 72 jam.</p>
 </div>
 </div>
@@ -7067,12 +7388,12 @@ style={{width:`${Math.min(100,(fetchProgress.loaded/fetchProgress.total)*100)}%`
 <div className="text-xs text-gray-500 mt-1">Total Loaded</div>
 </div>
 <div className="bg-white border rounded-xl p-4 text-center">
-<div className="text-2xl font-black text-green-600">{allData.filter(r=>r.prodi==='Ekonomi Syariah').length}</div>
-<div className="text-xs text-gray-500 mt-1">Ekonomi Syariah</div>
+<div className="text-2xl font-black text-green-600">{[...new Set(allData.map(r=>r.prodi).filter(Boolean))].length}</div>
+<div className="text-xs text-gray-500 mt-1">Program Studi</div>
 </div>
 <div className="bg-white border rounded-xl p-4 text-center">
-<div className="text-2xl font-black text-purple-600">{allData.filter(r=>r.prodi==='Perbankan Syariah').length}</div>
-<div className="text-xs text-gray-500 mt-1">Perbankan Syariah</div>
+<div className="text-2xl font-black text-purple-600">{allData.filter(r=>r.prodi==='Ekonomi Syariah'||r.prodi==='Perbankan Syariah').length}</div>
+<div className="text-xs text-gray-500 mt-1">FEBI (ES + PS)</div>
 </div>
 <div className="bg-white border rounded-xl p-4 text-center">
 <div className="text-2xl font-black text-orange-500">{tahunList.length}</div>
@@ -7094,8 +7415,7 @@ className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blu
 <select value={uinsiFilterProdi} onChange={e=>setUinsiFilterProdi(e.target.value)}
 className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none">
 <option value="">Semua Prodi</option>
-<option value="Ekonomi Syariah">Ekonomi Syariah</option>
-<option value="Perbankan Syariah">Perbankan Syariah</option>
+{[...new Set(allData.map(r=>r.prodi).filter(Boolean))].sort().map(p=><option key={p} value={p}>{p}</option>)}
 </select>
 </div>
 <div>
@@ -7146,10 +7466,14 @@ className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blu
 <span className="inline-flex items-center justify-center px-2 py-1 bg-blue-100 text-blue-700 rounded-lg text-xs font-semibold">{item.tahun||'-'}</span>
 </td>
 <td className="px-4 py-3 text-center">
+<div className="flex items-center justify-center gap-1">
 <button onClick={()=>{setSelectedUinsiItem(item);setShowUinsiDetail(true);}}
-className="p-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-all hover:scale-110 mr-1" title="Lihat Detail">👁️</button>
+className="p-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-all hover:scale-110" title="Lihat Detail & Sitasi">👁️</button>
+<button onClick={()=>handlePrintUinsi(item)}
+className="p-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-all hover:scale-110" title="Cetak / PDF">🖨️</button>
 <a href={item.url} target="_blank" rel="noopener noreferrer"
-className="inline-flex p-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-all hover:scale-110" title="Buka Repositori">🔗</a>
+className="inline-flex p-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-all hover:scale-110" title="Buka Repository">🔗</a>
+</div>
 </td>
 </tr>
 ))}
@@ -7168,46 +7492,154 @@ className="inline-flex p-2 bg-green-100 text-green-700 rounded-lg hover:bg-green
 <Pagination />
 </div>
 
-{/* ── Detail Modal ── */}
-{showUinsiDetail && selectedUinsiItem && (
-<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={()=>{setShowUinsiDetail(false);setSelectedUinsiItem(null);}}>
-<div className="bg-white rounded-2xl p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto animate-slideIn" onClick={e=>e.stopPropagation()}>
-<div className="flex justify-between items-start mb-5">
-<h2 className="text-xl font-bold text-blue-900 flex items-center gap-2">🌐 Detail Skripsi — Repository UINSI</h2>
-<button onClick={()=>{setShowUinsiDetail(false);setSelectedUinsiItem(null);}} className="p-2 hover:bg-gray-100 rounded-lg text-xl">✕</button>
+{/* ══════ DETAIL MODAL — View + Sitasi + Print + Link ══════ */}
+{showUinsiDetail && selectedUinsiItem && (() => {
+const item = selectedUinsiItem;
+const prodiColor = item.prodi === 'Ekonomi Syariah' ? 'from-emerald-600 to-teal-600' : item.prodi === 'Perbankan Syariah' ? 'from-violet-600 to-purple-600' : 'from-blue-600 to-indigo-600';
+const prodiBadge = item.prodi === 'Ekonomi Syariah' ? 'bg-emerald-500' : item.prodi === 'Perbankan Syariah' ? 'bg-violet-500' : 'bg-blue-500';
+
+// Citations
+const authorFull = item.penulis || '-';
+const year = item.tahun || 'n.d.';
+const title = item.judul || '-';
+const prodi = item.prodi || 'FEBI';
+const citAPA = `${authorFull}. (${year}). ${title}. Skripsi, ${prodi}, FEBI UINSI Samarinda.`;
+const citMLA = `${authorFull}. "${title}." Skripsi, Program Studi ${prodi}, FEBI UINSI Samarinda, ${year}.`;
+const citChicago = `${authorFull}. "${title}." Skripsi, Universitas Islam Negeri Sultan Aji Muhammad Idris Samarinda, ${year}.`;
+const citIEEE = `${authorFull}, "${title}," Skripsi, ${prodi}, FEBI UINSI Samarinda, ${year}.`;
+
+const closeModal = () => { setShowUinsiDetail(false); setSelectedUinsiItem(null); };
+
+return (
+<div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={closeModal}>
+<div className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl" onClick={e=>e.stopPropagation()}>
+
+{/* Header */}
+<div className={`bg-gradient-to-r ${prodiColor} text-white p-5`}>
+<div className="flex items-center justify-between">
+<div className="flex items-center gap-2">
+<span className="text-2xl">🌐</span>
+<div>
+<p className="text-xs opacity-80 font-semibold uppercase tracking-wider">Detail Skripsi — Repository UINSI</p>
+<p className="text-sm opacity-90">Universitas Islam Negeri Sultan Aji Muhammad Idris Samarinda</p>
 </div>
-<div className="space-y-4">
-<div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-xl border border-blue-100">
-<h3 className="text-lg font-bold text-blue-900 mb-3 leading-snug">{selectedUinsiItem.judul}</h3>
-<div className="grid md:grid-cols-2 gap-3 text-sm">
-<div><p className="text-gray-500 text-xs">Penulis</p><p className="font-semibold">{selectedUinsiItem.penulis}</p></div>
-<div><p className="text-gray-500 text-xs">Program Studi</p>
-<span className={`px-2 py-1 rounded-lg text-xs font-semibold ${selectedUinsiItem.prodi==='Ekonomi Syariah'?'bg-green-100 text-green-700':'bg-purple-100 text-purple-700'}`}>{selectedUinsiItem.prodi}</span></div>
-<div><p className="text-gray-500 text-xs">Tahun</p><p className="font-semibold">{selectedUinsiItem.tahun||'-'}</p></div>
-<div><p className="text-gray-500 text-xs">Sumber</p><span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">🌐 Repository UINSI</span></div>
+</div>
+<div className="flex items-center gap-2">
+<span className={`px-3 py-1 ${prodiBadge} rounded-full text-xs font-bold`}>{item.prodi}</span>
+<button onClick={closeModal} className="p-2 hover:bg-white/20 rounded-lg text-xl">✕</button>
 </div>
 </div>
-{selectedUinsiItem.abstrak && (
-<div className="border rounded-xl p-5">
-<h4 className="font-bold text-gray-800 mb-2 text-sm flex items-center gap-2">📝 Abstrak</h4>
-<p className="text-gray-700 leading-relaxed text-sm">{selectedUinsiItem.abstrak}</p>
+<h3 className="text-lg font-bold leading-snug mt-3">{item.judul}</h3>
+</div>
+
+{/* Body */}
+<div className="flex-1 overflow-y-auto p-5 space-y-4">
+
+{/* Metadata */}
+<div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+{[
+{label:'Penulis', value: authorFull},
+{label:'Tahun', value: year},
+{label:'Program Studi', value: prodi},
+{label:'Institusi', value: 'UINSI Samarinda'},
+{label:'Fakultas', value: 'FEBI'},
+{label:'Sumber', value: item.id?.startsWith('oai_') ? 'OAI-PMH' : item.id?.startsWith('html_') ? 'HTML Scrape' : 'Seed Data'},
+].map((m,i)=>(
+<div key={i} className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+<p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">{m.label}</p>
+<p className="font-bold text-gray-900 text-sm">{m.value}</p>
+</div>
+))}
+</div>
+
+{/* Abstrak */}
+<div className="border rounded-xl overflow-hidden">
+<div className={`bg-gradient-to-r ${prodiColor} px-5 py-2.5`}>
+<h4 className="font-bold text-white text-sm flex items-center gap-2">📝 Abstrak</h4>
+</div>
+<div className="p-5">
+{item.abstrak ? (
+<p className="text-gray-700 leading-relaxed text-sm text-justify">{item.abstrak}</p>
+) : (
+<div className="text-center py-6">
+<span className="text-4xl block mb-2">📄</span>
+<p className="text-gray-400 italic text-sm">Abstrak tidak tersedia pada metadata OAI-PMH.</p>
+<p className="text-gray-400 text-xs mt-1">Kunjungi halaman repository UINSI untuk teks lengkap.</p>
 </div>
 )}
-<div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-<p className="text-xs text-amber-700">⚠️ Data bersumber dari repository resmi UINSI Samarinda. Untuk PDF lengkap, kunjungi halaman skripsi di situs UINSI.</p>
 </div>
-<div className="flex gap-3 pt-2">
-<a href={selectedUinsiItem.url} target="_blank" rel="noopener noreferrer"
-className="flex-1 px-5 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-all flex items-center justify-center gap-2 text-sm">
+</div>
+
+{/* Sitasi Multi-Format */}
+<div className="border rounded-xl overflow-hidden">
+<div className="bg-teal-600 px-5 py-2.5">
+<h4 className="font-bold text-white text-sm flex items-center gap-2">📎 Sitasi / Citation</h4>
+</div>
+<div className="p-4 space-y-2.5">
+{[
+{fmt:'APA',text:citAPA},{fmt:'MLA',text:citMLA},{fmt:'Chicago',text:citChicago},{fmt:'IEEE',text:citIEEE}
+].map(c=>(
+<div key={c.fmt} className="flex items-start gap-2 bg-gray-50 rounded-lg p-3 border border-gray-100 group hover:border-teal-300 transition-colors">
+<div className="flex-1 min-w-0">
+<p className="text-[10px] font-bold text-teal-700 uppercase tracking-wider mb-0.5">{c.fmt} Style</p>
+<p className="text-xs text-gray-700 leading-relaxed italic">{c.text}</p>
+</div>
+<button onClick={()=>copyUinsiCitation(c.fmt,c.text)}
+className={`flex-shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all ${uinsiCopiedFmt===c.fmt?'bg-green-500 text-white':'bg-teal-100 text-teal-700 hover:bg-teal-200'}`}>
+{uinsiCopiedFmt===c.fmt?'✓ Copied':'📋 Salin'}
+</button>
+</div>
+))}
+</div>
+</div>
+
+{/* Provenance */}
+<div className="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-xl overflow-hidden">
+<div className="bg-amber-100 px-5 py-2.5 border-b border-amber-200">
+<h4 className="font-bold text-amber-800 text-sm flex items-center gap-2">🔐 Provenance & Verifikasi Akademik</h4>
+</div>
+<div className="p-4 space-y-2">
+<div className="flex gap-3 text-sm"><span className="text-amber-700 font-semibold min-w-[120px] text-xs">Sumber Data</span><span className="text-amber-900 text-xs">OAI-PMH Protocol — DSpace Repository</span></div>
+<div className="flex gap-3 text-sm"><span className="text-amber-700 font-semibold min-w-[120px] text-xs">Endpoint OAI</span><span className="text-amber-900 text-xs font-mono break-all">https://repository.uinsi.ac.id/oai/request</span></div>
+{item.url && <div className="flex gap-3 text-sm"><span className="text-amber-700 font-semibold min-w-[120px] text-xs">Repository URL</span><a href={item.url} target="_blank" rel="noopener noreferrer" className="text-indigo-600 text-xs hover:underline break-all">{item.url}</a></div>}
+<div className="flex gap-3 text-sm"><span className="text-amber-700 font-semibold min-w-[120px] text-xs">Metadata Standard</span><span className="text-amber-900 text-xs">Dublin Core (oai_dc) via OAI-PMH 2.0</span></div>
+<div className="flex gap-3 text-sm"><span className="text-amber-700 font-semibold min-w-[120px] text-xs">Diindeks oleh</span><span className="text-amber-900 text-xs">SiBIRO — FEBI UINSI Samarinda</span></div>
+<div className="mt-2 pt-2 border-t border-amber-200/60">
+<p className="text-[11px] text-amber-700 leading-relaxed">⚠️ Data diambil otomatis dari repository resmi <strong>UINSI Samarinda</strong>. Untuk dokumen lengkap (PDF full-text), kunjungi halaman repository asli.</p>
+</div>
+</div>
+</div>
+</div>
+
+{/* Footer Actions */}
+<div className="border-t bg-gray-50 p-4">
+<div className="flex flex-wrap gap-2.5">
+{item.url && (
+<a href={item.url} target="_blank" rel="noopener noreferrer"
+className={`flex-1 min-w-[160px] px-5 py-3 bg-gradient-to-r ${prodiColor} text-white rounded-xl font-semibold hover:opacity-90 transition-all flex items-center justify-center gap-2 text-sm shadow-md`}>
 🔗 Buka di Repository UINSI
 </a>
-<button onClick={()=>{setShowUinsiDetail(false);setSelectedUinsiItem(null);}}
+)}
+<button onClick={()=>handlePrintUinsi(item)}
+className="flex-1 min-w-[160px] px-5 py-3 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition-all flex items-center justify-center gap-2 text-sm shadow-md">
+🖨️ Cetak / Download PDF
+</button>
+<button onClick={()=>copyUinsiCitation('APA',citAPA)}
+className={`flex-1 min-w-[160px] px-5 py-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 text-sm shadow-md ${uinsiCopiedFmt==='APA'?'bg-green-500 text-white':'bg-teal-600 text-white hover:bg-teal-700'}`}>
+{uinsiCopiedFmt==='APA'?'✓ Sitasi Tersalin!':'📋 Salin Sitasi (APA)'}
+</button>
+<button onClick={closeModal}
 className="px-5 py-3 bg-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-300 transition-all text-sm">Tutup</button>
 </div>
+<div className="mt-3 bg-white border border-gray-200 rounded-lg p-3">
+<p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Format Sitasi (APA)</p>
+<p className="text-xs text-gray-600 italic leading-relaxed">{citAPA}</p>
 </div>
 </div>
 </div>
-)}
+</div>
+);
+})()}
 </div>
 );
 };
@@ -8191,15 +8623,620 @@ return (
 );
 };
 
-const RepositoryPage = ({ repository, userRole, onAdd, onEdit, onDelete, uinsiData, onUinsiDataChange, ptkinNasionalData, onPtkinNasionalDataChange }) => {
+// ============================================
+// JURNAL ILMIAH TAB — OAI-PMH Harvesting + Firebase Cache
+// ============================================
+const JurnalIlmiahTab = ({ onDataChange, onJurnalDataChange }) => {
+const [jurnalData, setJurnalData] = React.useState([]);
+const [fetchStatus, setFetchStatus] = React.useState('idle'); // idle | loading | done | error
+const [fetchProgress, setFetchProgress] = React.useState({ loaded: 0, total: JURNAL_REGISTRY.length, currentJurnal: '' });
+const [searchTerm, setSearchTerm] = React.useState('');
+const [filterSinta, setFilterSinta] = React.useState('');
+const [filterJurnal, setFilterJurnal] = React.useState('');
+const [currentPage, setCurrentPage] = React.useState(1);
+const [logs, setLogs] = React.useState([]);
+const [selectedItem, setSelectedItem] = React.useState(null);
+const [copiedFormat, setCopiedFormat] = React.useState(null);
+const PER_PAGE = 15;
+
+const addLog = (msg, type = 'info') => setLogs(prev => [...prev.slice(-50), { msg, type, ts: new Date().toLocaleTimeString() }]);
+
+const copyCitation = (format, text) => {
+  navigator.clipboard.writeText(text).then(() => {
+    setCopiedFormat(format);
+    setTimeout(() => setCopiedFormat(null), 2000);
+  });
+};
+
+// ── OAI-PMH XML Parser for OJS journals ──
+const parseOAI = (xml, jId, jNama) => {
+  const doc = new DOMParser().parseFromString(xml, 'text/xml');
+  const items = [];
+  doc.querySelectorAll('record').forEach(rec => {
+    if (rec.querySelector('header')?.getAttribute('status') === 'deleted') return;
+    const meta = rec.querySelector('metadata');
+    if (!meta) return;
+    const g = tag => { const el = meta.querySelector('dc\\:' + tag + ', ' + tag); return el ? el.textContent.trim() : ''; };
+    const gAll = tag => Array.from(meta.querySelectorAll('dc\\:' + tag + ', ' + tag)).map(n => n.textContent.trim()).filter(Boolean);
+    const judul = g('title');
+    if (!judul || judul.length < 10) return;
+    const descs = gAll('description').sort((a,b)=>b.length-a.length);
+    const abstrak = (descs[0] || '').substring(0, 600);
+    const penulis = g('creator') || gAll('contributor')[0] || '';
+    const tahun = (g('date')||'').substring(0,4);
+    const identifiers = gAll('identifier');
+    const url = identifiers.find(u => u.startsWith('http')) || '';
+    items.push({ judul, penulis, abstrak, tahun, prodi:'', sumber:'jurnal', jurnalId: jId, jurnalNama: jNama, url });
+  });
+  const rtEl = doc.querySelector('resumptionToken');
+  const token = rtEl ? (rtEl.textContent.trim()||null) : null;
+  return { items, token };
+};
+
+// ── Deduplicate merge ──
+const mergeJurnal = (existing, newItems) => {
+  const seen = new Set(existing.map(x => (x.judul||'').toLowerCase().trim().substring(0,80)));
+  let added = 0;
+  for (const item of newItems) {
+    const k = (item.judul||'').toLowerCase().trim().substring(0,80);
+    if (k && !seen.has(k)) { seen.add(k); existing.push(item); added++; }
+  }
+  return added;
+};
+
+// ── Fetch via CORS proxy (reuse global CORS_PROXIES) ──
+const fetchViaProxy = async (url) => {
+  for (let i = 0; i < Math.min(CORS_PROXIES.length, 5); i++) {
+    try {
+      const proxyUrl = CORS_PROXIES[i](url);
+      const controller = new AbortController();
+      const tid = setTimeout(() => controller.abort(), 12000);
+      const res = await fetch(proxyUrl, { signal: controller.signal });
+      clearTimeout(tid);
+      if (!res.ok) continue;
+      const text = await res.text();
+      if (text && text.length > 100) return text;
+    } catch(_) {}
+  }
+  return null;
+};
+
+// ── Main fetch ──
+const startFetch = async () => {
+  setFetchStatus('loading');
+  setLogs([]);
+  addLog('📰 Mulai harvesting jurnal ilmiah via OAI-PMH...', 'info');
+  const all = [...jurnalData];
+  let totalNew = 0;
+  const MAX_PAGES = 5;
+
+  for (let idx = 0; idx < JURNAL_REGISTRY.length; idx++) {
+    const j = JURNAL_REGISTRY[idx];
+    setFetchProgress({ loaded: idx, total: JURNAL_REGISTRY.length, currentJurnal: j.singkatan });
+
+    // Check per-journal Firebase cache first
+    try {
+      const cache = await DB.get('jurnal_cache/' + j.id);
+      if (cache && cache.data && Array.isArray(cache.data) && cache.data.length > 3 && (Date.now() - (cache.savedAt||0)) < 7*24*60*60*1000) {
+        const added = mergeJurnal(all, cache.data);
+        totalNew += added;
+        addLog('✅ ' + j.singkatan + ': ' + cache.data.length + ' artikel (cache)', 'success');
+        continue;
+      }
+    } catch(_) {}
+
+    // Fetch via OAI-PMH
+    try {
+      const url = j.oaiBase + '?verb=ListRecords&metadataPrefix=oai_dc';
+      addLog('🔍 ' + j.singkatan + ': fetching via OAI-PMH...', 'info');
+      const xml = await fetchViaProxy(url);
+      if (!xml) { addLog('⚠️ ' + j.singkatan + ': tidak dapat diakses', 'warn'); continue; }
+
+      const parsed = parseOAI(xml, j.id, j.nama);
+      mergeJurnal(all, parsed.items);
+
+      // Pagination
+      let token = parsed.token;
+      let page = 1;
+      while (token && page < MAX_PAGES) {
+        const pUrl = j.oaiBase + '?verb=ListRecords&resumptionToken=' + encodeURIComponent(token);
+        const pXml = await fetchViaProxy(pUrl);
+        if (!pXml) break;
+        const p2 = parseOAI(pXml, j.id, j.nama);
+        mergeJurnal(all, p2.items);
+        token = p2.token;
+        page++;
+      }
+
+      // Save per-journal cache to Firebase
+      const jItems = all.filter(x => x.jurnalId === j.id);
+      if (jItems.length > 0 && db) {
+        try { await DB.set('jurnal_cache/' + j.id, { savedAt: Date.now(), count: jItems.length, data: jItems.slice(0, 3000) }); } catch(_) {}
+      }
+
+      totalNew += jItems.length;
+      addLog('✅ ' + j.singkatan + ': ' + jItems.length + ' artikel', 'success');
+    } catch(e) { addLog('❌ ' + j.singkatan + ': ' + e.message, 'error'); }
+  }
+
+  setJurnalData(all);
+  setFetchStatus('done');
+  setFetchProgress({ loaded: JURNAL_REGISTRY.length, total: JURNAL_REGISTRY.length, currentJurnal: '' });
+  addLog('🎉 Selesai! Total: ' + all.length + ' artikel jurnal ilmiah', 'success');
+
+  // Save metadata
+  if (db) {
+    try { await DB.set('jurnal_meta', { lastSyncAt: Date.now(), count: all.length, jurnalCount: JURNAL_REGISTRY.length }); } catch(_) {}
+  }
+
+  // Propagate to parent
+  if (onDataChange) onDataChange(all);
+  if (onJurnalDataChange) onJurnalDataChange(all);
+};
+
+// ── Auto-load from Firebase cache on mount ──
+React.useEffect(() => {
+  const autoLoad = async () => {
+    if (!db) return;
+    setFetchStatus('loading');
+    setFetchProgress({ loaded: 0, total: 1, currentJurnal: 'Firebase cache...' });
+    try {
+      const cache = await DB.get('jurnal_cache');
+      if (cache && typeof cache === 'object') {
+        const items = [];
+        Object.values(cache).forEach(c => {
+          if (c && c.data && Array.isArray(c.data)) items.push(...c.data);
+        });
+        if (items.length > 0) {
+          // Deduplicate
+          const seen = new Set();
+          const deduped = items.filter(x => {
+            const k = (x.judul||'').toLowerCase().trim().substring(0,80);
+            if (!k || seen.has(k)) return false;
+            seen.add(k); return true;
+          });
+          setJurnalData(deduped);
+          addLog('✅ Cache loaded: ' + deduped.length + ' artikel jurnal', 'success');
+          if (onDataChange) onDataChange(deduped);
+          if (onJurnalDataChange) onJurnalDataChange(deduped);
+        }
+      }
+    } catch(e) { addLog('Cache error: ' + e.message, 'warn'); }
+    setFetchStatus('idle');
+  };
+  autoLoad();
+}, []);
+
+// ── Filtered + paginated data ──
+const filtered = React.useMemo(() => {
+  return jurnalData.filter(item => {
+    const q = searchTerm.toLowerCase();
+    const matchSearch = !q || (item.judul||'').toLowerCase().includes(q) || (item.penulis||'').toLowerCase().includes(q);
+    const matchSinta = !filterSinta || (JURNAL_REGISTRY.find(j=>j.id===item.jurnalId)||{}).sinta === filterSinta;
+    const matchJurnal = !filterJurnal || item.jurnalId === filterJurnal;
+    return matchSearch && matchSinta && matchJurnal;
+  });
+}, [jurnalData, searchTerm, filterSinta, filterJurnal]);
+
+const totalPages = Math.ceil(filtered.length / PER_PAGE);
+const paged = filtered.slice((currentPage-1)*PER_PAGE, currentPage*PER_PAGE);
+React.useEffect(() => setCurrentPage(1), [searchTerm, filterSinta, filterJurnal]);
+
+// ── SINTA badge helper ──
+const sintaBadge = (sinta) => {
+  const colors = { S1:'bg-red-100 text-red-800 border-red-300', S2:'bg-orange-100 text-orange-800 border-orange-300', S3:'bg-yellow-100 text-yellow-800 border-yellow-300', S4:'bg-blue-100 text-blue-800 border-blue-300', S5:'bg-gray-100 text-gray-700 border-gray-300' };
+  return colors[sinta] || 'bg-gray-100 text-gray-600 border-gray-200';
+};
+
+return (
+  <div className="space-y-4">
+    {/* Header Stats */}
+    <div className="bg-gradient-to-r from-amber-50 via-orange-50 to-yellow-50 border border-amber-200 rounded-xl p-4">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h3 className="text-lg font-bold text-amber-900 flex items-center gap-2">
+            <span>📰</span> Jurnal Ilmiah SINTA & Nasional
+          </h3>
+          <p className="text-sm text-amber-700 mt-1">
+            {JURNAL_STATS.total} jurnal terdaftar — SINTA 2: {JURNAL_STATS.sinta12} · SINTA 3-4: {JURNAL_STATS.sinta34} · SINTA 5+: {JURNAL_STATS.sinta56}
+          </p>
+          <p className="text-xs text-amber-600 mt-0.5">
+            Total artikel: <strong className="text-amber-900">{jurnalData.length.toLocaleString()}</strong> — via OAI-PMH OJS + Firebase cache incremental
+          </p>
+        </div>
+        <button
+          onClick={startFetch}
+          disabled={fetchStatus === 'loading'}
+          className="px-4 py-2.5 bg-gradient-to-r from-amber-600 to-orange-600 text-white rounded-xl font-semibold hover:from-amber-700 hover:to-orange-700 transition-all disabled:opacity-50 flex items-center gap-2 shadow-md">
+          {fetchStatus === 'loading' ? '⏳ Fetching...' : '🔄 Fetch / Refresh Jurnal'}
+        </button>
+      </div>
+
+      {/* Progress */}
+      {fetchStatus === 'loading' && (
+        <div className="mt-3 bg-white rounded-lg p-3 border border-amber-200">
+          <div className="flex justify-between text-xs text-amber-700 mb-1">
+            <span>📰 {fetchProgress.currentJurnal}</span>
+            <span>{fetchProgress.loaded}/{fetchProgress.total}</span>
+          </div>
+          <div className="w-full h-2 bg-amber-100 rounded-full overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-amber-500 to-orange-500 transition-all duration-300 rounded-full"
+              style={{width: Math.round((fetchProgress.loaded/Math.max(1,fetchProgress.total))*100) + '%'}} />
+          </div>
+        </div>
+      )}
+    </div>
+
+    {/* Filters */}
+    <div className="bg-white rounded-xl shadow-sm border p-4">
+      <div className="grid md:grid-cols-4 gap-4">
+        <div className="md:col-span-2">
+          <label className="block text-xs font-semibold text-gray-600 mb-1">🔍 Cari Artikel</label>
+          <input type="text" placeholder="Cari judul atau penulis..."
+            value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-amber-500 focus:outline-none" />
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-gray-600 mb-1">📊 Filter SINTA</label>
+          <select value={filterSinta} onChange={(e) => setFilterSinta(e.target.value)}
+            className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-amber-500 focus:outline-none">
+            <option value="">Semua Level</option>
+            <option value="S2">SINTA 2</option>
+            <option value="S3">SINTA 3</option>
+            <option value="S4">SINTA 4</option>
+            <option value="S5">SINTA 5</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-gray-600 mb-1">📰 Filter Jurnal</label>
+          <select value={filterJurnal} onChange={(e) => setFilterJurnal(e.target.value)}
+            className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-amber-500 focus:outline-none">
+            <option value="">Semua Jurnal</option>
+            {JURNAL_REGISTRY.map(j => <option key={j.id} value={j.id}>{j.singkatan} ({j.sinta})</option>)}
+          </select>
+        </div>
+      </div>
+      <p className="text-xs text-gray-400 mt-2">
+        Menampilkan {filtered.length.toLocaleString()} dari {jurnalData.length.toLocaleString()} artikel
+      </p>
+    </div>
+
+    {/* Article List */}
+    <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+      {paged.length === 0 ? (
+        <div className="p-12 text-center text-gray-400">
+          <div className="text-4xl mb-3">📰</div>
+          <p className="font-semibold">Belum ada data artikel jurnal</p>
+          <p className="text-sm mt-1">Klik "Fetch / Refresh Jurnal" untuk mengambil data dari {JURNAL_STATS.total} jurnal OJS via OAI-PMH</p>
+        </div>
+      ) : (
+        <div className="divide-y">
+          {paged.map((item, idx) => {
+            const jurnal = JURNAL_REGISTRY.find(j => j.id === item.jurnalId);
+            return (
+              <div key={idx} className="p-4 hover:bg-amber-50/50 transition-colors cursor-pointer" onClick={() => setSelectedItem(item)}>
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center text-amber-700 font-bold text-xs">
+                    {(currentPage-1)*PER_PAGE + idx + 1}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-semibold text-sm text-gray-900 leading-snug">{item.judul}</h4>
+                    <div className="flex flex-wrap items-center gap-2 mt-1">
+                      <span className="text-xs text-gray-600">👤 {item.penulis || '-'}</span>
+                      {item.tahun && <span className="text-xs text-gray-400">📅 {item.tahun}</span>}
+                      {jurnal && <span className={'text-xs px-1.5 py-0.5 rounded border font-semibold ' + sintaBadge(jurnal.sinta)}>{jurnal.sinta}</span>}
+                      {jurnal && <span className="text-xs text-amber-700 font-medium">📰 {jurnal.singkatan}</span>}
+                    </div>
+                    {item.abstrak && <p className="text-xs text-gray-500 mt-1 line-clamp-2">{item.abstrak.substring(0,200)}...</p>}
+                  </div>
+                  {item.url && (
+                    <a href={item.url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}
+                      className="flex-shrink-0 px-2 py-1 bg-amber-100 text-amber-700 rounded-lg text-xs font-semibold hover:bg-amber-200 transition-colors" title="Buka artikel">
+                      🔗
+                    </a>
+                  )}
+                  <button onClick={(e) => { e.stopPropagation(); setSelectedItem(item); }}
+                    className="flex-shrink-0 px-2 py-1 bg-blue-100 text-blue-700 rounded-lg text-xs font-semibold hover:bg-blue-200 transition-colors" title="Lihat detail">
+                    👁️
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between px-4 py-3 border-t bg-gray-50">
+          <p className="text-xs text-gray-500">Halaman {currentPage}/{totalPages}</p>
+          <div className="flex gap-1">
+            <button onClick={() => setCurrentPage(1)} disabled={currentPage===1}
+              className="px-2 py-1 text-xs rounded bg-white border hover:bg-gray-50 disabled:opacity-30">⟨⟨</button>
+            <button onClick={() => setCurrentPage(p=>Math.max(1,p-1))} disabled={currentPage===1}
+              className="px-2 py-1 text-xs rounded bg-white border hover:bg-gray-50 disabled:opacity-30">⟨</button>
+            <button onClick={() => setCurrentPage(p=>Math.min(totalPages,p+1))} disabled={currentPage===totalPages}
+              className="px-2 py-1 text-xs rounded bg-white border hover:bg-gray-50 disabled:opacity-30">⟩</button>
+            <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage===totalPages}
+              className="px-2 py-1 text-xs rounded bg-white border hover:bg-gray-50 disabled:opacity-30">⟩⟩</button>
+          </div>
+        </div>
+      )}
+    </div>
+
+    {/* Fetch Logs */}
+    {logs.length > 0 && (
+      <div className="bg-gray-900 rounded-xl p-4 max-h-48 overflow-y-auto">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-green-400 text-xs font-mono font-bold">📋 Fetch Logs</span>
+          <button onClick={() => setLogs([])} className="text-gray-500 text-xs hover:text-gray-300">Clear</button>
+        </div>
+        {logs.map((log, i) => (
+          <div key={i} className={'font-mono text-xs ' + (log.type==='error'?'text-red-400':log.type==='success'?'text-green-400':log.type==='warn'?'text-yellow-400':'text-gray-400')}>
+            <span className="text-gray-600">[{log.ts}]</span> {log.msg}
+          </div>
+        ))}
+      </div>
+    )}
+
+    {/* ══════ DETAIL MODAL — View + Sitasi + Print + Link ══════ */}
+    {selectedItem && (() => {
+      const jurnal = JURNAL_REGISTRY.find(j => j.id === selectedItem.jurnalId);
+      const sintaColor = !jurnal ? 'from-gray-500 to-gray-600' : jurnal.sinta === 'S1' || jurnal.sinta === 'S2' ? 'from-orange-600 to-red-600' : jurnal.sinta === 'S3' ? 'from-yellow-600 to-amber-600' : jurnal.sinta === 'S4' ? 'from-blue-600 to-indigo-600' : 'from-gray-500 to-slate-600';
+      const sintaLabel = jurnal ? jurnal.sinta : '-';
+      const articleUrl = selectedItem.url || (jurnal ? jurnal.repoUrl : '');
+
+      // ── Citation generators ──
+      const authorLast = (selectedItem.penulis || '-').split(',')[0].split(' ').pop();
+      const authorFull = selectedItem.penulis || '-';
+      const year = selectedItem.tahun || 'n.d.';
+      const title = selectedItem.judul || '-';
+      const jurnalNama = selectedItem.jurnalNama || jurnal?.nama || '-';
+
+      const citationAPA = `${authorFull}. (${year}). ${title}. ${jurnalNama}.`;
+      const citationMLA = `${authorFull}. "${title}." ${jurnalNama}, ${year}.`;
+      const citationChicago = `${authorFull}. "${title}." ${jurnalNama} (${year}).`;
+      const citationIEEE = `${authorFull}, "${title}," ${jurnalNama}, ${year}.`;
+
+      // ── Print function ──
+      const handlePrintJurnal = () => {
+        const w = window.open('', '_blank', 'width=800,height=900');
+        if (!w) { alert('Pop-up diblokir. Izinkan pop-up untuk cetak.'); return; }
+        const now = new Date();
+        const tgl = now.toLocaleDateString('id-ID', {day:'numeric',month:'long',year:'numeric'});
+        const jam = now.toLocaleTimeString('id-ID', {hour:'2-digit',minute:'2-digit'});
+        w.document.write(`<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><title>${title} — Detail Jurnal</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Tahoma,sans-serif;padding:40px;color:#1e293b;max-width:800px;margin:0 auto;line-height:1.6}
+.header{background:linear-gradient(135deg,#d97706,#ea580c);color:white;padding:20px 28px;border-radius:12px;margin-bottom:24px}
+.header h1{font-size:13px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;opacity:.85;margin-bottom:4px}
+.header h2{font-size:18px;font-weight:700;line-height:1.4}
+.sinta-badge{display:inline-block;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:800;color:white;background:#f59e0b;margin-top:8px}
+.section{margin-bottom:18px;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden}
+.section-title{background:#f8fafc;padding:10px 16px;font-weight:700;font-size:12px;color:#475569;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;gap:6px}
+.section-body{padding:16px}
+.meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.meta-item{padding:10px 14px;background:#f8fafc;border-radius:8px;border:1px solid #e5e7eb}
+.meta-label{font-size:9px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.meta-value{font-size:13px;font-weight:600;color:#1e293b}
+.abstrak{font-size:13px;color:#374151;text-align:justify;line-height:1.7}
+.citation-box{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:14px;margin-top:10px}
+.citation-label{font-size:10px;font-weight:800;color:#92400e;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.citation-text{font-size:12px;color:#78350f;line-height:1.5;font-style:italic}
+.provenance{font-size:11px;color:#6b7280;margin-top:12px;padding-top:12px;border-top:1px solid #e5e7eb}
+.footer{margin-top:24px;padding-top:16px;border-top:2px solid #d97706;display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#6b7280}
+.btn-print{margin-top:20px;padding:10px 24px;background:#d97706;color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px}
+@media print{.btn-print{display:none}.header{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style></head><body>
+<div class="header">
+<h1>📰 Detail Artikel Jurnal Ilmiah</h1>
+<h2>${title}</h2>
+<span class="sinta-badge">${sintaLabel} — ${jurnal ? jurnal.penerbit : 'Unknown'}</span>
+</div>
+<div class="section"><div class="section-title">📋 Metadata Artikel</div><div class="section-body">
+<div class="meta-grid">
+<div class="meta-item"><div class="meta-label">Penulis</div><div class="meta-value">${authorFull}</div></div>
+<div class="meta-item"><div class="meta-label">Tahun Publikasi</div><div class="meta-value">${year}</div></div>
+<div class="meta-item"><div class="meta-label">Nama Jurnal</div><div class="meta-value">${jurnalNama}</div></div>
+<div class="meta-item"><div class="meta-label">Akreditasi SINTA</div><div class="meta-value">${sintaLabel}</div></div>
+<div class="meta-item"><div class="meta-label">Penerbit</div><div class="meta-value">${jurnal ? jurnal.penerbit : '-'}</div></div>
+<div class="meta-item"><div class="meta-label">URL Artikel</div><div class="meta-value" style="font-size:11px;word-break:break-all">${articleUrl || '-'}</div></div>
+</div></div></div>
+${selectedItem.abstrak ? `<div class="section"><div class="section-title">📝 Abstrak</div><div class="section-body"><p class="abstrak">${selectedItem.abstrak}</p></div></div>` : ''}
+<div class="section"><div class="section-title">📎 Sitasi</div><div class="section-body">
+<div class="citation-box"><div class="citation-label">APA Style</div><div class="citation-text">${citationAPA}</div></div>
+<div class="citation-box" style="margin-top:8px"><div class="citation-label">MLA Style</div><div class="citation-text">${citationMLA}</div></div>
+<div class="citation-box" style="margin-top:8px"><div class="citation-label">Chicago Style</div><div class="citation-text">${citationChicago}</div></div>
+<div class="citation-box" style="margin-top:8px"><div class="citation-label">IEEE Style</div><div class="citation-text">${citationIEEE}</div></div>
+</div></div>
+<div class="provenance">🔐 <strong>Provenance:</strong> Data diambil via OAI-PMH Protocol dari ${jurnal ? jurnal.oaiBase : 'OJS endpoint'}. Diindeks oleh SiBIRO FEBI UINSI Samarinda pada ${tgl}, ${jam} WITA.</div>
+<div class="footer"><div>SiBIRO — Sistem Deteksi Kemiripan Karya Ilmiah<br>FEBI UINSI Samarinda</div><div>${tgl}<br>${jam} WITA</div></div>
+<center><button class="btn-print" onclick="window.print()">🖨️ Cetak / Simpan PDF</button></center>
+</body></html>`);
+        w.document.close();
+        setTimeout(() => w.focus(), 200);
+      };
+
+      return (
+      <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setSelectedItem(null)}>
+        <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl" onClick={e => e.stopPropagation()}>
+
+          {/* ── Header ── */}
+          <div className={`bg-gradient-to-r ${sintaColor} text-white p-5`}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">📰</span>
+                <div>
+                  <p className="text-xs opacity-80 font-semibold uppercase tracking-wider">Detail Artikel Jurnal Ilmiah</p>
+                  {jurnal && <p className="text-sm opacity-90">{jurnal.singkatan} · {jurnal.penerbit}</p>}
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                {jurnal && <span className="px-3 py-1 bg-white/20 rounded-full text-xs font-bold">{sintaLabel}</span>}
+                <button onClick={() => setSelectedItem(null)} className="p-2 hover:bg-white/20 rounded-lg text-xl">✕</button>
+              </div>
+            </div>
+            <h3 className="text-lg font-bold leading-snug mt-3">{selectedItem.judul}</h3>
+          </div>
+
+          {/* ── Body (scrollable) ── */}
+          <div className="flex-1 overflow-y-auto p-5 space-y-4">
+
+            {/* Metadata Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Penulis</p>
+                <p className="font-bold text-gray-900 text-sm">{authorFull}</p>
+              </div>
+              <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Tahun</p>
+                <p className="font-bold text-gray-900 text-sm">{year}</p>
+              </div>
+              <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Akreditasi</p>
+                <p className="font-bold text-gray-900 text-sm">{jurnal ? `${sintaLabel} — SINTA` : 'Nasional'}</p>
+              </div>
+              <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 col-span-2 md:col-span-2">
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Nama Jurnal</p>
+                <p className="font-bold text-gray-900 text-sm">{jurnalNama}</p>
+              </div>
+              <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Penerbit</p>
+                <p className="font-bold text-gray-900 text-sm">{jurnal ? jurnal.penerbit : '-'}</p>
+              </div>
+            </div>
+
+            {/* Abstrak */}
+            <div className="border rounded-xl overflow-hidden">
+              <div className={`bg-gradient-to-r ${sintaColor} px-5 py-2.5`}>
+                <h4 className="font-bold text-white text-sm flex items-center gap-2">📝 Abstrak</h4>
+              </div>
+              <div className="p-5">
+                {selectedItem.abstrak ? (
+                  <p className="text-gray-700 leading-relaxed text-sm text-justify">{selectedItem.abstrak}</p>
+                ) : (
+                  <div className="text-center py-6">
+                    <span className="text-4xl block mb-2">📄</span>
+                    <p className="text-gray-400 italic text-sm">Abstrak tidak tersedia pada metadata OAI-PMH.</p>
+                    <p className="text-gray-400 text-xs mt-1">Kunjungi halaman jurnal asli untuk teks lengkap.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Sitasi Multi-Format */}
+            <div className="border rounded-xl overflow-hidden">
+              <div className="bg-teal-600 px-5 py-2.5">
+                <h4 className="font-bold text-white text-sm flex items-center gap-2">📎 Sitasi / Citation</h4>
+              </div>
+              <div className="p-4 space-y-2.5">
+                {[
+                  {fmt:'APA', text: citationAPA},
+                  {fmt:'MLA', text: citationMLA},
+                  {fmt:'Chicago', text: citationChicago},
+                  {fmt:'IEEE', text: citationIEEE}
+                ].map(c => (
+                  <div key={c.fmt} className="flex items-start gap-2 bg-gray-50 rounded-lg p-3 border border-gray-100 group hover:border-teal-300 transition-colors">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] font-bold text-teal-700 uppercase tracking-wider mb-0.5">{c.fmt} Style</p>
+                      <p className="text-xs text-gray-700 leading-relaxed italic">{c.text}</p>
+                    </div>
+                    <button onClick={() => copyCitation(c.fmt, c.text)}
+                      className={`flex-shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all ${copiedFormat === c.fmt ? 'bg-green-500 text-white' : 'bg-teal-100 text-teal-700 hover:bg-teal-200'}`}>
+                      {copiedFormat === c.fmt ? '✓ Copied' : '📋 Salin'}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Provenance */}
+            <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-xl overflow-hidden">
+              <div className="bg-amber-100 px-5 py-2.5 border-b border-amber-200">
+                <h4 className="font-bold text-amber-800 text-sm flex items-center gap-2">🔐 Provenance & Verifikasi</h4>
+              </div>
+              <div className="p-4 space-y-2">
+                <div className="flex gap-3 text-sm">
+                  <span className="text-amber-700 font-semibold min-w-[120px] text-xs">Sumber Data</span>
+                  <span className="text-amber-900 text-xs">OAI-PMH Protocol (Open Journal Systems)</span>
+                </div>
+                {jurnal && (
+                  <div className="flex gap-3 text-sm">
+                    <span className="text-amber-700 font-semibold min-w-[120px] text-xs">OAI Endpoint</span>
+                    <span className="text-amber-900 text-xs font-mono break-all">{jurnal.oaiBase}</span>
+                  </div>
+                )}
+                {jurnal && (
+                  <div className="flex gap-3 text-sm">
+                    <span className="text-amber-700 font-semibold min-w-[120px] text-xs">Homepage Jurnal</span>
+                    <a href={jurnal.repoUrl} target="_blank" rel="noopener noreferrer" className="text-indigo-600 text-xs hover:underline break-all">{jurnal.repoUrl}</a>
+                  </div>
+                )}
+                <div className="flex gap-3 text-sm">
+                  <span className="text-amber-700 font-semibold min-w-[120px] text-xs">Diindeks oleh</span>
+                  <span className="text-amber-900 text-xs">SiBIRO — FEBI UINSI Samarinda</span>
+                </div>
+                <div className="mt-2 pt-2 border-t border-amber-200/60">
+                  <p className="text-[11px] text-amber-700 leading-relaxed">
+                    ⚠️ Data diambil otomatis dari jurnal <strong>{jurnalNama}</strong> via OAI-PMH. Untuk dokumen lengkap (PDF full-text), kunjungi halaman jurnal asli.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ── Footer Action Buttons ── */}
+          <div className="border-t bg-gray-50 p-4">
+            <div className="flex flex-wrap gap-2.5">
+              {articleUrl && (
+                <a href={articleUrl} target="_blank" rel="noopener noreferrer"
+                  className={`flex-1 min-w-[160px] px-5 py-3 bg-gradient-to-r ${sintaColor} text-white rounded-xl font-semibold hover:opacity-90 transition-all flex items-center justify-center gap-2 text-sm shadow-md`}>
+                  🔗 Buka Artikel Asli
+                </a>
+              )}
+              <button onClick={handlePrintJurnal}
+                className="flex-1 min-w-[160px] px-5 py-3 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition-all flex items-center justify-center gap-2 text-sm shadow-md">
+                🖨️ Cetak / Download PDF
+              </button>
+              <button onClick={() => copyCitation('APA', citationAPA)}
+                className={`flex-1 min-w-[160px] px-5 py-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 text-sm shadow-md ${copiedFormat === 'APA' ? 'bg-green-500 text-white' : 'bg-teal-600 text-white hover:bg-teal-700'}`}>
+                {copiedFormat === 'APA' ? '✓ Sitasi Tersalin!' : '📋 Salin Sitasi (APA)'}
+              </button>
+              <button onClick={() => setSelectedItem(null)}
+                className="px-5 py-3 bg-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-300 transition-all text-sm">
+                Tutup
+              </button>
+            </div>
+            {/* Quick citation preview */}
+            <div className="mt-3 bg-white border border-gray-200 rounded-lg p-3">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Format Sitasi (APA)</p>
+              <p className="text-xs text-gray-600 italic leading-relaxed">
+                {citationAPA}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      );
+    })()}
+  </div>
+);
+};
+
+const RepositoryPage = ({ repository, userRole, onAdd, onEdit, onDelete, uinsiData, onUinsiDataChange, ptkinNasionalData, onPtkinNasionalDataChange, jurnalData, onJurnalDataChange, proposalsData }) => {
 
 // ── Tab state ──
 const [activeTab, setActiveTab] = React.useState('lokal');
+const liveProposalCount = proposalsData ? proposalsData.length : 0;
 const [liveUinsiCount, setLiveUinsiCount] = React.useState(
   (uinsiData && uinsiData.length > 0) ? uinsiData.length : UINSI_REPOSITORY_DATA.length
 );
 const [livePtkinCount, setLivePtkinCount] = React.useState(
   (ptkinNasionalData && ptkinNasionalData.length > 0) ? ptkinNasionalData.length : 0
+);
+const [liveJurnalCount, setLiveJurnalCount] = React.useState(
+  (jurnalData && jurnalData.length > 0) ? jurnalData.length : 0
 );
 
 // ── State lokal tab ──
@@ -8247,6 +9284,13 @@ React.useEffect(() => {
     setLivePtkinCount(ptkinNasionalData.length);
   }
 }, [ptkinNasionalData]);
+
+// Update liveJurnalCount jika prop jurnalData berubah
+React.useEffect(() => {
+  if (jurnalData && jurnalData.length > 0) {
+    setLiveJurnalCount(jurnalData.length);
+  }
+}, [jurnalData]);
 
 const canAdd = userRole === 'admin' || userRole === 'operator';
 const canEdit = userRole === 'admin' || userRole === 'operator';
@@ -8381,11 +9425,15 @@ return (
           <span>📚</span> Repository Skripsi FEBI UINSI
         </h2>
         <p className="text-sm text-gray-500 mt-1">
+          <span className="text-rose-600 font-semibold">📋 Proposal: <strong>{liveProposalCount}</strong></span>
+          &nbsp;|&nbsp;
           Lokal FEBI: <strong className="text-emerald-700">{repository.length}</strong> &nbsp;|&nbsp;
           <span className="text-blue-600 font-semibold">UINSI: <strong>{liveUinsiCount}</strong></span>
           &nbsp;|&nbsp;
           <span className="text-indigo-600 font-semibold">🇮🇩 PTKIN Nasional: <strong>{livePtkinCount.toLocaleString()}</strong></span>
-          &nbsp;|&nbsp; <strong className="text-purple-600">{(repository.length + liveUinsiCount + livePtkinCount).toLocaleString()}</strong> total basis similarity
+          &nbsp;|&nbsp;
+          <span className="text-amber-600 font-semibold">📰 Jurnal: <strong>{liveJurnalCount.toLocaleString()}</strong></span>
+          &nbsp;|&nbsp; <strong className="text-purple-600">{(liveProposalCount + repository.length + liveUinsiCount + livePtkinCount + liveJurnalCount).toLocaleString()}</strong> total basis similarity
         </p>
       </div>
       {activeTab === 'lokal' && canAdd && (
@@ -8407,10 +9455,11 @@ return (
       <div>
         <p className="text-sm font-semibold text-purple-900">Cek Similarity Terintegrasi Nasional</p>
         <p className="text-xs text-purple-700">
-          Basis perbandingan: <strong>{repository.length} skripsi lokal</strong> +{' '}
+          Basis perbandingan: <strong>{liveProposalCount} proposal</strong> +{' '}
+          <strong>{repository.length} skripsi lokal</strong> +{' '}
           <strong>{liveUinsiCount} UINSI</strong> +{' '}
           <strong>{livePtkinCount.toLocaleString()} PTKIN Nasional</strong> +{' '}
-          <strong>seluruh proposal</strong> = <strong className="text-indigo-700">{(repository.length + liveUinsiCount + livePtkinCount).toLocaleString()}+ sumber</strong>
+          <strong>{liveJurnalCount.toLocaleString()} artikel jurnal</strong> = <strong className="text-indigo-700">{(liveProposalCount + repository.length + liveUinsiCount + livePtkinCount + liveJurnalCount).toLocaleString()} sumber</strong>
         </p>
       </div>
     </div>
@@ -8451,6 +9500,18 @@ return (
         <span>🇮🇩</span> PTKIN Nasional
         <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${activeTab==='nasional'?'bg-white text-indigo-700':'bg-indigo-100 text-indigo-700'}`}>
           {livePtkinCount > 0 ? livePtkinCount.toLocaleString() : PTKIN_REGISTRY.length + ' PT'}
+        </span>
+      </button>
+      <button
+        onClick={() => setActiveTab('jurnal')}
+        className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg font-semibold text-sm transition-all ${
+          activeTab === 'jurnal'
+            ? 'bg-amber-600 text-white shadow-md'
+            : 'text-gray-600 hover:text-amber-700'
+        }`}>
+        <span>📰</span> <span className="hidden sm:inline">Jurnal</span> Ilmiah
+        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${activeTab==='jurnal'?'bg-white text-amber-700':'bg-amber-100 text-amber-700'}`}>
+          {liveJurnalCount > 0 ? liveJurnalCount.toLocaleString() : JURNAL_REGISTRY.length + ' J'}
         </span>
       </button>
     </div>
@@ -8577,6 +9638,16 @@ return (
       <PtkinNasionalTab
         onDataChange={(data) => setLivePtkinCount(data.length)}
         onNasionalDataChange={onPtkinNasionalDataChange}
+      />
+    )}
+
+    {/* ═══════════════════════════════════════ */}
+    {/* TAB 4: JURNAL ILMIAH SINTA & NASIONAL */}
+    {/* ═══════════════════════════════════════ */}
+    {activeTab === 'jurnal' && (
+      <JurnalIlmiahTab
+        onDataChange={(data) => setLiveJurnalCount(data.length)}
+        onJurnalDataChange={onJurnalDataChange}
       />
     )}
 
@@ -9247,7 +10318,7 @@ return (
 <div className="bg-white rounded-xl shadow-sm border p-6">
 <h3 className="text-lg font-bold text-gray-900 mb-4">Informasi Sistem</h3>
 <div className="space-y-2 text-sm text-gray-600">
-<p>• Versi Dashboard: 8.0.0 (Integrated Repository with 48 PTKIN)</p>
+<p>• Versi Dashboard: 8.0.0 (Integrated Repository with 58 PTKIN dan 54 Jurnal Ilmiah)</p>
 <p>• Database: Firebase Realtime Database</p>
 <p>• Real-time Sync: Aktif</p>
 <p>• Last Updated: {new Date().toLocaleDateString('id-ID')}</p>
@@ -9611,7 +10682,7 @@ if (sc >= 25) return { label: 'RENDAH', color: '#065f46', bg: '#dcfce7' };
 return { label: 'AMAN', color: '#042f2e', bg: '#ccfbf1' };
 };
 const ri = getRisikoRow(r.similarityScore);
-const sumber = r.sourceLabel || (r.type === 'proposal' ? 'Proposal' : r.isFromUinsi ? 'Repository UINSI' : 'Repository Lokal');
+const sumber = r.sourceLabel || (r.type === 'proposal' ? 'Proposal' : r.isFromJurnal ? 'Jurnal Ilmiah' : r.isFromUinsi ? 'Repository UINSI' : 'Repository Lokal');
 const details = r.similarityDetails || {};
 const cosine = details.cosine !== undefined ? details.cosine + '%' : '-';
 const jaccard = details.jaccardBigram !== undefined ? details.jaccardBigram + '%' : '-';
@@ -10138,7 +11209,7 @@ const highlight = similarityChecker.highlightMatchingTerms(formData.judul, item.
 return (
 <div key={idx} className="bg-white p-3 rounded-lg mb-2 border border-gray-200">
 <p className="text-xs font-medium text-gray-600 mb-1">
-{item.sourceLabel || (item.type === 'proposal' ? '📝 Proposal' : item.isFromUinsi ? '🌐 Repository UINSI' : '🏛️ Repository Lokal')} • {item.tahun}
+{item.sourceLabel || (item.type === 'proposal' ? '📝 Proposal' : item.isFromJurnal ? '📰 Jurnal Ilmiah' : item.isFromUinsi ? '🌐 Repository UINSI' : '🏛️ Repository Lokal')} • {item.tahun}
 </p>
 <div dangerouslySetInnerHTML={{ __html: highlight.new }} className="text-sm font-semibold mb-1" />
 <p className="text-xs text-gray-600">{item.author} • {item.prodi}</p>
@@ -10478,6 +11549,8 @@ const [kalenderAkademik, setKalenderAkademik] = React.useState(null); // null = 
 const [uinsiRepository, setUinsiRepository] = React.useState(UINSI_REPOSITORY_DATA);
 // State data PTKIN Nasional (dari Firebase cache / OAI-PMH multi-institusi)
 const [ptkinNasionalRepository, setPtkinNasionalRepository] = React.useState([]);
+// State data Jurnal Ilmiah (dari Firebase cache / OJS OAI-PMH)
+const [jurnalRepository, setJurnalRepository] = React.useState([]);
 const [toast, setToast] = React.useState({ show: false, msg: '', type: 'info' });
 const [showModal, setShowModal] = React.useState(false);
 const [modalType, setModalType] = React.useState('');
@@ -10654,6 +11727,24 @@ if (ptkinItems.length > 0) {
   console.log(`✅ PTKIN Nasional cache loaded: ${ptkinItems.length} skripsi → siap untuk cek similarity`);
 }
 }
+// Auto-load Jurnal Ilmiah cache
+const jurnalCache = await DB.get('jurnal_cache');
+if (jurnalCache && typeof jurnalCache === 'object') {
+const jurnalItems = [];
+const jSeen = new Set();
+Object.values(jurnalCache).forEach(c => {
+  if (c && c.data && Array.isArray(c.data)) {
+    c.data.forEach(d => {
+      const k = (d.judul||'').toLowerCase().trim().substring(0,80);
+      if (k && !jSeen.has(k)) { jSeen.add(k); jurnalItems.push(d); }
+    });
+  }
+});
+if (jurnalItems.length > 0) {
+  setJurnalRepository(jurnalItems);
+  console.log(`✅ Jurnal cache loaded: ${jurnalItems.length} artikel → siap untuk cek similarity`);
+}
+}
 } catch(e) { console.log('UINSI cache auto-load:', e.message); }
 };
 loadUinsiCache();
@@ -10676,6 +11767,7 @@ console.log('- Proposals:', proposalsArr.length);
 console.log('- Bimbingan:', bimbinganArr.length);
 console.log('- Repository:', repositoryArr.length);
 console.log('- Operator:', operatorArr.length);
+console.log('- Jurnal Ilmiah:', jurnalRepository.length);
 console.log('- User Role:', userRole);
 }, [mahasiswaArr, dosenArr, proposalsArr, bimbinganArr, repositoryArr, operatorArr, userRole]);
 
@@ -10866,8 +11958,10 @@ return;
 
 // ── Helper: animate step ──
 const SIM_STEPS = [
+{ label: 'Memuat data proposal mahasiswa (real-time)...', icon: '📋' },
 { label: 'Memuat data repository lokal & UINSI...', icon: '📂' },
 { label: 'Mengintegrasikan data PTKIN Nasional...', icon: '🇮🇩' },
+{ label: 'Mengintegrasikan data jurnal ilmiah...', icon: '📰' },
 { label: 'Menjalankan 8 algoritma similarity judul...', icon: '🧬' },
 { label: 'Menganalisis kemiripan abstrak...', icon: '📄' },
 { label: 'Menghitung bobot gabungan (70% + 30%)...', icon: '⚖️' },
@@ -10879,8 +11973,13 @@ setSimilarityResult(null);
 setSimilarityChecking({ step: 0, percent: 0, steps: SIM_STEPS });
 
 try {
-// Step 0 - load repos
-await delay(350);
+// Step 0 - load proposals (real-time dari Firebase)
+await delay(250);
+const proposalCount = Object.keys(proposals).length;
+setSimilarityChecking(prev => ({ ...prev, step: 1, percent: 10 }));
+
+// Step 1 - load repos + UINSI
+await delay(300);
 const combinedRepo = { ...repository };
 uinsiRepository.forEach((item, idx) => {
 const key = `uinsi_${item.id || idx}`;
@@ -10895,9 +11994,9 @@ _sourceType: 'uinsi',
 _sourceUrl: item.url || ''
 };
 });
-setSimilarityChecking(prev => ({ ...prev, step: 1, percent: 18 }));
+setSimilarityChecking(prev => ({ ...prev, step: 2, percent: 20 }));
 
-// Step 1 - PTKIN nasional
+// Step 2 - PTKIN nasional
 await delay(300);
 ptkinNasionalRepository.forEach((item, idx) => {
 const key = `ptkin_${item.institusiId || 'nas'}_${item.id || idx}`;
@@ -10913,44 +12012,66 @@ _sourceInstitusi: item.institusi || '',
 _sourceInstitusiId: item.institusiId || ''
 };
 });
-setSimilarityChecking(prev => ({ ...prev, step: 2, percent: 35 }));
+setSimilarityChecking(prev => ({ ...prev, step: 3, percent: 30 }));
 
-// Step 2 - Run algorithms
+// Step 3 - Jurnal ilmiah
+await delay(300);
+jurnalRepository.forEach((item, idx) => {
+const key = `jurnal_${item.jurnalId || 'j'}_${idx}`;
+combinedRepo[key] = {
+judul: item.judul,
+penulis: item.penulis,
+prodi: item.prodi || '',
+tahun: item.tahun || '',
+pembimbing: '-',
+abstrak: item.abstrak || '',
+_sourceType: 'jurnal_ilmiah',
+_sourceJurnal: item.jurnalNama || '',
+_sourceJurnalId: item.jurnalId || '',
+_sourceUrl: item.url || ''
+};
+});
+setSimilarityChecking(prev => ({ ...prev, step: 4, percent: 40 }));
+
+// Step 4 - Run algorithms
 await delay(400);
 const totalSources = proposalsArr ? proposalsArr.length : 0;
 const totalRepo = Object.keys(combinedRepo).length;
 const hasAbstrak = abstrak && abstrak.trim().length >= 30;
-setSimilarityChecking(prev => ({ ...prev, step: 3, percent: 55 }));
+setSimilarityChecking(prev => ({ ...prev, step: 5, percent: 55 }));
 
-// Step 3 - Abstract analysis
+// Step 5 - Abstract analysis
 await delay(350);
 const result = checkProposalSimilarityAdvanced(judul, proposals, combinedRepo, abstrak || '');
-setSimilarityChecking(prev => ({ ...prev, step: 4, percent: 78 }));
+setSimilarityChecking(prev => ({ ...prev, step: 6, percent: 78 }));
 
-// Step 4 - Weight calculation
+// Step 6 - Weight calculation
 await delay(300);
 result.results = (result.results || []).map(r => ({
 ...r,
 isFromUinsi: r.id && r.id.toString().startsWith('uinsi_'),
 isFromPtkin: r.id && r.id.toString().startsWith('ptkin_'),
-sourceLabel: (r.id && r.id.toString().startsWith('ptkin_')) 
+sourceLabel: (r.id && r.id.toString().startsWith('jurnal_'))
+  ? `📰 ${(combinedRepo[r.id]?._sourceJurnal || 'Jurnal Ilmiah')}`
+  : (r.id && r.id.toString().startsWith('ptkin_')) 
   ? `🇮🇩 PTKIN ${(combinedRepo[r.id]?._sourceInstitusi || 'Nasional')}` 
   : (r.id && r.id.toString().startsWith('uinsi_')) 
     ? '🌐 Repository UINSI' 
-    : (r.type === 'proposal' ? '📝 Proposal' : '🏛️ Repository Lokal')
+    : (r.type === 'proposal' ? '📝 Proposal' : '🏛️ Repository Lokal'),
+isFromJurnal: r.id && r.id.toString().startsWith('jurnal_')
 }));
 result.usedAbstract = hasAbstrak;
-setSimilarityChecking(prev => ({ ...prev, step: 5, percent: 95 }));
+setSimilarityChecking(prev => ({ ...prev, step: 7, percent: 95 }));
 
-// Step 5 - Finalize
+// Step 7 - Finalize
 await delay(350);
-setSimilarityChecking(prev => ({ ...prev, step: 6, percent: 100 }));
+setSimilarityChecking(prev => ({ ...prev, step: 8, percent: 100 }));
 await delay(400);
 
 setSimilarityResult(result);
 setSimilarityChecking(null);
 const modeInfo = hasAbstrak ? ' [Judul 70% + Abstrak 30%]' : ' [Judul 100%]';
-showToast(`Similarity check selesai! (${result.highestSimilarity}%)${modeInfo} — ${totalRepo.toLocaleString()} skripsi + ${totalSources} proposal dicek`, 'success');
+showToast(`Similarity check selesai! (${result.highestSimilarity}%)${modeInfo} — ${proposalCount} proposal + ${totalRepo.toLocaleString()} repository/artikel dicek`, 'success');
 } catch (err) {
 console.error('Similarity check error:', err);
 setSimilarityChecking(null);
@@ -11259,6 +12380,9 @@ uinsiData={uinsiRepository}
 onUinsiDataChange={(data) => setUinsiRepository(data)}
 ptkinNasionalData={ptkinNasionalRepository}
 onPtkinNasionalDataChange={(data) => setPtkinNasionalRepository(data)}
+jurnalData={jurnalRepository}
+onJurnalDataChange={(data) => setJurnalRepository(data)}
+proposalsData={proposalsArr}
 />;
 case 'kelola-mhs':
 return <KelolaMahasiswaPage
@@ -11372,13 +12496,14 @@ console.log('✅ SEMUA PAGE: userRole didefinisikan dengan benar, tidak ada erro
 console.log('✅ TANDA TANGAN CETAK: Nama dan NIP/NIM terisi otomatis sesuai data');
 console.log('✅ DUAL PEMBIMBING: Pembimbing 2 mendapat hak yang sama, tampilan berdampingan untuk mahasiswa');
 console.log('✅ PAGINATION: Semua halaman utama memiliki pagination 15 baris per halaman dengan navigasi Prev/Next');
-console.log('✅ REPOSITORY UINSI: Tab Repository UINSI Samarinda terintegrasi (seed + live OAI-PMH + Firebase cache)');
+console.log('✅ REPOSITORY UINSI: Full Repository Harvest — seluruh fakultas UINSI (seed + OAI-PMH + Firebase incremental cache)');
 console.log('✅ SIMILARITY TERINTEGRASI: Cek similarity kini mencakup Proposal + Repository Lokal + Repository UINSI + PTKIN Nasional');
 console.log('✅ CORS PROXY PARALLEL RACE: 8 proxy diadu serentak, sticky proxy untuk request berikutnya');
 console.log('✅ PARALLEL FETCH: ES + PS di-fetch bersamaan (Promise.allSettled), tanpa batch cap, delay minimal 80ms');
 console.log('✅ FULL CACHE: Semua data tersimpan di Firebase tanpa batas slice — coverage 100% otomatis');
 console.log('✅ ABSTRAK SIMILARITY: Bobot proporsional Judul 70% + Abstrak 30% untuk akurasi lebih tinggi');
 console.log('🇮🇩 PTKIN NASIONAL: Repository ' + PTKIN_REGISTRY.length + ' PTKIN (UIN/IAIN/STAIN) se-Indonesia terintegrasi');
+console.log('📰 JURNAL ILMIAH: ' + JURNAL_REGISTRY.length + ' jurnal OJS (SINTA 1-5 & Nasional) terintegrasi via OAI-PMH + Firebase cache');
 console.log('🏛️ PTKIN REGISTRY: ' + PTKIN_STATS.uin + ' UIN, ' + PTKIN_STATS.iain + ' IAIN, ' + PTKIN_STATS.stain + ' STAIN');
 console.log('📡 MULTI-INSTITUSI FETCH: OAI-PMH fetcher untuk semua PTKIN dengan progress tracking & caching per institusi');
 console.log('🔍 SIMILARITY NASIONAL: Cek kemiripan judul terhadap ribuan skripsi dari PTKIN se-Indonesia');
